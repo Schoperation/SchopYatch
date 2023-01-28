@@ -1,6 +1,8 @@
 package command
 
-import "github.com/disgoorg/disgo/events"
+import (
+	"github.com/disgoorg/disgo/events"
+)
 
 type Command interface {
 	GetName() string

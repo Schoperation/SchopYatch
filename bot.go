@@ -3,22 +3,31 @@ package main
 import (
 	"context"
 	"log"
+	"schoperation/schopyatch/command"
+	"strings"
 
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
 )
 
 type SchopYatch struct {
-	Client bot.Client
-	Config YatchConfig
+	Client   bot.Client
+	Config   YatchConfig
+	Commands map[string]command.Command
 }
 
-func NewSchopYatchBot(config YatchConfig) *SchopYatch {
+func NewSchopYatchBot(config YatchConfig, commands []command.Command) *SchopYatch {
+	var mappedCommands = make(map[string]command.Command)
+
+	for _, command := range commands {
+		mappedCommands[command.GetName()] = command
+	}
+
 	return &SchopYatch{
-		Config: config,
+		Config:   config,
+		Commands: mappedCommands,
 	}
 }
 
@@ -55,17 +64,19 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		return
 	}
 
-	var message string
-	if event.Message.Content == "ping" {
-		message = "pong"
-	} else if event.Message.Content == "pong" {
-		message = "ping"
+	message := event.Message.Content
+
+	if !strings.HasPrefix(message, sy.Config.Prefix) {
+		return
 	}
 
-	if message != "" {
-		_, err := event.Client().Rest().CreateMessage(event.ChannelID, discord.NewMessageCreateBuilder().SetContent(message).Build())
-		if err != nil {
-			log.Printf("Error sending the message: %v", err)
-		}
+	message = strings.Replace(message, sy.Config.Prefix, "", 1)
+
+	splitMessage := strings.Split(message, " ")
+	cmd, exists := sy.Commands[splitMessage[0]]
+	if !exists {
+		return
 	}
+
+	cmd.Execute(event, splitMessage[1:]...)
 }

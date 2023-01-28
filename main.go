@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"schoperation/schopyatch/command"
 	"syscall"
 )
 
@@ -17,7 +18,11 @@ func main() {
 		log.Fatalf("Error loading the config: %v", err)
 	}
 
-	schopYatch := NewSchopYatchBot(config)
+	commands := []command.Command{
+		command.NewPingCmd(),
+	}
+
+	schopYatch := NewSchopYatchBot(config, commands)
 	err = schopYatch.SetupClient()
 	if err != nil {
 		log.Fatalf("Error building SchopYatch: %v", err)
