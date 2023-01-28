@@ -3,19 +3,18 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
 type YatchConfig struct {
-	Token string
+	Token  string
+	Prefix string
 }
 
-func LoadConfig() YatchConfig {
+func LoadConfig() (YatchConfig, error) {
 	file, err := os.Open("yatch_config.json")
 	if err != nil {
-		log.Fatalf("Error opening the config file: %v", err)
-		return YatchConfig{}
+		return YatchConfig{}, err
 	}
 
 	defer file.Close()
@@ -25,9 +24,8 @@ func LoadConfig() YatchConfig {
 	var yatchConfig YatchConfig
 	err = json.Unmarshal(bytes, &yatchConfig)
 	if err != nil {
-		log.Fatalf("Error parsing json in config file: %v", err)
-		return YatchConfig{}
+		return YatchConfig{}, err
 	}
 
-	return yatchConfig
+	return yatchConfig, nil
 }
