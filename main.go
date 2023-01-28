@@ -15,10 +15,12 @@ import (
 )
 
 func main() {
-	log.SetPrefix("SY")
+	log.SetPrefix("SY|")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	client, err := disgo.New("MTA2ODcyMDY5NDExODA3MjQzMA.GP6jeX.ImwFQfqRmYYBgT0Djyzzj6EhseAA4KJIcR95N8",
+	config := LoadConfig()
+
+	client, err := disgo.New(config.Token,
 		bot.WithGatewayConfigOpts(
 			gateway.WithIntents(
 				gateway.IntentGuildMessages,
@@ -38,7 +40,7 @@ func main() {
 		log.Fatalf("Error connecting to Discord gateway: %v", err)
 	}
 
-	log.Println("SchopYatch is up and running!")
+	log.Printf("SchopYatch is up and running!")
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM)
 	<-s
@@ -57,6 +59,9 @@ func onMessageCreate(event *events.MessageCreate) {
 	}
 
 	if message != "" {
-		_, _ = event.Client().Rest().CreateMessage(event.ChannelID, discord.NewMessageCreateBuilder().SetContent(message).Build())
+		_, err := event.Client().Rest().CreateMessage(event.ChannelID, discord.NewMessageCreateBuilder().SetContent(message).Build())
+		if err != nil {
+			log.Printf("Error sending the message: %v", err)
+		}
 	}
 }
