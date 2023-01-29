@@ -6,10 +6,16 @@ import (
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
-type EventListener struct{}
+type EventListener struct {
+	Queue    *MusicQueue
+	LoopMode *LoopMode
+}
 
-func NewEventListener() lavalink.PlayerEventListener {
-	return &EventListener{}
+func NewEventListener(queue *MusicQueue, loopMode *LoopMode) lavalink.PlayerEventListener {
+	return &EventListener{
+		Queue:    queue,
+		LoopMode: loopMode,
+	}
 }
 
 func (l *EventListener) OnPlayerPause(player lavalink.Player) {
@@ -22,7 +28,7 @@ func (l *EventListener) OnPlayerUpdate(player lavalink.Player, state lavalink.Pl
 	//log.Printf("OnPlayerUpdate")
 }
 func (l *EventListener) OnTrackStart(player lavalink.Player, track lavalink.AudioTrack) {
-	log.Printf("OnTrackStart")
+	//log.Printf("%d", *l.LoopMode)
 }
 func (l *EventListener) OnTrackEnd(player lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
 	log.Printf("OnTrackEnd")

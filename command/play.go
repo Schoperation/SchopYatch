@@ -96,11 +96,18 @@ func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrac
 		return
 	}
 
-	err = (*deps.MusicPlayer).Player.Play(track)
-	if err != nil {
-		log.Printf("%v", err)
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't play this... might be some dumb age restriction?")
+	if deps.MusicPlayer.Player.PlayingTrack() == nil {
+		err = deps.MusicPlayer.Player.Play(track)
+		if err != nil {
+			log.Printf("%v", err)
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't play this... might be some dumb age restriction?")
+			return
+		}
+
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info().Title, track.Info().Author))
 		return
 	}
 
+	deps.MusicPlayer.Queue.Enqueue(track)
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added *%s* by **%s** to the queue.", track.Info().Title, track.Info().Author))
 }

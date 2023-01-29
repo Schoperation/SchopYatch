@@ -22,7 +22,7 @@ type SchopYatch struct {
 	Config   YatchConfig
 	Commands map[string]command.Command
 	guilds   map[snowflake.ID]string
-	players  map[snowflake.ID]musicplayer.MusicPlayer
+	players  map[snowflake.ID]*musicplayer.MusicPlayer
 	Lavalink disgolink.Link
 }
 
@@ -31,7 +31,7 @@ func NewSchopYatchBot(config YatchConfig) *SchopYatch {
 		Config:   config,
 		Commands: command.GetCommandsAndAliasesAsMap(),
 		guilds:   make(map[snowflake.ID]string),
-		players:  make(map[snowflake.ID]musicplayer.MusicPlayer),
+		players:  make(map[snowflake.ID]*musicplayer.MusicPlayer),
 	}
 }
 
@@ -81,7 +81,7 @@ func (sy *SchopYatch) GetPlayerByGuildId(guildId snowflake.ID) *musicplayer.Musi
 		return nil
 	}
 
-	return &player
+	return player
 }
 
 func (sy *SchopYatch) OnReady(event *events.Ready) {
@@ -97,7 +97,7 @@ func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
 	guildId := event.GuildID
 
 	sy.guilds[guildId] = guildId.String()
-	sy.players[guildId] = *musicplayer.NewMusicPlayer(guildId, sy.Lavalink)
+	sy.players[guildId] = musicplayer.NewMusicPlayer(guildId, sy.Lavalink)
 }
 
 func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
@@ -135,5 +135,6 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 
 	if err != nil {
 		log.Printf("Error occurred running the %s command: %v", cmd.GetName(), err)
+		return
 	}
 }

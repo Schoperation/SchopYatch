@@ -6,6 +6,7 @@ var (
 	playCmd  = NewPlayCmd()
 	joinCmd  = NewJoinCmd()
 	leaveCmd = NewLeaveCmd()
+	queueCmd = NewQueueCmd()
 )
 
 func GetCommands() []Command {
@@ -15,6 +16,7 @@ func GetCommands() []Command {
 		playCmd,
 		joinCmd,
 		leaveCmd,
+		queueCmd,
 	}
 }
 

@@ -22,14 +22,15 @@ type MusicPlayer struct {
 }
 
 func NewMusicPlayer(guildId snowflake.ID, lavalink disgolink.Link) *MusicPlayer {
-	player := lavalink.Player(guildId)
-	player.SetVolume(42)
-	player.AddListener(NewEventListener())
-
-	return &MusicPlayer{
+	musicPlayer := MusicPlayer{
 		GuildID:  guildId,
 		Player:   lavalink.Player(guildId),
-		Queue:    *NewMusicQueue(),
+		Queue:    NewMusicQueue(),
 		LoopMode: LoopOff,
 	}
+
+	musicPlayer.Player.SetVolume(42)
+	musicPlayer.Player.AddListener(NewEventListener(&musicPlayer.Queue, &musicPlayer.LoopMode))
+
+	return &musicPlayer
 }

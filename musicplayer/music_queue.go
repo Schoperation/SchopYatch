@@ -9,8 +9,8 @@ type MusicQueue struct {
 	size   int
 }
 
-func NewMusicQueue() *MusicQueue {
-	return &MusicQueue{
+func NewMusicQueue() MusicQueue {
+	return MusicQueue{
 		tracks: []lavalink.AudioTrack{},
 		size:   0,
 	}
@@ -18,13 +18,13 @@ func NewMusicQueue() *MusicQueue {
 
 func (q *MusicQueue) Enqueue(track lavalink.AudioTrack) {
 	q.tracks = append(q.tracks, track)
-	q.size += 1
+	q.size++
 }
 
 func (q *MusicQueue) EnqueueList(tracks []lavalink.AudioTrack) {
 	for _, track := range tracks {
 		q.tracks = append(q.tracks, track)
-		q.size += 1
+		q.size++
 	}
 }
 
@@ -45,7 +45,7 @@ func (q *MusicQueue) DequeueAtIndex(index int) *lavalink.AudioTrack {
 		q.tracks = append(q.tracks[:index], q.tracks[index+1:]...)
 	}
 
-	q.size -= 1
+	q.size--
 
 	return &track
 }
