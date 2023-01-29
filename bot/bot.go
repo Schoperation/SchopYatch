@@ -4,32 +4,34 @@ import (
 	"context"
 	"log"
 	"schoperation/schopyatch/command"
-	"schoperation/schopyatch/util"
+	"schoperation/schopyatch/musicplayer"
 	"strings"
 
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
+	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/disgolink/disgolink"
 	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/snowflake/v2"
 )
 
 type SchopYatch struct {
 	Client   bot.Client
 	Config   YatchConfig
-	Lavalink disgolink.Link
 	Commands map[string]command.Command
-	Queue    util.MusicQueue
-	LoopMode util.LoopMode
+	guilds   map[snowflake.ID]string
+	players  map[snowflake.ID]musicplayer.MusicPlayer
+	Lavalink disgolink.Link
 }
 
 func NewSchopYatchBot(config YatchConfig) *SchopYatch {
 	return &SchopYatch{
 		Config:   config,
 		Commands: command.GetCommandsAndAliasesAsMap(),
-		Queue:    *util.NewMusicQueue(),
-		LoopMode: util.LoopOff,
+		guilds:   make(map[snowflake.ID]string),
+		players:  make(map[snowflake.ID]musicplayer.MusicPlayer),
 	}
 }
 
@@ -38,20 +40,26 @@ func (sy *SchopYatch) SetupClient() error {
 	sy.Client, err = disgo.New(sy.Config.Token,
 		bot.WithGatewayConfigOpts(
 			gateway.WithIntents(
+				gateway.IntentGuilds,
 				gateway.IntentGuildMessages,
-				gateway.IntentMessageContent,
 				gateway.IntentGuildVoiceStates,
+				gateway.IntentMessageContent,
 			),
+		),
+		bot.WithCacheConfigOpts(
+			cache.WithCaches(cache.FlagVoiceStates, cache.FlagMembers, cache.FlagChannels, cache.FlagGuilds, cache.FlagRoles),
 		),
 		bot.WithEventListenerFunc(sy.OnReady),
 		bot.WithEventListenerFunc(sy.OnMessageCreate),
+		bot.WithEventListenerFunc(sy.OnGuildJoin),
 	)
-	if err != nil {
-		return err
-	}
 
+	return err
+}
+
+func (sy *SchopYatch) SetupLavalink() error {
 	link := disgolink.New(sy.Client)
-	link.AddNode(context.TODO(), lavalink.NodeConfig{
+	_, err := link.AddNode(context.TODO(), lavalink.NodeConfig{
 		Name:        "schopyatch",
 		Host:        "localhost",
 		Port:        "2333",
@@ -59,9 +67,21 @@ func (sy *SchopYatch) SetupClient() error {
 		Secure:      false,
 		ResumingKey: "",
 	})
-	sy.Lavalink = link
+	if err != nil {
+		return err
+	}
 
+	sy.Lavalink = link
 	return nil
+}
+
+func (sy *SchopYatch) GetPlayerByGuildId(guildId snowflake.ID) *musicplayer.MusicPlayer {
+	player, exists := sy.players[guildId]
+	if !exists {
+		return nil
+	}
+
+	return &player
 }
 
 func (sy *SchopYatch) OnReady(event *events.Ready) {
@@ -71,6 +91,13 @@ func (sy *SchopYatch) OnReady(event *events.Ready) {
 	}
 
 	log.Printf("SchopYatch is up and running!")
+}
+
+func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
+	guildId := event.GuildID
+
+	sy.guilds[guildId] = guildId.String()
+	sy.players[guildId] = *musicplayer.NewMusicPlayer(guildId, sy.Lavalink)
 }
 
 func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
@@ -92,11 +119,18 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		return
 	}
 
+	player := sy.GetPlayerByGuildId(*event.GuildID)
+	if player == nil {
+		log.Printf("Hol' up, there's no initialized music player for your server?")
+		return
+	}
+
 	err := cmd.Execute(command.CommandDependencies{
-		Client:   &sy.Client,
-		Lavalink: &sy.Lavalink,
-		Event:    event,
-		Prefix:   sy.Config.Prefix,
+		Client:      &sy.Client,
+		MusicPlayer: player,
+		Lavalink:    &sy.Lavalink,
+		Event:       event,
+		Prefix:      sy.Config.Prefix,
 	}, splitMessage[1:]...)
 
 	if err != nil {

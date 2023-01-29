@@ -21,7 +21,7 @@ func main() {
 	/*
 		TODO cmds:
 
-		help (reads descriptions, usages, and aliases)
+		- help (reads descriptions, usages, and aliases)
 		about
 
 		join voice channel (to keep functionality in one place)
@@ -46,6 +46,11 @@ func main() {
 	err = schopYatch.SetupClient()
 	if err != nil {
 		log.Fatalf("Error building SchopYatch: %v", err)
+	}
+
+	err = schopYatch.SetupLavalink()
+	if err != nil {
+		log.Fatalf("Error setting up lavalink: %v", err)
 	}
 
 	defer schopYatch.Lavalink.Close()

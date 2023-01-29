@@ -1,9 +1,11 @@
 package command
 
 var (
-	helpCmd = NewHelpCmd()
-	pingCmd = NewPingCmd()
-	playCmd = NewPlayCmd()
+	helpCmd  = NewHelpCmd()
+	pingCmd  = NewPingCmd()
+	playCmd  = NewPlayCmd()
+	joinCmd  = NewJoinCmd()
+	leaveCmd = NewLeaveCmd()
 )
 
 func GetCommands() []Command {
@@ -11,6 +13,8 @@ func GetCommands() []Command {
 		helpCmd,
 		pingCmd,
 		playCmd,
+		joinCmd,
+		leaveCmd,
 	}
 }
 

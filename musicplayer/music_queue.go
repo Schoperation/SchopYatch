@@ -1,15 +1,7 @@
-package util
+package musicplayer
 
 import (
 	"github.com/disgoorg/disgolink/lavalink"
-)
-
-type LoopMode int
-
-const (
-	LoopOff LoopMode = iota
-	LoopTrack
-	LoopQueue
 )
 
 type MusicQueue struct {

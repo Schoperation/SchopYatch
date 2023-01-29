@@ -52,7 +52,7 @@ func (cmd *PlayCmd) GetAliases() []string {
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	if len(opts) == 0 {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song")
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song??")
 		return nil
 	}
 
@@ -90,31 +90,16 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 }
 
 func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrack) {
-
-	voiceState, exists := (*deps.Client).Caches().VoiceState(*deps.Event.GuildID, deps.Event.Message.Author.ID)
-	if !exists {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+	err := joinVoiceChannel(deps)
+	if err != nil {
+		log.Printf("Couldn't join voice channel: %v", err)
 		return
 	}
 
-	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, voiceState.ChannelID, false, true)
-	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot connect to your channel... do I have permission?")
-		log.Printf("%v", err)
-		return
-	}
-
-	player := (*deps.Lavalink).Player(*deps.Event.GuildID)
-
-	err = player.SetVolume(42)
+	err = (*deps.MusicPlayer).Player.Play(track)
 	if err != nil {
 		log.Printf("%v", err)
-		return
-	}
-
-	err = player.Play(track)
-	if err != nil {
-		log.Printf("%v", err)
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't play this... might be some dumb age restriction?")
 		return
 	}
 
