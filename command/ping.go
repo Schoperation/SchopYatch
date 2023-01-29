@@ -1,8 +1,7 @@
 package command
 
 import (
-	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/disgo/events"
+	"schoperation/schopyatch/util"
 )
 
 type PingCmd struct {
@@ -25,8 +24,8 @@ func (cmd *PingCmd) GetDescription() string {
 	return cmd.Description
 }
 
-func (cmd *PingCmd) Execute(e *events.MessageCreate, opts ...string) error {
-	_, err := e.Client().Rest().CreateMessage(e.ChannelID, discord.NewMessageCreateBuilder().SetContent("Pong!").Build())
+func (cmd *PingCmd) Execute(deps CommandDependencies, opts ...string) error {
+	err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Pong!")
 	if err != nil {
 		return err
 	}

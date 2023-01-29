@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"encoding/json"
@@ -7,8 +7,9 @@ import (
 )
 
 type YatchConfig struct {
-	Token  string
-	Prefix string
+	Token            string `json:"token"`
+	LavalinkPassword string `json:"lavalink_password"`
+	Prefix           string `json:"prefix"`
 }
 
 func LoadConfig() (YatchConfig, error) {

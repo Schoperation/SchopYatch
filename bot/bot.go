@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"context"
@@ -10,11 +10,14 @@ import (
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
+	"github.com/disgoorg/disgolink/disgolink"
+	"github.com/disgoorg/disgolink/lavalink"
 )
 
 type SchopYatch struct {
 	Client   bot.Client
 	Config   YatchConfig
+	Lavalink disgolink.Link
 	Commands map[string]command.Command
 }
 
@@ -38,6 +41,7 @@ func (sy *SchopYatch) SetupClient() error {
 			gateway.WithIntents(
 				gateway.IntentGuildMessages,
 				gateway.IntentMessageContent,
+				gateway.IntentGuildVoiceStates,
 			),
 		),
 		bot.WithEventListenerFunc(sy.OnReady),
@@ -46,6 +50,17 @@ func (sy *SchopYatch) SetupClient() error {
 	if err != nil {
 		return err
 	}
+
+	link := disgolink.New(sy.Client)
+	link.AddNode(context.TODO(), lavalink.NodeConfig{
+		Name:        "schopyatch",
+		Host:        "localhost",
+		Port:        "2333",
+		Password:    sy.Config.LavalinkPassword,
+		Secure:      false,
+		ResumingKey: "",
+	})
+	sy.Lavalink = link
 
 	return nil
 }
@@ -73,10 +88,18 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 	message = strings.Replace(message, sy.Config.Prefix, "", 1)
 
 	splitMessage := strings.Split(message, " ")
-	cmd, exists := sy.Commands[splitMessage[0]]
+	cmd, exists := sy.Commands[strings.ToLower(splitMessage[0])]
 	if !exists {
 		return
 	}
 
-	cmd.Execute(event, splitMessage[1:]...)
+	err := cmd.Execute(command.CommandDependencies{
+		Client:   &sy.Client,
+		Lavalink: &sy.Lavalink,
+		Event:    event,
+	}, splitMessage[1:]...)
+
+	if err != nil {
+		log.Printf("Error occurred running the %s command: %v", cmd.GetName(), err)
+	}
 }

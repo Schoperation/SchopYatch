@@ -1,5 +1,9 @@
 github.com/disgoorg/disgo v0.15.0 h1:OTYlhyQ/frPtqY9dGRSaBpo7GJtTQj+8dah2ml+LPHM=
 github.com/disgoorg/disgo v0.15.0/go.mod h1:j7MCI6foUipYNozxwttr2hcaEQa3gNEbcwgLnyLUf6E=
+github.com/disgoorg/disgolink/disgolink v1.7.4 h1:JqiB9fOMxEZHktfHc0LZVOCiNLVmkmtlIic8qDTd5W0=
+github.com/disgoorg/disgolink/disgolink v1.7.4/go.mod h1:qbYYCPJvmoBSxDnk+UznKRYa86QMsIZKQxfv9joBVr4=
+github.com/disgoorg/disgolink/lavalink v1.7.3 h1:i3wThR0CWWvabhR/HSYM8b6Ln7Ex3ZgX6Hs4VZ+ZSV0=
+github.com/disgoorg/disgolink/lavalink v1.7.3/go.mod h1:e/oo6afxnHvjkgGeJYrDazVIJEsQuWVSFahsek+K1mo=
 github.com/disgoorg/json v1.0.0 h1:kDhSM661fgIuNoZF3BO5/odaR5NSq80AWb937DH+Pdo=
 github.com/disgoorg/json v1.0.0/go.mod h1:BHDwdde0rpQFDVsRLKhma6Y7fTbQKub/zdGO5O9NqqA=
 github.com/disgoorg/log v1.2.0 h1:sqlXnu/ZKAlIlHV9IO+dbMto7/hCQ474vlIdMWk8QKo=
@@ -14,5 +18,9 @@ golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e h1:T8NU3HyQ8ClP4SEE+KbFlg
 golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/exp v0.0.0-20220325121720-054d8573a5d8 h1:Xt4/LzbTwfocTk9ZLEu4onjeFucl88iW+v4j4PWbQuE=
 golang.org/x/exp v0.0.0-20220325121720-054d8573a5d8/go.mod h1:lgLbSvA5ygNOMpwM/9anMpWVlVJ7Z+cHWq/eFuinpGE=
+golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab h1:1S7USr8/C0Sgk4egxq4zZ07zYt2Xh1IiFp8hUMXH/us=
+golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 h1:id054HUawV2/6IGm2IV8KZQjqtwAOo2CYlOToYqa0d0=
 golang.org/x/sys v0.0.0-20211019181941-9d821ace8654/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.1.0 h1:kunALQeHf1/185U1i0GOB/fy1IPRDDpuoOOqRReG57U=
+golang.org/x/sys v0.1.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
