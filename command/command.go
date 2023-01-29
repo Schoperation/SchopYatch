@@ -9,7 +9,10 @@ import (
 
 type Command interface {
 	GetName() string
+	GetSummary() string
 	GetDescription() string
+	GetUsage() string
+	GetAliases() []string
 	Execute(deps CommandDependencies, opts ...string) error
 }
 
@@ -17,4 +20,5 @@ type CommandDependencies struct {
 	Client   *bot.Client
 	Lavalink *disgolink.Link
 	Event    *events.MessageCreate
+	Prefix   string
 }

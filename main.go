@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"schoperation/schopyatch/bot"
-	"schoperation/schopyatch/command"
 	"syscall"
 )
 
@@ -19,12 +18,31 @@ func main() {
 		log.Fatalf("Error loading the config: %v", err)
 	}
 
-	commands := []command.Command{
-		command.NewPingCmd(),
-		command.NewPlayCmd(),
-	}
+	/*
+		TODO cmds:
 
-	schopYatch := bot.NewSchopYatchBot(config, commands)
+		help (reads descriptions, usages, and aliases)
+		about
+
+		join voice channel (to keep functionality in one place)
+		leave voice channel
+
+		play / resume
+			support for
+				search
+				playlists
+		pause
+		seek
+		nowplaying
+		loop track/queue
+
+		queue
+		skip
+		skipto
+		clear
+		shuffle
+	*/
+	schopYatch := bot.NewSchopYatchBot(config)
 	err = schopYatch.SetupClient()
 	if err != nil {
 		log.Fatalf("Error building SchopYatch: %v", err)

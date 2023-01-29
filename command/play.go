@@ -10,13 +10,19 @@ import (
 
 type PlayCmd struct {
 	Name        string
+	Summary     string
 	Description string
+	Usage       string
+	Aliases     []string
 }
 
 func NewPlayCmd() Command {
 	return &PlayCmd{
 		Name:        "play",
+		Summary:     "Play a track or playlist",
 		Description: "Plays a track on the bot",
+		Usage:       "play <required> [optional]",
+		Aliases:     []string{"p", "resume"},
 	}
 }
 
@@ -24,8 +30,20 @@ func (cmd *PlayCmd) GetName() string {
 	return cmd.Name
 }
 
+func (cmd *PlayCmd) GetSummary() string {
+	return cmd.Summary
+}
+
 func (cmd *PlayCmd) GetDescription() string {
 	return cmd.Description
+}
+
+func (cmd *PlayCmd) GetUsage() string {
+	return cmd.Usage
+}
+
+func (cmd *PlayCmd) GetAliases() []string {
+	return cmd.Aliases
 }
 
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
@@ -59,7 +77,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 func (cmd *PlayCmd) play(deps CommandDependencies, track lavalink.AudioTrack) {
 
-	channelId, err := snowflake.Parse("12345")
+	channelId, err := snowflake.Parse("720381297545052201")
 	if err != nil {
 		log.Printf("%v", err)
 	}

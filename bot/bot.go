@@ -21,16 +21,10 @@ type SchopYatch struct {
 	Commands map[string]command.Command
 }
 
-func NewSchopYatchBot(config YatchConfig, commands []command.Command) *SchopYatch {
-	var mappedCommands = make(map[string]command.Command)
-
-	for _, command := range commands {
-		mappedCommands[command.GetName()] = command
-	}
-
+func NewSchopYatchBot(config YatchConfig) *SchopYatch {
 	return &SchopYatch{
 		Config:   config,
-		Commands: mappedCommands,
+		Commands: command.GetCommandsAndAliasesAsMap(),
 	}
 }
 
@@ -97,6 +91,7 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		Client:   &sy.Client,
 		Lavalink: &sy.Lavalink,
 		Event:    event,
+		Prefix:   sy.Config.Prefix,
 	}, splitMessage[1:]...)
 
 	if err != nil {
