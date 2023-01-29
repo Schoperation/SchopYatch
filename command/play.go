@@ -2,10 +2,13 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/url"
+	"schoperation/schopyatch/util"
+	"strings"
 
 	"github.com/disgoorg/disgolink/lavalink"
-	"github.com/disgoorg/snowflake/v2"
 )
 
 type PlayCmd struct {
@@ -47,24 +50,35 @@ func (cmd *PlayCmd) GetAliases() []string {
 }
 
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
-	//query := "ytsearch:Rick Astley - Never Gonna Give You Up"
-	query := "https://www.youtube.com/watch?v=ez-T4UD-bzs"
-	//query := "https://soundcloud.com/milulumilu/phoenix-wright-ace-attorney-11"
 
-	err := (*deps.Lavalink).BestRestClient().LoadItemHandler(context.TODO(), query, lavalink.NewResultHandler(
+	if len(opts) == 0 {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song")
+		return nil
+	}
+
+	// If we have a query, then we'll need to put the string opts back together into one.
+	song := opts[0]
+	_, err := url.ParseRequestURI(song)
+	if err != nil {
+		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYoutube, strings.Join(opts, " "))
+	}
+
+	err = (*deps.Lavalink).BestRestClient().LoadItemHandler(context.TODO(), song, lavalink.NewResultHandler(
 		func(track lavalink.AudioTrack) {
 			// Loaded a single track
-			//track2 = track
-			cmd.play(deps, track)
+			cmd.playTrack(deps, track)
 		},
 		func(playlist lavalink.AudioPlaylist) {
 			// Loaded a playlist
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Playlist loading not implemented yet, sory :((")
 		},
 		func(tracks []lavalink.AudioTrack) {
 			// Loaded a search result
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Searching not implemented yet, sory :((")
 		},
 		func() {
 			// nothing matching the query found
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Track not found. Make sure the URL is correct, or try searching something else...")
 		},
 		func(ex lavalink.FriendlyException) {
 			// something went wrong while loading the track
@@ -75,22 +89,33 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	return err
 }
 
-func (cmd *PlayCmd) play(deps CommandDependencies, track lavalink.AudioTrack) {
+func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrack) {
 
-	channelId, err := snowflake.Parse("720381297545052201")
-	if err != nil {
-		log.Printf("%v", err)
-	}
-	err = (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, &channelId, false, true)
-	if err != nil {
-		log.Printf("%v", err)
+	voiceState, exists := (*deps.Client).Caches().VoiceState(*deps.Event.GuildID, deps.Event.Message.Author.ID)
+	if !exists {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+		return
 	}
 
-	log.Printf("%s", track.Info().Title)
+	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, voiceState.ChannelID, false, true)
+	if err != nil {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot connect to your channel... do I have permission?")
+		log.Printf("%v", err)
+		return
+	}
 
 	player := (*deps.Lavalink).Player(*deps.Event.GuildID)
+
+	err = player.SetVolume(42)
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
 	err = player.Play(track)
 	if err != nil {
 		log.Printf("%v", err)
+		return
 	}
+
 }

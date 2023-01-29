@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"schoperation/schopyatch/command"
+	"schoperation/schopyatch/util"
 	"strings"
 
 	"github.com/disgoorg/disgo"
@@ -19,12 +20,16 @@ type SchopYatch struct {
 	Config   YatchConfig
 	Lavalink disgolink.Link
 	Commands map[string]command.Command
+	Queue    util.MusicQueue
+	LoopMode util.LoopMode
 }
 
 func NewSchopYatchBot(config YatchConfig) *SchopYatch {
 	return &SchopYatch{
 		Config:   config,
 		Commands: command.GetCommandsAndAliasesAsMap(),
+		Queue:    *util.NewMusicQueue(),
+		LoopMode: util.LoopOff,
 	}
 }
 

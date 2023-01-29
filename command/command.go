@@ -1,6 +1,8 @@
 package command
 
 import (
+	"schoperation/schopyatch/util"
+
 	"github.com/disgoorg/disgo/bot"
 
 	"github.com/disgoorg/disgo/events"
@@ -20,5 +22,7 @@ type CommandDependencies struct {
 	Client   *bot.Client
 	Lavalink *disgolink.Link
 	Event    *events.MessageCreate
+	Queue    *util.MusicQueue
 	Prefix   string
+	LoopMode util.LoopMode
 }
