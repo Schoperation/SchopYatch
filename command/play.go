@@ -96,6 +96,11 @@ func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrac
 		return
 	}
 
+	if deps.MusicPlayer.GotDisconnected {
+		deps.MusicPlayer.RecreatePlayer(*deps.Lavalink)
+		deps.MusicPlayer.GotDisconnected = false
+	}
+
 	if deps.MusicPlayer.Player.PlayingTrack() == nil {
 		err = deps.MusicPlayer.Player.Play(track)
 		if err != nil {

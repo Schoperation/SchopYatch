@@ -30,7 +30,7 @@ func main() {
 		play / resume
 			support for
 				search
-				playlists
+				- playlists
 		pause
 		seek
 		- nowplaying

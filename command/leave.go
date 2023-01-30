@@ -49,10 +49,20 @@ func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {
 }
 
 func leaveVoiceChannel(deps CommandDependencies) error {
-	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, nil, false, false)
-	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot leave the channel... wait what?")
+	if deps.MusicPlayer.Player.PlayingTrack() != nil {
+		err := deps.MusicPlayer.Player.Stop()
+		if err != nil {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't stop this track...")
+			return err
+		}
 	}
 
+	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, nil, false, true)
+	if err != nil {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot leave the channel... wait what?")
+		return err
+	}
+
+	deps.MusicPlayer.GotDisconnected = true
 	return err
 }

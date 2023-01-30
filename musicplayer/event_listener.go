@@ -50,5 +50,5 @@ func (l *EventListener) OnTrackStuck(player lavalink.Player, track lavalink.Audi
 	log.Printf("OnTrackStuck")
 }
 func (l *EventListener) OnWebSocketClosed(player lavalink.Player, code int, reason string, byRemote bool) {
-	log.Printf("OnWebSocketClosed")
+	log.Printf("OnWebSocketClosed code: %v\n", code)
 }
