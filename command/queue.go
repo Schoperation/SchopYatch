@@ -51,16 +51,17 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	if deps.MusicPlayer.Player.PlayingTrack() != nil {
 		currentTrack := deps.MusicPlayer.Player.PlayingTrack()
-		builder.WriteString(fmt.Sprintf("Now playing: *%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info().Title, currentTrack.Info().Author, deps.MusicPlayer.Player.Position().String(), currentTrack.Info().Length.String()))
+		builder.WriteString(fmt.Sprintf("Now Playing: *%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info().Title, currentTrack.Info().Author, deps.MusicPlayer.Player.Position().String(), currentTrack.Info().Length.String()))
 	}
 
 	if deps.MusicPlayer.Queue.IsEmpty() {
 		builder.WriteString("Queue is empty.\n")
-		err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
-		return err
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+		return nil
 	}
 
-	pages := (deps.MusicPlayer.Queue.Length() / 10) + 1
+	queueLen := deps.MusicPlayer.Queue.Length()
+	pages := (queueLen / 10) + 1
 	pageNum := 1
 	if len(opts) > 0 {
 		num, err := strconv.Atoi(opts[0])
@@ -71,6 +72,12 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 		} else {
 			pageNum = num
 		}
+	}
+
+	if queueLen == 1 {
+		builder.WriteString(fmt.Sprintf("Total of **%d** track.\n", 1))
+	} else {
+		builder.WriteString(fmt.Sprintf("Total of **%d** tracks.\n", queueLen))
 	}
 	builder.WriteString(fmt.Sprintf("Page **%d** of **%d** of the queue:\n\n", pageNum, pages))
 
@@ -85,6 +92,6 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, queue[i].Info().Title, queue[i].Info().Author, queue[i].Info().Length))
 	}
 
-	err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
-	return err
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+	return nil
 }

@@ -69,3 +69,8 @@ func (q *MusicQueue) Peek() *lavalink.AudioTrack {
 func (q *MusicQueue) PeekList() []lavalink.AudioTrack {
 	return q.tracks
 }
+
+func (q *MusicQueue) Clear() {
+	q.tracks = []lavalink.AudioTrack{}
+	q.size = 0
+}

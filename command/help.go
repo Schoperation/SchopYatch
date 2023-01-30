@@ -53,9 +53,8 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 		cmd, exists := mappedCommands[strings.ToLower(opts[0])]
 		if !exists {
-			err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Could not find %s. Try doing %shelp for a full list.", strings.ToLower(opts[0]), deps.Prefix))
-
-			return err
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Could not find %s. Try doing %shelp for a full list.", strings.ToLower(opts[0]), deps.Prefix))
+			return nil
 		}
 
 		builder.WriteString(fmt.Sprintf("Usage: `%s%s`\n", deps.Prefix, cmd.GetUsage()))
@@ -71,8 +70,8 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 		builder.WriteString(fmt.Sprintf("%s\n", cmd.GetDescription()))
 
-		err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
-		return err
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+		return nil
 	}
 
 	builder.WriteString("SchopYatch is designed similarly to the old FredYatch, albeit with a few missing features and different command names.\n")
@@ -86,6 +85,6 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	builder.WriteString("```")
 
-	err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
-	return err
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+	return nil
 }

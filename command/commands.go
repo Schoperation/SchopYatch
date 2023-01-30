@@ -1,12 +1,15 @@
 package command
 
 var (
-	helpCmd  = NewHelpCmd()
-	pingCmd  = NewPingCmd()
-	playCmd  = NewPlayCmd()
-	joinCmd  = NewJoinCmd()
-	leaveCmd = NewLeaveCmd()
-	queueCmd = NewQueueCmd()
+	helpCmd       = NewHelpCmd()
+	pingCmd       = NewPingCmd()
+	playCmd       = NewPlayCmd()
+	joinCmd       = NewJoinCmd()
+	leaveCmd      = NewLeaveCmd()
+	queueCmd      = NewQueueCmd()
+	skipCmd       = NewSkipCmd()
+	skipToCmd     = NewSkipToCmd()
+	nowPlayingCmd = NewNowPlayingCmd()
 )
 
 func GetCommands() []Command {
@@ -17,6 +20,9 @@ func GetCommands() []Command {
 		joinCmd,
 		leaveCmd,
 		queueCmd,
+		skipCmd,
+		skipToCmd,
+		nowPlayingCmd,
 	}
 }
 

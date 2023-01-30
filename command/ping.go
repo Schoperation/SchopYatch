@@ -43,10 +43,6 @@ func (cmd *PingCmd) GetAliases() []string {
 }
 
 func (cmd *PingCmd) Execute(deps CommandDependencies, opts ...string) error {
-	err := util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Pong!")
-	if err != nil {
-		return err
-	}
-
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Pong!")
 	return nil
 }

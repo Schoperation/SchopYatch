@@ -24,8 +24,8 @@ func main() {
 		- help (reads descriptions, usages, and aliases)
 		about
 
-		join voice channel (to keep functionality in one place)
-		leave voice channel
+		- join voice channel (to keep functionality in one place)
+		- leave voice channel
 
 		play / resume
 			support for
@@ -33,12 +33,12 @@ func main() {
 				playlists
 		pause
 		seek
-		nowplaying
+		- nowplaying
 		loop track/queue
 
-		queue
-		skip
-		skipto
+		- queue
+		- skip
+		- skipto
 		clear
 		shuffle
 	*/

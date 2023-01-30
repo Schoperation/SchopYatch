@@ -70,7 +70,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 		},
 		func(playlist lavalink.AudioPlaylist) {
 			// Loaded a playlist
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Playlist loading not implemented yet, sory :((")
+			cmd.playList(deps, playlist)
 		},
 		func(tracks []lavalink.AudioTrack) {
 			// Loaded a search result
@@ -110,4 +110,21 @@ func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrac
 
 	deps.MusicPlayer.Queue.Enqueue(track)
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added *%s* by **%s** to the queue.", track.Info().Title, track.Info().Author))
+}
+
+func (cmd *PlayCmd) playList(deps CommandDependencies, playlist lavalink.AudioPlaylist) {
+	if len(playlist.Tracks()) == 0 {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Empty playlist. Try again...?")
+		return
+	}
+
+	cmd.playTrack(deps, playlist.Tracks()[0])
+
+	if len(playlist.Tracks()) == 1 {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Just a one hit wonder, huh?")
+		return
+	}
+
+	deps.MusicPlayer.Queue.EnqueueList(playlist.Tracks()[1:])
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added **%d** tracks from playlist **%s** to the queue.", len(playlist.Tracks()[1:]), playlist.Name()))
 }
