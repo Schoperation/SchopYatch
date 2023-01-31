@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"schoperation/schopyatch/util"
+	"strconv"
 	"strings"
 
 	"github.com/disgoorg/disgolink/lavalink"
@@ -50,15 +51,30 @@ func (cmd *PlayCmd) GetAliases() []string {
 }
 
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
-
 	if len(opts) == 0 {
+		if deps.MusicPlayer.Player.Paused() {
+			return resume(deps)
+		}
+
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song??")
+		return nil
+	}
+
+	num, err := strconv.Atoi(opts[0])
+	if err == nil {
+		if num < 1 || num > deps.MusicPlayer.GetLengthOfSearchResults() {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.GetLengthOfSearchResults()))
+			return nil
+		}
+
+		cmd.playTrack(deps, *deps.MusicPlayer.GetSearchResult(num - 1))
+		deps.MusicPlayer.ClearSearchResults()
 		return nil
 	}
 
 	// If we have a query, then we'll need to put the string opts back together into one.
 	song := opts[0]
-	_, err := url.ParseRequestURI(song)
+	_, err = url.ParseRequestURI(song)
 	if err != nil {
 		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYoutube, strings.Join(opts, " "))
 	}
@@ -74,7 +90,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 		},
 		func(tracks []lavalink.AudioTrack) {
 			// Loaded a search result
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Searching not implemented yet, sory :((")
+			cmd.search(deps, tracks)
 		},
 		func() {
 			// nothing matching the query found
@@ -132,4 +148,29 @@ func (cmd *PlayCmd) playList(deps CommandDependencies, playlist lavalink.AudioPl
 
 	deps.MusicPlayer.Queue.EnqueueList(playlist.Tracks()[1:])
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added **%d** tracks from playlist **%s** to the queue.", len(playlist.Tracks()[1:]), playlist.Name()))
+}
+
+func (cmd *PlayCmd) search(deps CommandDependencies, tracks []lavalink.AudioTrack) {
+	if len(tracks) == 0 {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No results. Try some other keywords? Such as OFFICIAL, FEATURING, ft., THE TRUTH ABOUT, IS A FRAUD, or CHARLIE")
+		return
+	}
+
+	builder := strings.Builder{}
+	builder.WriteString("Search Results:\n\n")
+
+	rangeLimit := 5
+	if rangeLimit > len(tracks) {
+		rangeLimit = len(tracks)
+	}
+
+	deps.MusicPlayer.ClearSearchResults()
+
+	for i := 0; i < rangeLimit; i++ {
+		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, tracks[i].Info().Title, tracks[i].Info().Author, tracks[i].Info().Length))
+		deps.MusicPlayer.AddSearchResult(tracks[i])
+	}
+
+	builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
 }

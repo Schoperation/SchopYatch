@@ -64,6 +64,7 @@ func leaveVoiceChannel(deps CommandDependencies) error {
 	}
 
 	deps.MusicPlayer.Queue.Clear()
+	deps.MusicPlayer.ClearSearchResults()
 	deps.MusicPlayer.GotDisconnected = true
 	return err
 }

@@ -27,12 +27,12 @@ func main() {
 		- join voice channel (to keep functionality in one place)
 		- leave voice channel
 
-		play / resume
+		play
 			support for
-				search
+				- search
 				- playlists
-		pause
-		resume
+		- pause
+		- resume
 		seek
 		- nowplaying
 		loop track/queue

@@ -5,6 +5,8 @@ var (
 	playCmd       = NewPlayCmd()
 	joinCmd       = NewJoinCmd()
 	leaveCmd      = NewLeaveCmd()
+	pauseCmd      = NewPauseCmd()
+	resumeCmd     = NewResumeCmd()
 	nowPlayingCmd = NewNowPlayingCmd()
 	skipCmd       = NewSkipCmd()
 	skipToCmd     = NewSkipToCmd()
@@ -20,6 +22,8 @@ func GetCommands() []Command {
 		playCmd,
 		joinCmd,
 		leaveCmd,
+		pauseCmd,
+		resumeCmd,
 		nowPlayingCmd,
 		skipCmd,
 		skipToCmd,
