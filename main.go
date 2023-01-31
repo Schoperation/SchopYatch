@@ -32,6 +32,7 @@ func main() {
 				search
 				- playlists
 		pause
+		resume
 		seek
 		- nowplaying
 		loop track/queue
@@ -39,8 +40,8 @@ func main() {
 		- queue
 		- skip
 		- skipto
-		clear
-		shuffle
+		- clear
+		- shuffle
 	*/
 	schopYatch := bot.NewSchopYatchBot(config)
 	err = schopYatch.SetupClient()

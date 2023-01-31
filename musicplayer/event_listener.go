@@ -7,22 +7,24 @@ import (
 )
 
 type EventListener struct {
-	Queue    *MusicQueue
-	LoopMode *LoopMode
+	Queue           *MusicQueue
+	LoopMode        *LoopMode
+	GotDisconnected *bool
 }
 
-func NewEventListener(queue *MusicQueue, loopMode *LoopMode) lavalink.PlayerEventListener {
+func NewEventListener(queue *MusicQueue, loopMode *LoopMode, gotDisconnected *bool) lavalink.PlayerEventListener {
 	return &EventListener{
-		Queue:    queue,
-		LoopMode: loopMode,
+		Queue:           queue,
+		LoopMode:        loopMode,
+		GotDisconnected: gotDisconnected,
 	}
 }
 
 func (l *EventListener) OnPlayerPause(player lavalink.Player) {
-	log.Printf("OnPlayerPause")
+	//log.Printf("OnPlayerPause")
 }
 func (l *EventListener) OnPlayerResume(player lavalink.Player) {
-	log.Printf("OnPlayerResume")
+	//log.Printf("OnPlayerResume")
 }
 func (l *EventListener) OnPlayerUpdate(player lavalink.Player, state lavalink.PlayerState) {
 	//log.Printf("OnPlayerUpdate")
@@ -44,11 +46,12 @@ func (l *EventListener) OnTrackEnd(player lavalink.Player, track lavalink.AudioT
 	}
 }
 func (l *EventListener) OnTrackException(player lavalink.Player, track lavalink.AudioTrack, exception lavalink.FriendlyException) {
-	log.Printf("OnTrackException")
+	//log.Printf("OnTrackException")
 }
 func (l *EventListener) OnTrackStuck(player lavalink.Player, track lavalink.AudioTrack, thresholdMs lavalink.Duration) {
-	log.Printf("OnTrackStuck")
+	//log.Printf("OnTrackStuck")
 }
 func (l *EventListener) OnWebSocketClosed(player lavalink.Player, code int, reason string, byRemote bool) {
-	log.Printf("OnWebSocketClosed code: %v\n", code)
+	//log.Printf("OnWebSocketClosed code: %v\n", code)
+	*l.GotDisconnected = true
 }

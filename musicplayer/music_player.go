@@ -32,14 +32,12 @@ func NewMusicPlayer(guildId snowflake.ID, lavalink disgolink.Link) *MusicPlayer 
 	}
 
 	musicPlayer.Player.SetVolume(42)
-	musicPlayer.Player.AddListener(NewEventListener(&musicPlayer.Queue, &musicPlayer.LoopMode))
+	musicPlayer.Player.AddListener(NewEventListener(&musicPlayer.Queue, &musicPlayer.LoopMode, &musicPlayer.GotDisconnected))
 
 	return &musicPlayer
 }
 
 func (mp *MusicPlayer) RecreatePlayer(lavalink disgolink.Link) error {
-	mp.Queue.Clear()
-
 	err := mp.Player.Destroy()
 	if err != nil {
 		return err
@@ -47,7 +45,7 @@ func (mp *MusicPlayer) RecreatePlayer(lavalink disgolink.Link) error {
 
 	player := lavalink.Player(mp.GuildID)
 	player.SetVolume(42)
-	player.AddListener(NewEventListener(&mp.Queue, &mp.LoopMode))
+	player.AddListener(NewEventListener(&mp.Queue, &mp.LoopMode, &mp.GotDisconnected))
 	mp.Player = player
 	return nil
 }

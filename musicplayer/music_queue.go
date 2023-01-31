@@ -1,6 +1,9 @@
 package musicplayer
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
@@ -73,4 +76,11 @@ func (q *MusicQueue) PeekList() []lavalink.AudioTrack {
 func (q *MusicQueue) Clear() {
 	q.tracks = []lavalink.AudioTrack{}
 	q.size = 0
+}
+
+func (q *MusicQueue) Shuffle() {
+	rand.Seed(time.Now().UnixMicro())
+	rand.Shuffle(q.Length(), func(i, j int) {
+		q.tracks[i], q.tracks[j] = q.tracks[j], q.tracks[i]
+	})
 }
