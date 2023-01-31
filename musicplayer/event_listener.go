@@ -33,13 +33,22 @@ func (l *EventListener) OnTrackStart(player lavalink.Player, track lavalink.Audi
 	//log.Printf("%d", *l.LoopMode)
 }
 func (l *EventListener) OnTrackEnd(player lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
-	if !endReason.MayStartNext() || l.Queue.IsEmpty() {
+	if !endReason.MayStartNext() || (l.Queue.IsEmpty() && *l.LoopMode != LoopTrack) {
 		return
 	}
 
-	// TODO implement looping
-	nextTrack := l.Queue.Dequeue()
-	err := player.Play(*nextTrack)
+	var nextTrack lavalink.AudioTrack
+	switch *l.LoopMode {
+	case LoopTrack:
+		nextTrack = track
+	case LoopQueue:
+		l.Queue.Enqueue(track)
+		nextTrack = *l.Queue.Dequeue()
+	default:
+		nextTrack = *l.Queue.Dequeue()
+	}
+
+	err := player.Play(nextTrack)
 	if err != nil {
 		log.Printf("Could not play the next track: %v", err)
 		return

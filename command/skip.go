@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"schoperation/schopyatch/musicplayer"
 	"schoperation/schopyatch/util"
 )
 
@@ -60,6 +61,10 @@ func (cmd *SkipCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "All is now quiet on the SchopYatch front.")
 		return nil
+	}
+
+	if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+		deps.MusicPlayer.Queue.Enqueue(deps.MusicPlayer.Player.PlayingTrack())
 	}
 
 	nextTrack := deps.MusicPlayer.Queue.Dequeue()

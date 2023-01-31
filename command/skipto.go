@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"schoperation/schopyatch/musicplayer"
 	"schoperation/schopyatch/util"
 	"strconv"
 )
@@ -20,7 +21,7 @@ func NewSkipToCmd() Command {
 		Summary:     "Skip multiple tracks to a spot in the queue",
 		Description: "This command skips not only the currently playing track, but any tracks in the queue that are before the specified position number. To see the position numbers, run the queue command.",
 		Usage:       "skipto <position>",
-		Aliases:     []string{"nextto"},
+		Aliases:     []string{"st", "sto", "nextto"},
 	}
 }
 
@@ -68,6 +69,10 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return nil
 	}
 
+	if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+		deps.MusicPlayer.Queue.Enqueue(deps.MusicPlayer.Player.PlayingTrack())
+	}
+
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Woah hey now, that ain't a number...")
@@ -79,7 +84,11 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 	}
 
 	for i := 0; i < num-1; i++ {
-		_ = deps.MusicPlayer.Queue.Dequeue()
+		track := deps.MusicPlayer.Queue.Dequeue()
+
+		if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+			deps.MusicPlayer.Queue.Enqueue(*track)
+		}
 	}
 
 	nextTrack := deps.MusicPlayer.Queue.Dequeue()

@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"schoperation/schopyatch/musicplayer"
 	"schoperation/schopyatch/util"
 	"strings"
 )
@@ -81,7 +82,14 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 		builder.WriteString(fmt.Sprintf("%d sec remaining.", secondsLeft))
 	}
 
-	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`", currentTrack.Info().Title, currentTrack.Info().Author, builder.String(), currentPos, trackLen)
+	loopStr := ""
+	if deps.MusicPlayer.LoopMode == musicplayer.LoopTrack {
+		loopStr = "**Looping Current Track**\n"
+	} else if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+		loopStr = "**Looping Queue**\n"
+	}
+
+	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s", currentTrack.Info().Title, currentTrack.Info().Author, builder.String(), currentPos, trackLen, loopStr)
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, finalStr)
 	return nil
 }

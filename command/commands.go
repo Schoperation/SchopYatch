@@ -10,6 +10,7 @@ var (
 	nowPlayingCmd = NewNowPlayingCmd()
 	skipCmd       = NewSkipCmd()
 	skipToCmd     = NewSkipToCmd()
+	loopCmd       = NewLoopCmd()
 	queueCmd      = NewQueueCmd()
 	clearCmd      = NewClearCmd()
 	shuffleCmd    = NewShuffleCmd()
@@ -27,6 +28,7 @@ func GetCommands() []Command {
 		nowPlayingCmd,
 		skipCmd,
 		skipToCmd,
+		loopCmd,
 		queueCmd,
 		clearCmd,
 		shuffleCmd,

@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"log"
+	"schoperation/schopyatch/musicplayer"
 	"schoperation/schopyatch/util"
 	"strconv"
 	"strings"
@@ -52,6 +53,12 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if deps.MusicPlayer.Player.PlayingTrack() != nil {
 		currentTrack := deps.MusicPlayer.Player.PlayingTrack()
 		builder.WriteString(fmt.Sprintf("Now Playing: *%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info().Title, currentTrack.Info().Author, deps.MusicPlayer.Player.Position().String(), currentTrack.Info().Length.String()))
+	}
+
+	if deps.MusicPlayer.LoopMode == musicplayer.LoopTrack {
+		builder.WriteString("**Looping Current Track**\n")
+	} else if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+		builder.WriteString("**Looping Queue**\n")
 	}
 
 	if deps.MusicPlayer.Queue.IsEmpty() {
