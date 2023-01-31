@@ -17,8 +17,8 @@ func NewLoopCmd() Command {
 	return &LoopCmd{
 		Name:        "loop",
 		Summary:     "Loop a track or the queue",
-		Description: "This command loops either the current track or the entire queue. Run without any arguments for the current track, or loop queue for the whole queue. Run the commands again, or loop off, to turn off looping.",
-		Usage:       "loop [single|queue|off]",
+		Description: "This command loops either the current track or the entire queue. Run without any arguments for the current track, or loop all/queue/list for the whole queue. Run the commands again, or loop off, to turn off looping.",
+		Usage:       "loop [single|all|off]",
 		Aliases:     []string{""},
 	}
 }
@@ -53,6 +53,8 @@ func (cmd *LoopCmd) Execute(deps CommandDependencies, opts ...string) error {
 	case "single":
 		cmd.loopSingle(deps)
 		return nil
+	case "all":
+		fallthrough
 	case "list":
 		fallthrough
 	case "queue":
