@@ -10,9 +10,11 @@ var (
 	nowPlayingCmd = NewNowPlayingCmd()
 	skipCmd       = NewSkipCmd()
 	skipToCmd     = NewSkipToCmd()
+	seekCmd       = NewSeekCmd()
 	loopCmd       = NewLoopCmd()
 	queueCmd      = NewQueueCmd()
 	clearCmd      = NewClearCmd()
+	removeCmd     = NewRemoveCmd()
 	shuffleCmd    = NewShuffleCmd()
 	pingCmd       = NewPingCmd()
 )
@@ -20,19 +22,21 @@ var (
 func GetCommands() []Command {
 	return []Command{
 		helpCmd,
-		playCmd,
+		pingCmd,
 		joinCmd,
 		leaveCmd,
+		playCmd,
 		pauseCmd,
 		resumeCmd,
 		nowPlayingCmd,
 		skipCmd,
 		skipToCmd,
+		seekCmd,
 		loopCmd,
 		queueCmd,
 		clearCmd,
+		removeCmd,
 		shuffleCmd,
-		pingCmd,
 	}
 }
 

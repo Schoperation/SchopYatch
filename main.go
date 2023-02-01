@@ -19,29 +19,10 @@ func main() {
 	}
 
 	/*
-		TODO cmds:
+		TODO
 
-		- help (reads descriptions, usages, and aliases)
-		about
-
-		- join voice channel (to keep functionality in one place)
-		- leave voice channel
-
-		- play
-			- support for
-				- search
-				- playlists
-		- pause
-		- resume
-		seek
-		- nowplaying
-		- loop track/queue
-
-		- queue
-		- skip
-		- skipto
-		- clear
-		- shuffle
+		about cmd?
+		let seek use 00h00m00s
 	*/
 	schopYatch := bot.NewSchopYatchBot(config)
 	err = schopYatch.SetupClient()

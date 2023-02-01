@@ -75,12 +75,16 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 	}
 
 	builder.WriteString("SchopYatch is designed similarly to the old FredYatch, albeit with a few missing features and different command names.\n")
-	builder.WriteString("For a quickstart, use the play command with either a url or a search query, and the bot should play music immediately in your channel.\n\n")
-	builder.WriteString(fmt.Sprintf("Full list of commands is below. To see more info about a command, you can use `%shelp command`.\n", deps.Prefix))
+	builder.WriteString("For a quickstart, use the `play` command with either a url or a search query, and the bot should play music immediately in your channel.\n\n")
+	builder.WriteString(fmt.Sprintf("To see more info about a command, you can use `%shelp command`.\n", deps.Prefix))
 	builder.WriteString(fmt.Sprintf("Usages look like this: `%scommand <required parameter> [optional parameter]`\n\n```", deps.Prefix))
 
-	for _, cmd := range commands {
+	for i, cmd := range commands {
 		builder.WriteString(fmt.Sprintf("\t%s%s ~ %s\n", deps.Prefix, cmd.GetName(), cmd.GetSummary()))
+
+		if (i+1)%4 == 0 {
+			builder.WriteString("\n")
+		}
 	}
 
 	builder.WriteString("```")
