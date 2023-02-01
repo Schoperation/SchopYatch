@@ -61,8 +61,8 @@ func (sy *SchopYatch) SetupLavalink() error {
 	link := disgolink.New(sy.Client)
 	_, err := link.AddNode(context.TODO(), lavalink.NodeConfig{
 		Name:        "schopyatch",
-		Host:        "localhost",
-		Port:        "2333",
+		Host:        sy.Config.LavalinkHost,
+		Port:        sy.Config.LavalinkPort,
 		Password:    sy.Config.LavalinkPassword,
 		Secure:      false,
 		ResumingKey: "",

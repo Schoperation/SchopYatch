@@ -3,3 +3,4 @@ logs
 yatch_config.json
 application.yml
 *.jar
+schopyatch

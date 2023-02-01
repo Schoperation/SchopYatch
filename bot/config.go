@@ -8,6 +8,8 @@ import (
 
 type YatchConfig struct {
 	Token            string `json:"token"`
+	LavalinkHost     string `json:"lavalink_host"`
+	LavalinkPort     string `json:"lavalink_port"`
 	LavalinkPassword string `json:"lavalink_password"`
 	Prefix           string `json:"prefix"`
 }

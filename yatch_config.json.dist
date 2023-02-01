@@ -1,5 +1,7 @@
 {
     "token": "your token here",
+    "lavalink_host": "localhost",
+    "lavalink_port": "2333",
     "lavalink_password": "your lavalink node password here",
-    "prefix" "!"
+    "prefix": ";;"
 }
