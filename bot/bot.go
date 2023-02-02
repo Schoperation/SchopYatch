@@ -64,7 +64,7 @@ func (sy *SchopYatch) SetupLavalink() error {
 		Host:        sy.Config.LavalinkHost,
 		Port:        sy.Config.LavalinkPort,
 		Password:    sy.Config.LavalinkPassword,
-		Secure:      false,
+		Secure:      sy.Config.LavalinkSecure,
 		ResumingKey: "",
 	})
 	if err != nil {

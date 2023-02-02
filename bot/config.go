@@ -2,7 +2,7 @@ package bot
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -11,6 +11,7 @@ type YatchConfig struct {
 	LavalinkHost     string `json:"lavalink_host"`
 	LavalinkPort     string `json:"lavalink_port"`
 	LavalinkPassword string `json:"lavalink_password"`
+	LavalinkSecure   bool   `json:"lavalink_secure"`
 	Prefix           string `json:"prefix"`
 }
 
@@ -22,7 +23,7 @@ func LoadConfig() (YatchConfig, error) {
 
 	defer file.Close()
 
-	bytes, _ := ioutil.ReadAll(file)
+	bytes, _ := io.ReadAll(file)
 
 	var yatchConfig YatchConfig
 	err = json.Unmarshal(bytes, &yatchConfig)
