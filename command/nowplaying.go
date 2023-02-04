@@ -8,41 +8,41 @@ import (
 )
 
 type NowPlayingCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewNowPlayingCmd() Command {
 	return &NowPlayingCmd{
-		Name:        "nowplaying",
-		Summary:     "Show the details of the track currently playing",
-		Description: "This command shows details about the track that's currently playing on the bot.",
-		Usage:       "nowplaying",
-		Aliases:     []string{"np"},
+		name:        "nowplaying",
+		summary:     "Show the details of the track currently playing",
+		description: "This command shows details about the track that's currently playing on the bot.",
+		usage:       "nowplaying",
+		aliases:     []string{"np"},
 	}
 }
 
 func (cmd *NowPlayingCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *NowPlayingCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *NowPlayingCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *NowPlayingCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *NowPlayingCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) error {

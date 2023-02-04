@@ -7,41 +7,41 @@ import (
 )
 
 type HelpCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewHelpCmd() Command {
 	return &HelpCmd{
-		Name:        "help",
-		Summary:     "Shows info about the commands",
-		Description: "Woah, you need a lot of help if you're asking for it twice. Have you considered middle school?",
-		Usage:       "help [command]",
-		Aliases:     []string{"h", "helpme", "thefuckisthisshit"},
+		name:        "help",
+		summary:     "Shows info about the commands",
+		description: "Woah, you need a lot of help if you're asking for it twice. Have you considered middle school?",
+		usage:       "help [command]",
+		aliases:     []string{"h", "helpme", "thefuckisthisshit"},
 	}
 }
 
 func (cmd *HelpCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *HelpCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *HelpCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *HelpCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *HelpCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {

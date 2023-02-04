@@ -13,41 +13,41 @@ import (
 )
 
 type PlayCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewPlayCmd() Command {
 	return &PlayCmd{
-		Name:        "play",
-		Summary:     "Play a track or playlist",
-		Description: "Plays a track on the bot",
-		Usage:       "play <required> [optional]",
-		Aliases:     []string{"p", "resume"},
+		name:        "play",
+		summary:     "Play a track or playlist",
+		description: "Plays a track on the bot",
+		usage:       "play <required> [optional]",
+		aliases:     []string{"p", "resume"},
 	}
 }
 
 func (cmd *PlayCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *PlayCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *PlayCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *PlayCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *PlayCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {

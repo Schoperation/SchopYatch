@@ -6,41 +6,41 @@ import (
 )
 
 type LoopCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewLoopCmd() Command {
 	return &LoopCmd{
-		Name:        "loop",
-		Summary:     "Loop a track or the queue",
-		Description: "This command loops either the current track or the entire queue. Run without any arguments for the current track, or loop all/queue/list for the whole queue. Run the commands again, or loop off, to turn off looping.",
-		Usage:       "loop [single|all|off]",
-		Aliases:     []string{""},
+		name:        "loop",
+		summary:     "Loop a track or the queue",
+		description: "This command loops either the current track or the entire queue. Run without any arguments for the current track, or loop all/queue/list for the whole queue. Run the commands again, or loop off, to turn off looping.",
+		usage:       "loop [single|all|off]",
+		aliases:     []string{""},
 	}
 }
 
 func (cmd *LoopCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *LoopCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *LoopCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *LoopCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *LoopCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *LoopCmd) Execute(deps CommandDependencies, opts ...string) error {

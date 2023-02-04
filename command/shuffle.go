@@ -3,41 +3,41 @@ package command
 import "schoperation/schopyatch/util"
 
 type ShuffleCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewShuffleCmd() Command {
 	return &ShuffleCmd{
-		Name:        "shuffle",
-		Summary:     "Shuffle the queue",
-		Description: "This command simply shuffles the current queue.",
-		Usage:       "shuffle",
-		Aliases:     []string{"riffle"},
+		name:        "shuffle",
+		summary:     "Shuffle the queue",
+		description: "This command simply shuffles the current queue.",
+		usage:       "shuffle",
+		aliases:     []string{"riffle"},
 	}
 }
 
 func (cmd *ShuffleCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *ShuffleCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *ShuffleCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *ShuffleCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *ShuffleCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *ShuffleCmd) Execute(deps CommandDependencies, opts ...string) error {

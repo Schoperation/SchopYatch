@@ -10,41 +10,41 @@ import (
 )
 
 type QueueCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewQueueCmd() Command {
 	return &QueueCmd{
-		Name:        "queue",
-		Summary:     "View the player's queue",
-		Description: "Use this command to view a list of tracks that will eventually be played on the bot. If there are more than 10 tracks in the queue, you can add a page parameter to see additional pages.",
-		Usage:       "queue [page]",
-		Aliases:     []string{"q", "list"},
+		name:        "queue",
+		summary:     "View the player's queue",
+		description: "Use this command to view a list of tracks that will eventually be played on the bot. If there are more than 10 tracks in the queue, you can add a page parameter to see additional pages.",
+		usage:       "queue [page]",
+		aliases:     []string{"q", "list"},
 	}
 }
 
 func (cmd *QueueCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *QueueCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *QueueCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *QueueCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *QueueCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {

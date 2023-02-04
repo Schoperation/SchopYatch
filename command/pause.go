@@ -6,41 +6,41 @@ import (
 )
 
 type PauseCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewPauseCmd() Command {
 	return &PauseCmd{
-		Name:        "pause",
-		Summary:     "Pause the player",
-		Description: "This command simply pauses the player. Use resume, unpause, or play to resume the track.",
-		Usage:       "pause",
-		Aliases:     []string{"holdit"},
+		name:        "pause",
+		summary:     "Pause the player",
+		description: "This command simply pauses the player. Use resume, unpause, or play to resume the track.",
+		usage:       "pause",
+		aliases:     []string{"holdit"},
 	}
 }
 
 func (cmd *PauseCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *PauseCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *PauseCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *PauseCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *PauseCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *PauseCmd) Execute(deps CommandDependencies, opts ...string) error {

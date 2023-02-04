@@ -7,41 +7,41 @@ import (
 )
 
 type SkipCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewSkipCmd() Command {
 	return &SkipCmd{
-		Name:        "skip",
-		Summary:     "Skip the current track",
-		Description: "This command skips the track that's currently playing on the bot. If the queue has tracks, it'll play the next one in line. Otherwise, it'll go radio silent...",
-		Usage:       "skip",
-		Aliases:     []string{"s", "next"},
+		name:        "skip",
+		summary:     "Skip the current track",
+		description: "This command skips the track that's currently playing on the bot. If the queue has tracks, it'll play the next one in line. Otherwise, it'll go radio silent...",
+		usage:       "skip",
+		aliases:     []string{"s", "next"},
 	}
 }
 
 func (cmd *SkipCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *SkipCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *SkipCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *SkipCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *SkipCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *SkipCmd) Execute(deps CommandDependencies, opts ...string) error {

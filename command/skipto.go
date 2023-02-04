@@ -8,41 +8,41 @@ import (
 )
 
 type SkipToCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewSkipToCmd() Command {
 	return &SkipToCmd{
-		Name:        "skipto",
-		Summary:     "Skip multiple tracks to a spot in the queue",
-		Description: "This command skips not only the currently playing track, but any tracks in the queue that are before the specified position number. To see the position numbers, run the queue command.",
-		Usage:       "skipto <position>",
-		Aliases:     []string{"st", "sto", "nextto"},
+		name:        "skipto",
+		summary:     "Skip multiple tracks to a spot in the queue",
+		description: "This command skips not only the currently playing track, but any tracks in the queue that are before the specified position number. To see the position numbers, run the queue command.",
+		usage:       "skipto <position>",
+		aliases:     []string{"st", "sto", "nextto"},
 	}
 }
 
 func (cmd *SkipToCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *SkipToCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *SkipToCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *SkipToCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *SkipToCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {

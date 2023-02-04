@@ -7,41 +7,41 @@ import (
 )
 
 type RemoveCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewRemoveCmd() Command {
 	return &RemoveCmd{
-		Name:        "remove",
-		Summary:     "Remove a track from the queue",
-		Description: "This command simply removes a specified track number from the queue.",
-		Usage:       "remove <number>",
-		Aliases:     []string{"r", "delete"},
+		name:        "remove",
+		summary:     "Remove a track from the queue",
+		description: "This command simply removes a specified track number from the queue.",
+		usage:       "remove <number>",
+		aliases:     []string{"r", "delete"},
 	}
 }
 
 func (cmd *RemoveCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *RemoveCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *RemoveCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *RemoveCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *RemoveCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *RemoveCmd) Execute(deps CommandDependencies, opts ...string) error {

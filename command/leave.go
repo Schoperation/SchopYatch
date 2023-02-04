@@ -6,41 +6,41 @@ import (
 )
 
 type LeaveCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewLeaveCmd() Command {
 	return &LeaveCmd{
-		Name:        "leave",
-		Summary:     "Make the bot leave a voice channel",
-		Description: "Upon running, the bot will leave the user's voice channel. Kindly.",
-		Usage:       "leave",
-		Aliases:     []string{"fuckoff"},
+		name:        "leave",
+		summary:     "Make the bot leave a voice channel",
+		description: "Upon running, the bot will leave the user's voice channel. Kindly.",
+		usage:       "leave",
+		aliases:     []string{"fuckoff"},
 	}
 }
 
 func (cmd *LeaveCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *LeaveCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *LeaveCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *LeaveCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *LeaveCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {

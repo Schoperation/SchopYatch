@@ -7,41 +7,41 @@ import (
 )
 
 type ClearCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewClearCmd() Command {
 	return &ClearCmd{
-		Name:        "clear",
-		Summary:     "Clear the queue",
-		Description: "This command simply clears the queue. Has an additional, optional parameter to clear only the first num or so entries. Will not affect the track currently playing; use skip for that.",
-		Usage:       "clear [num]",
-		Aliases:     []string{"c", "empty", "clearqueue", "clearlist"},
+		name:        "clear",
+		summary:     "Clear the queue",
+		description: "This command simply clears the queue. Has an additional, optional parameter to clear only the first num or so entries. Will not affect the track currently playing; use skip for that.",
+		usage:       "clear [num]",
+		aliases:     []string{"c", "empty", "clearqueue", "clearlist"},
 	}
 }
 
 func (cmd *ClearCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *ClearCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *ClearCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *ClearCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *ClearCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *ClearCmd) Execute(deps CommandDependencies, opts ...string) error {

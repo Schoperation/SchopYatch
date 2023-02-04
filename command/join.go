@@ -7,41 +7,41 @@ import (
 )
 
 type JoinCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewJoinCmd() Command {
 	return &JoinCmd{
-		Name:        "join",
-		Summary:     "Make the bot join a voice channel",
-		Description: "Upon running, the bot will join the user's voice channel. It will error out if either the user isn't in a voice channel, or if the bot doesn't have permission to join.",
-		Usage:       "join",
-		Aliases:     []string{"j"},
+		name:        "join",
+		summary:     "Make the bot join a voice channel",
+		description: "Upon running, the bot will join the user's voice channel. It will error out if either the user isn't in a voice channel, or if the bot doesn't have permission to join.",
+		usage:       "join",
+		aliases:     []string{"j"},
 	}
 }
 
 func (cmd *JoinCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *JoinCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *JoinCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *JoinCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *JoinCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *JoinCmd) Execute(deps CommandDependencies, opts ...string) error {

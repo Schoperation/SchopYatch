@@ -3,41 +3,41 @@ package command
 import "schoperation/schopyatch/util"
 
 type ResumeCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewResumeCmd() Command {
 	return &ResumeCmd{
-		Name:        "resume",
-		Summary:     "Resume the player",
-		Description: "This command simply resumes the player if it's paused.",
-		Usage:       "resume",
-		Aliases:     []string{"unpause"},
+		name:        "resume",
+		summary:     "Resume the player",
+		description: "This command simply resumes the player if it's paused.",
+		usage:       "resume",
+		aliases:     []string{"unpause"},
 	}
 }
 
 func (cmd *ResumeCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *ResumeCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *ResumeCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *ResumeCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *ResumeCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *ResumeCmd) Execute(deps CommandDependencies, opts ...string) error {

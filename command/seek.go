@@ -10,41 +10,41 @@ import (
 )
 
 type SeekCmd struct {
-	Name        string
-	Summary     string
-	Description string
-	Usage       string
-	Aliases     []string
+	name        string
+	summary     string
+	description string
+	usage       string
+	aliases     []string
 }
 
 func NewSeekCmd() Command {
 	return &SeekCmd{
-		Name:        "seek",
-		Summary:     "Seek to a position in the current track",
-		Description: "This command allows you to seek to a specific time within the currently playing track. Ex. `seek 30` goes to 30 seconds, `seek 1:30` goes to 1 minute and 30 seconds, and `seek 02:01:30` goes to 2 hours, 1 minute, and 30 seconds. Leading zeros (01) are optional.",
-		Usage:       "seek <hh:mm:ss>",
-		Aliases:     []string{""},
+		name:        "seek",
+		summary:     "Seek to a position in the current track",
+		description: "This command allows you to seek to a specific time within the currently playing track. Ex. `seek 30` goes to 30 seconds, `seek 1:30` goes to 1 minute and 30 seconds, and `seek 02:01:30` goes to 2 hours, 1 minute, and 30 seconds. Leading zeros (01) are optional.",
+		usage:       "seek <hh:mm:ss>",
+		aliases:     []string{""},
 	}
 }
 
 func (cmd *SeekCmd) GetName() string {
-	return cmd.Name
+	return cmd.name
 }
 
 func (cmd *SeekCmd) GetSummary() string {
-	return cmd.Summary
+	return cmd.summary
 }
 
 func (cmd *SeekCmd) GetDescription() string {
-	return cmd.Description
+	return cmd.description
 }
 
 func (cmd *SeekCmd) GetUsage() string {
-	return cmd.Usage
+	return cmd.usage
 }
 
 func (cmd *SeekCmd) GetAliases() []string {
-	return cmd.Aliases
+	return cmd.aliases
 }
 
 func (cmd *SeekCmd) Execute(deps CommandDependencies, opts ...string) error {
