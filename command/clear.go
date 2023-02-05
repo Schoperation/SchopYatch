@@ -12,6 +12,7 @@ type ClearCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewClearCmd() Command {
@@ -21,6 +22,7 @@ func NewClearCmd() Command {
 		description: "This command simply clears the queue. Has an additional, optional parameter to clear only the first num or so entries. Will not affect the track currently playing; use skip for that.",
 		usage:       "clear [num]",
 		aliases:     []string{"c", "empty", "clearqueue", "clearlist"},
+		voiceOnly:   true,
 	}
 }
 
@@ -42,6 +44,10 @@ func (cmd *ClearCmd) GetUsage() string {
 
 func (cmd *ClearCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *ClearCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *ClearCmd) Execute(deps CommandDependencies, opts ...string) error {

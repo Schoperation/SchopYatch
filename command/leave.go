@@ -11,6 +11,7 @@ type LeaveCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewLeaveCmd() Command {
@@ -20,6 +21,7 @@ func NewLeaveCmd() Command {
 		description: "Upon running, the bot will leave the user's voice channel. Kindly.",
 		usage:       "leave",
 		aliases:     []string{"fuckoff"},
+		voiceOnly:   true,
 	}
 }
 
@@ -43,6 +45,10 @@ func (cmd *LeaveCmd) GetAliases() []string {
 	return cmd.aliases
 }
 
+func (cmd *LeaveCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
+}
+
 func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {
 	err := leaveVoiceChannel(deps)
 	return err
@@ -57,7 +63,7 @@ func leaveVoiceChannel(deps CommandDependencies) error {
 		}
 	}
 
-	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, nil, false, true)
+	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, nil, false, false)
 	if err != nil {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot leave the channel... wait what?")
 		return err

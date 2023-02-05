@@ -13,6 +13,7 @@ type SkipToCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewSkipToCmd() Command {
@@ -22,6 +23,7 @@ func NewSkipToCmd() Command {
 		description: "This command skips not only the currently playing track, but any tracks in the queue that are before the specified position number. To see the position numbers, run the queue command.",
 		usage:       "skipto <position>",
 		aliases:     []string{"st", "sto", "nextto"},
+		voiceOnly:   true,
 	}
 }
 
@@ -43,6 +45,10 @@ func (cmd *SkipToCmd) GetUsage() string {
 
 func (cmd *SkipToCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *SkipToCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {

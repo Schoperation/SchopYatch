@@ -15,6 +15,7 @@ type Command interface {
 	GetDescription() string
 	GetUsage() string
 	GetAliases() []string
+	IsVoiceOnlyCmd() bool
 	Execute(deps CommandDependencies, opts ...string) error
 }
 

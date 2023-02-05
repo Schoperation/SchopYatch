@@ -12,6 +12,7 @@ type JoinCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewJoinCmd() Command {
@@ -21,6 +22,7 @@ func NewJoinCmd() Command {
 		description: "Upon running, the bot will join the user's voice channel. It will error out if either the user isn't in a voice channel, or if the bot doesn't have permission to join.",
 		usage:       "join",
 		aliases:     []string{"j", "summon"},
+		voiceOnly:   true,
 	}
 }
 
@@ -42,6 +44,10 @@ func (cmd *JoinCmd) GetUsage() string {
 
 func (cmd *JoinCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *JoinCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *JoinCmd) Execute(deps CommandDependencies, opts ...string) error {

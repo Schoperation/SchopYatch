@@ -8,6 +8,7 @@ type ResumeCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewResumeCmd() Command {
@@ -17,6 +18,7 @@ func NewResumeCmd() Command {
 		description: "This command simply resumes the player if it's paused.",
 		usage:       "resume",
 		aliases:     []string{"unpause"},
+		voiceOnly:   true,
 	}
 }
 
@@ -38,6 +40,10 @@ func (cmd *ResumeCmd) GetUsage() string {
 
 func (cmd *ResumeCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *ResumeCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *ResumeCmd) Execute(deps CommandDependencies, opts ...string) error {

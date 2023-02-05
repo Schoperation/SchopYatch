@@ -15,6 +15,7 @@ type QueueCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewQueueCmd() Command {
@@ -24,6 +25,7 @@ func NewQueueCmd() Command {
 		description: "Use this command to view a list of tracks that will eventually be played on the bot. If there are more than 10 tracks in the queue, you can add a page parameter to see additional pages.",
 		usage:       "queue [page]",
 		aliases:     []string{"q", "list"},
+		voiceOnly:   false,
 	}
 }
 
@@ -45,6 +47,10 @@ func (cmd *QueueCmd) GetUsage() string {
 
 func (cmd *QueueCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *QueueCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {

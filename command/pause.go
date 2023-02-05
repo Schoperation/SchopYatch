@@ -11,6 +11,7 @@ type PauseCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewPauseCmd() Command {
@@ -20,6 +21,7 @@ func NewPauseCmd() Command {
 		description: "This command simply pauses the player. Use resume, unpause, or play to resume the track.",
 		usage:       "pause",
 		aliases:     []string{"holdit"},
+		voiceOnly:   true,
 	}
 }
 
@@ -43,6 +45,10 @@ func (cmd *PauseCmd) GetAliases() []string {
 	return cmd.aliases
 }
 
+func (cmd *PauseCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
+}
+
 func (cmd *PauseCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if deps.MusicPlayer.Player.PlayingTrack() == nil {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No track's currently playing. Would you like to pause time instead?")
@@ -60,6 +66,6 @@ func (cmd *PauseCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return err
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Paused. Use %sresume, %sunpause, or %splay to resume.", deps.Prefix, deps.Prefix, deps.Prefix))
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Paused. Use `%sresume`, `%sunpause`, or `%splay` to resume.", deps.Prefix, deps.Prefix, deps.Prefix))
 	return nil
 }

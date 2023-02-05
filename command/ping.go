@@ -10,6 +10,7 @@ type PingCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewPingCmd() Command {
@@ -19,6 +20,7 @@ func NewPingCmd() Command {
 		description: "Plays ping pong. Brilliant, I know...",
 		usage:       "ping",
 		aliases:     []string{"pong"},
+		voiceOnly:   false,
 	}
 }
 
@@ -40,6 +42,10 @@ func (cmd *PingCmd) GetUsage() string {
 
 func (cmd *PingCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *PingCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *PingCmd) Execute(deps CommandDependencies, opts ...string) error {

@@ -11,6 +11,7 @@ type LoopCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewLoopCmd() Command {
@@ -20,6 +21,7 @@ func NewLoopCmd() Command {
 		description: "This command loops either the current track or the entire queue. Run without any arguments for the current track, or loop all/queue/list for the whole queue. Run the commands again, or loop off, to turn off looping.",
 		usage:       "loop [single|all|off]",
 		aliases:     []string{""},
+		voiceOnly:   true,
 	}
 }
 
@@ -41,6 +43,10 @@ func (cmd *LoopCmd) GetUsage() string {
 
 func (cmd *LoopCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *LoopCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *LoopCmd) Execute(deps CommandDependencies, opts ...string) error {

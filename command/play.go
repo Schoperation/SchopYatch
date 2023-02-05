@@ -18,6 +18,7 @@ type PlayCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewPlayCmd() Command {
@@ -27,6 +28,7 @@ func NewPlayCmd() Command {
 		description: "Plays a track on the bot",
 		usage:       "play <required> [optional]",
 		aliases:     []string{"p", "resume"},
+		voiceOnly:   true,
 	}
 }
 
@@ -48,6 +50,10 @@ func (cmd *PlayCmd) GetUsage() string {
 
 func (cmd *PlayCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *PlayCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
@@ -81,23 +87,18 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	err = (*deps.Lavalink).BestRestClient().LoadItemHandler(context.TODO(), song, lavalink.NewResultHandler(
 		func(track lavalink.AudioTrack) {
-			// Loaded a single track
 			cmd.playTrack(deps, track)
 		},
 		func(playlist lavalink.AudioPlaylist) {
-			// Loaded a playlist
 			cmd.playList(deps, playlist)
 		},
 		func(tracks []lavalink.AudioTrack) {
-			// Loaded a search result
 			cmd.search(deps, tracks)
 		},
 		func() {
-			// nothing matching the query found
 			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Track not found. Make sure the URL is correct, or try searching something else...")
 		},
 		func(ex lavalink.FriendlyException) {
-			// something went wrong while loading the track
 			log.Printf("Lavalink error: %s", ex.Message)
 		},
 	))

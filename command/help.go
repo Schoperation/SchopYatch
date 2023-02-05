@@ -12,6 +12,7 @@ type HelpCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewHelpCmd() Command {
@@ -21,6 +22,7 @@ func NewHelpCmd() Command {
 		description: "Woah, you need a lot of help if you're asking for it twice. Have you considered middle school?",
 		usage:       "help [command]",
 		aliases:     []string{"h", "helpme", "thefuckisthisshit"},
+		voiceOnly:   false,
 	}
 }
 
@@ -42,6 +44,10 @@ func (cmd *HelpCmd) GetUsage() string {
 
 func (cmd *HelpCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *HelpCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {

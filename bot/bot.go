@@ -2,9 +2,11 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"schoperation/schopyatch/command"
 	"schoperation/schopyatch/musicplayer"
+	"schoperation/schopyatch/util"
 	"strings"
 
 	"github.com/disgoorg/disgo"
@@ -75,7 +77,7 @@ func (sy *SchopYatch) SetupLavalink() error {
 	return nil
 }
 
-func (sy *SchopYatch) GetPlayerByGuildId(guildId snowflake.ID) *musicplayer.MusicPlayer {
+func (sy *SchopYatch) getPlayerByGuildId(guildId snowflake.ID) *musicplayer.MusicPlayer {
 	player, exists := sy.players[guildId]
 	if !exists {
 		return nil
@@ -119,7 +121,28 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		return
 	}
 
-	player := sy.GetPlayerByGuildId(*event.GuildID)
+	if cmd.IsVoiceOnlyCmd() {
+		userVoiceState, exists := sy.Client.Caches().VoiceState(*event.GuildID, event.Message.Author.ID)
+		if !exists {
+			util.SendSimpleMessage(sy.Client, event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+			return
+		}
+
+		botVoiceState, exists := sy.Client.Caches().VoiceState(*event.GuildID, sy.Client.ID())
+		if !exists && cmd.GetName() != "join" && cmd.GetName() != "play" {
+			util.SendSimpleMessage(sy.Client, event.ChannelID, fmt.Sprintf("Dude I'm not in a voice channel... use either `%sjoin` or `%splay` to summon me.", sy.Config.Prefix, sy.Config.Prefix))
+			return
+		}
+
+		if exists {
+			if userVoiceState.ChannelID.String() != botVoiceState.ChannelID.String() {
+				util.SendSimpleMessage(sy.Client, event.ChannelID, "It would appear that you're in a different channel.")
+				return
+			}
+		}
+	}
+
+	player := sy.getPlayerByGuildId(*event.GuildID)
 	if player == nil {
 		log.Printf("Hol' up, there's no initialized music player for your server?")
 		return

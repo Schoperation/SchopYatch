@@ -12,6 +12,7 @@ type RemoveCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewRemoveCmd() Command {
@@ -21,6 +22,7 @@ func NewRemoveCmd() Command {
 		description: "This command simply removes a specified track number from the queue.",
 		usage:       "remove <number>",
 		aliases:     []string{"r", "delete"},
+		voiceOnly:   true,
 	}
 }
 
@@ -42,6 +44,9 @@ func (cmd *RemoveCmd) GetUsage() string {
 
 func (cmd *RemoveCmd) GetAliases() []string {
 	return cmd.aliases
+}
+func (cmd *RemoveCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *RemoveCmd) Execute(deps CommandDependencies, opts ...string) error {

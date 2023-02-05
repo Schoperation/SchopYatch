@@ -13,6 +13,7 @@ type NowPlayingCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewNowPlayingCmd() Command {
@@ -22,6 +23,7 @@ func NewNowPlayingCmd() Command {
 		description: "This command shows details about the track that's currently playing on the bot.",
 		usage:       "nowplaying",
 		aliases:     []string{"np"},
+		voiceOnly:   false,
 	}
 }
 
@@ -43,6 +45,10 @@ func (cmd *NowPlayingCmd) GetUsage() string {
 
 func (cmd *NowPlayingCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *NowPlayingCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) error {

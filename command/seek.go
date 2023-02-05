@@ -15,6 +15,7 @@ type SeekCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewSeekCmd() Command {
@@ -24,6 +25,7 @@ func NewSeekCmd() Command {
 		description: "This command allows you to seek to a specific time within the currently playing track. Ex. `seek 30` goes to 30 seconds, `seek 1:30` goes to 1 minute and 30 seconds, and `seek 02:01:30` goes to 2 hours, 1 minute, and 30 seconds. Leading zeros (01) are optional.",
 		usage:       "seek <hh:mm:ss>",
 		aliases:     []string{""},
+		voiceOnly:   true,
 	}
 }
 
@@ -45,6 +47,10 @@ func (cmd *SeekCmd) GetUsage() string {
 
 func (cmd *SeekCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *SeekCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *SeekCmd) Execute(deps CommandDependencies, opts ...string) error {

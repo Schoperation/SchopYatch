@@ -8,6 +8,7 @@ type ShuffleCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewShuffleCmd() Command {
@@ -17,6 +18,7 @@ func NewShuffleCmd() Command {
 		description: "This command simply shuffles the current queue.",
 		usage:       "shuffle",
 		aliases:     []string{"riffle"},
+		voiceOnly:   true,
 	}
 }
 
@@ -38,6 +40,10 @@ func (cmd *ShuffleCmd) GetUsage() string {
 
 func (cmd *ShuffleCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *ShuffleCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *ShuffleCmd) Execute(deps CommandDependencies, opts ...string) error {

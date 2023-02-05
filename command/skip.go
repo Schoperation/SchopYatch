@@ -12,6 +12,7 @@ type SkipCmd struct {
 	description string
 	usage       string
 	aliases     []string
+	voiceOnly   bool
 }
 
 func NewSkipCmd() Command {
@@ -21,6 +22,7 @@ func NewSkipCmd() Command {
 		description: "This command skips the track that's currently playing on the bot. If the queue has tracks, it'll play the next one in line. Otherwise, it'll go radio silent...",
 		usage:       "skip",
 		aliases:     []string{"s", "next"},
+		voiceOnly:   true,
 	}
 }
 
@@ -42,6 +44,10 @@ func (cmd *SkipCmd) GetUsage() string {
 
 func (cmd *SkipCmd) GetAliases() []string {
 	return cmd.aliases
+}
+
+func (cmd *SkipCmd) IsVoiceOnlyCmd() bool {
+	return cmd.voiceOnly
 }
 
 func (cmd *SkipCmd) Execute(deps CommandDependencies, opts ...string) error {
