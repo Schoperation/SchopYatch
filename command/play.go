@@ -148,7 +148,7 @@ func (cmd *PlayCmd) playList(deps CommandDependencies, playlist lavalink.AudioPl
 	}
 
 	deps.MusicPlayer.Queue.EnqueueList(playlist.Tracks()[1:])
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added **%d** tracks from playlist **%s** to the queue.", len(playlist.Tracks()[1:]), playlist.Name()))
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added **%d** additional tracks from playlist **%s** to the queue.", len(playlist.Tracks()[1:]), playlist.Name()))
 }
 
 func (cmd *PlayCmd) search(deps CommandDependencies, tracks []lavalink.AudioTrack) {
