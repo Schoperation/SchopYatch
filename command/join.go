@@ -67,5 +67,10 @@ func joinVoiceChannel(deps CommandDependencies) error {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot connect to your channel... do I have permission?")
 	}
 
+	if deps.MusicPlayer.GotDisconnected {
+		deps.MusicPlayer.RecreatePlayer(*deps.Lavalink)
+		deps.MusicPlayer.GotDisconnected = false
+	}
+
 	return err
 }

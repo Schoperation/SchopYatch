@@ -16,10 +16,9 @@ const (
 
 type MusicPlayer struct {
 	GuildID         snowflake.ID
-	Lavalink        *disgolink.Link
 	Player          lavalink.Player
 	Queue           MusicQueue
-	searchResults   SearchResults
+	SearchResults   SearchResults
 	LoopMode        LoopMode
 	GotDisconnected bool
 }
@@ -27,17 +26,21 @@ type MusicPlayer struct {
 func NewMusicPlayer(guildId snowflake.ID, link disgolink.Link) *MusicPlayer {
 	musicPlayer := MusicPlayer{
 		GuildID:         guildId,
-		Player:          link.Player(guildId),
 		Queue:           NewMusicQueue(),
-		searchResults:   NewSearchResults(),
+		SearchResults:   NewSearchResults(),
 		LoopMode:        LoopOff,
 		GotDisconnected: false,
 	}
 
-	musicPlayer.Player.SetVolume(42)
-	musicPlayer.Player.AddListener(NewEventListener(&musicPlayer.Queue, &musicPlayer.LoopMode, &musicPlayer.GotDisconnected))
-
+	musicPlayer.CreatePlayer(link)
 	return &musicPlayer
+}
+
+func (mp *MusicPlayer) CreatePlayer(link disgolink.Link) {
+	player := link.Player(mp.GuildID)
+	player.SetVolume(42)
+	player.AddListener(NewEventListener(&mp.Queue, &mp.LoopMode, &mp.GotDisconnected))
+	mp.Player = player
 }
 
 func (mp *MusicPlayer) RecreatePlayer(link disgolink.Link) error {
@@ -46,13 +49,6 @@ func (mp *MusicPlayer) RecreatePlayer(link disgolink.Link) error {
 		return err
 	}
 
-	player := link.Player(mp.GuildID)
-	player.SetVolume(42)
-	player.AddListener(NewEventListener(&mp.Queue, &mp.LoopMode, &mp.GotDisconnected))
-	mp.Player = player
+	mp.CreatePlayer(link)
 	return nil
-}
-
-func (mp *MusicPlayer) SearchResults() *SearchResults {
-	return &mp.searchResults
 }

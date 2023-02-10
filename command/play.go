@@ -68,13 +68,13 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	num, err := strconv.Atoi(opts[0])
 	if err == nil {
-		if num < 1 || num > deps.MusicPlayer.SearchResults().Length() {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.SearchResults().Length()))
+		if num < 1 || num > deps.MusicPlayer.SearchResults.Length() {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.SearchResults.Length()))
 			return nil
 		}
 
-		cmd.playTrack(deps, *deps.MusicPlayer.SearchResults().GetTrack(num - 1))
-		deps.MusicPlayer.SearchResults().Clear()
+		cmd.playTrack(deps, *deps.MusicPlayer.SearchResults.GetTrack(num - 1))
+		deps.MusicPlayer.SearchResults.Clear()
 		return nil
 	}
 
@@ -111,11 +111,6 @@ func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrac
 	if err != nil {
 		log.Printf("Couldn't join voice channel: %v", err)
 		return
-	}
-
-	if deps.MusicPlayer.GotDisconnected {
-		deps.MusicPlayer.RecreatePlayer(*deps.Lavalink)
-		deps.MusicPlayer.GotDisconnected = false
 	}
 
 	if deps.MusicPlayer.Player.PlayingTrack() == nil {
@@ -160,16 +155,16 @@ func (cmd *PlayCmd) search(deps CommandDependencies, tracks []lavalink.AudioTrac
 	builder := strings.Builder{}
 	builder.WriteString("Search Results:\n\n")
 
-	rangeLimit := deps.MusicPlayer.SearchResults().MaxLength()
+	rangeLimit := deps.MusicPlayer.SearchResults.MaxLength()
 	if rangeLimit > len(tracks) {
 		rangeLimit = len(tracks)
 	}
 
-	deps.MusicPlayer.SearchResults().Clear()
+	deps.MusicPlayer.SearchResults.Clear()
 
 	for i := 0; i < rangeLimit; i++ {
 		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, tracks[i].Info().Title, tracks[i].Info().Author, tracks[i].Info().Length))
-		deps.MusicPlayer.SearchResults().AddTrack(tracks[i])
+		deps.MusicPlayer.SearchResults.AddTrack(tracks[i])
 	}
 
 	builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
