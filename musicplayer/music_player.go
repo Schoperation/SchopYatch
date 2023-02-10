@@ -16,9 +16,10 @@ const (
 
 type MusicPlayer struct {
 	GuildID         snowflake.ID
+	Lavalink        *disgolink.Link
 	Player          lavalink.Player
 	Queue           MusicQueue
-	searchResults   []lavalink.AudioTrack
+	searchResults   SearchResults
 	LoopMode        LoopMode
 	GotDisconnected bool
 }
@@ -28,7 +29,7 @@ func NewMusicPlayer(guildId snowflake.ID, link disgolink.Link) *MusicPlayer {
 		GuildID:         guildId,
 		Player:          link.Player(guildId),
 		Queue:           NewMusicQueue(),
-		searchResults:   []lavalink.AudioTrack{},
+		searchResults:   NewSearchResults(),
 		LoopMode:        LoopOff,
 		GotDisconnected: false,
 	}
@@ -52,22 +53,6 @@ func (mp *MusicPlayer) RecreatePlayer(link disgolink.Link) error {
 	return nil
 }
 
-func (mp *MusicPlayer) AddSearchResult(track lavalink.AudioTrack) {
-	mp.searchResults = append(mp.searchResults, track)
-}
-
-func (mp *MusicPlayer) GetSearchResult(i int) *lavalink.AudioTrack {
-	if i < 0 || i >= len(mp.searchResults) {
-		return nil
-	}
-
-	return &mp.searchResults[i]
-}
-
-func (mp *MusicPlayer) GetLengthOfSearchResults() int {
-	return len(mp.searchResults)
-}
-
-func (mp *MusicPlayer) ClearSearchResults() {
-	mp.searchResults = []lavalink.AudioTrack{}
+func (mp *MusicPlayer) SearchResults() *SearchResults {
+	return &mp.searchResults
 }

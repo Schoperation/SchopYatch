@@ -68,13 +68,13 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	num, err := strconv.Atoi(opts[0])
 	if err == nil {
-		if num < 1 || num > deps.MusicPlayer.GetLengthOfSearchResults() {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.GetLengthOfSearchResults()))
+		if num < 1 || num > deps.MusicPlayer.SearchResults().Length() {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.SearchResults().Length()))
 			return nil
 		}
 
-		cmd.playTrack(deps, *deps.MusicPlayer.GetSearchResult(num - 1))
-		deps.MusicPlayer.ClearSearchResults()
+		cmd.playTrack(deps, *deps.MusicPlayer.SearchResults().GetTrack(num - 1))
+		deps.MusicPlayer.SearchResults().Clear()
 		return nil
 	}
 
@@ -160,16 +160,16 @@ func (cmd *PlayCmd) search(deps CommandDependencies, tracks []lavalink.AudioTrac
 	builder := strings.Builder{}
 	builder.WriteString("Search Results:\n\n")
 
-	rangeLimit := 5
+	rangeLimit := deps.MusicPlayer.SearchResults().MaxLength()
 	if rangeLimit > len(tracks) {
 		rangeLimit = len(tracks)
 	}
 
-	deps.MusicPlayer.ClearSearchResults()
+	deps.MusicPlayer.SearchResults().Clear()
 
 	for i := 0; i < rangeLimit; i++ {
 		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, tracks[i].Info().Title, tracks[i].Info().Author, tracks[i].Info().Length))
-		deps.MusicPlayer.AddSearchResult(tracks[i])
+		deps.MusicPlayer.SearchResults().AddTrack(tracks[i])
 	}
 
 	builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
