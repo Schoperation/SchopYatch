@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"schoperation/schopyatch/musicplayer"
 	"schoperation/schopyatch/util"
 )
 
@@ -20,7 +21,7 @@ func NewLeaveCmd() Command {
 		summary:     "Make the bot leave a voice channel",
 		description: "Upon running, the bot will leave the user's voice channel. Kindly.",
 		usage:       "leave",
-		aliases:     []string{"fuckoff"},
+		aliases:     []string{"fuckoff", "disconnect"},
 		voiceOnly:   true,
 	}
 }
@@ -71,6 +72,7 @@ func leaveVoiceChannel(deps CommandDependencies) error {
 
 	deps.MusicPlayer.Queue.Clear()
 	deps.MusicPlayer.SearchResults.Clear()
+	deps.MusicPlayer.LoopMode = musicplayer.LoopOff
 	deps.MusicPlayer.GotDisconnected = true
 	return err
 }

@@ -21,7 +21,7 @@ func NewHelpCmd() Command {
 		summary:     "Shows info about the commands",
 		description: "Woah, you need a lot of help if you're asking for it twice. Have you considered middle school?",
 		usage:       "help [command]",
-		aliases:     []string{"h", "helpme", "thefuckisthisshit"},
+		aliases:     []string{"h", "helpme", "thefuckisthisshit", "command", "commands"},
 		voiceOnly:   false,
 	}
 }
@@ -80,10 +80,11 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return nil
 	}
 
-	builder.WriteString("SchopYatch is designed similarly to the old FredYatch, albeit with a few missing features and different command names.\n")
-	builder.WriteString("For a quickstart, use the `play` command with either a url or a search query, and the bot should play music immediately in your channel.\n\n")
-	builder.WriteString(fmt.Sprintf("To see more info about a command, you can use `%shelp command`.\n", deps.Prefix))
-	builder.WriteString(fmt.Sprintf("Usages look like this: `%scommand <required parameter> [optional parameter]`\n\n```", deps.Prefix))
+	builder.WriteString("Hey, SchopYatch here!\n")
+	builder.WriteString(fmt.Sprintf("To get started quickly, use the `%splay` command with either a search query or a URL, and I'll play it immediately in your channel.\n\n", deps.Prefix))
+	builder.WriteString(fmt.Sprintf("E.g. `%splay ace attorney all pursuit themes`\nOr... `%splay https://www.youtube.com/watch?v=dv13gl0a-FA`\nAlso works with playlists and livestreams!\n\n", deps.Prefix, deps.Prefix))
+	builder.WriteString(fmt.Sprintf("Use `%shelp command` to learn more about a command, e.g. `%shelp play`.\n", deps.Prefix, deps.Prefix))
+	builder.WriteString(fmt.Sprintf("On those pages, usages use the following convention: `%scommand <required parameter> [optional parameter]`\n\n```", deps.Prefix))
 
 	for i, cmd := range commands {
 		builder.WriteString(fmt.Sprintf("\t%s%s ~ %s\n", deps.Prefix, cmd.GetName(), cmd.GetSummary()))
