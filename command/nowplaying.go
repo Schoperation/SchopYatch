@@ -60,18 +60,15 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 
 	currentPos := deps.MusicPlayer.Player.Position()
 	trackLen := currentTrack.Info().Length
+	timeLeft := trackLen.Seconds() - currentPos.Seconds()
 
-	daysLeft := trackLen.Days() - currentPos.Days()
-	hoursLeft := trackLen.HoursPart() - currentPos.HoursPart()
-	minutesLeft := trackLen.MinutesPart() - currentPos.MinutesPart()
-	secondsLeft := trackLen.SecondsPart() - currentPos.SecondsPart()
+	hoursLeft := timeLeft / 3600
+	timeLeft %= 3600
+	minutesLeft := timeLeft / 60
+	timeLeft %= 60
+	secondsLeft := timeLeft
 
 	builder := strings.Builder{}
-	if daysLeft > 1 {
-		builder.WriteString(fmt.Sprintf("%d days, ", daysLeft))
-	} else if daysLeft == 1 {
-		builder.WriteString(fmt.Sprintf("%d day, ", daysLeft))
-	}
 	if hoursLeft > 1 {
 		builder.WriteString(fmt.Sprintf("%d hrs, ", hoursLeft))
 	} else if hoursLeft == 1 {
@@ -82,7 +79,7 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 	} else if minutesLeft == 1 {
 		builder.WriteString(fmt.Sprintf("%d min, ", minutesLeft))
 	}
-	if secondsLeft > 1 {
+	if secondsLeft > 1 || secondsLeft == 0 {
 		builder.WriteString(fmt.Sprintf("%d secs remaining.", secondsLeft))
 	} else if secondsLeft == 1 {
 		builder.WriteString(fmt.Sprintf("%d sec remaining.", secondsLeft))

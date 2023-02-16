@@ -58,7 +58,7 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	if deps.MusicPlayer.Player.PlayingTrack() != nil {
 		currentTrack := deps.MusicPlayer.Player.PlayingTrack()
-		builder.WriteString(fmt.Sprintf("Now Playing: *%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info().Title, currentTrack.Info().Author, deps.MusicPlayer.Player.Position().String(), currentTrack.Info().Length.String()))
+		builder.WriteString(fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info().Title, currentTrack.Info().Author, deps.MusicPlayer.Player.Position().String(), currentTrack.Info().Length.String()))
 	}
 
 	if deps.MusicPlayer.LoopMode == musicplayer.LoopTrack {
@@ -75,6 +75,10 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	queueLen := deps.MusicPlayer.Queue.Length()
 	pages := (queueLen / 10) + 1
+	if queueLen%10 == 0 {
+		pages--
+	}
+
 	pageNum := 1
 	if len(opts) > 0 {
 		num, err := strconv.Atoi(opts[0])
@@ -88,11 +92,12 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 	}
 
 	if queueLen == 1 {
-		builder.WriteString(fmt.Sprintf("Total of **%d** track.\n", 1))
+		builder.WriteString(fmt.Sprintf("Total of **%d** track in the queue. `[%s]`\n", 1, deps.MusicPlayer.Queue.TrackLength().String()))
 	} else {
-		builder.WriteString(fmt.Sprintf("Total of **%d** tracks.\n", queueLen))
+		builder.WriteString(fmt.Sprintf("Total of **%d** tracks in the queue. `[%s]`\n", queueLen, deps.MusicPlayer.Queue.TrackLength().String()))
 	}
-	builder.WriteString(fmt.Sprintf("Page **%d** of **%d** of the queue:\n\n", pageNum, pages))
+
+	builder.WriteString(fmt.Sprintf("Page **%d** of **%d**:\n\n", pageNum, pages))
 
 	rangeStart := (pageNum - 1) * 10
 	rangeEnd := pageNum * 10
