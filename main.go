@@ -21,8 +21,8 @@ func main() {
 	/*
 		TODO
 
-		about cmd? with version
-		let seek use 00h00m00s
+		- about cmd? with version
+		- let seek use 00h00m00s
 
 		professor gopher
 	*/
