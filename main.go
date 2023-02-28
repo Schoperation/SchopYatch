@@ -21,8 +21,10 @@ func main() {
 	/*
 		TODO
 
-		about cmd?
+		about cmd? with version
 		let seek use 00h00m00s
+
+		professor gopher
 	*/
 	schopYatch := bot.NewSchopYatchBot(config)
 	err = schopYatch.SetupClient()
