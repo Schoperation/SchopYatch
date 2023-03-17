@@ -9,13 +9,10 @@ import (
 	"schoperation/schopyatch/util"
 	"strings"
 
-	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/disgolink/disgolink"
-	"github.com/disgoorg/disgolink/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -28,53 +25,32 @@ type SchopYatch struct {
 	Lavalink disgolink.Link
 }
 
-func NewSchopYatchBot(config YatchConfig) *SchopYatch {
-	return &SchopYatch{
+func NewSchopYatchBot(config YatchConfig) (SchopYatch, error) {
+	schopYatch := SchopYatch{
 		Config:   config,
 		Commands: command.GetCommandsAndAliasesAsMap(),
 		guilds:   make(map[snowflake.ID]string),
 		players:  make(map[snowflake.ID]*musicplayer.MusicPlayer),
 	}
-}
 
-func (sy *SchopYatch) SetupClient() error {
-	var err error
-	sy.Client, err = disgo.New(sy.Config.Token,
-		bot.WithGatewayConfigOpts(
-			gateway.WithIntents(
-				gateway.IntentGuilds,
-				gateway.IntentGuildMessages,
-				gateway.IntentGuildVoiceStates,
-				gateway.IntentMessageContent,
-			),
-		),
-		bot.WithCacheConfigOpts(
-			cache.WithCaches(cache.FlagVoiceStates, cache.FlagMembers, cache.FlagChannels, cache.FlagGuilds, cache.FlagRoles),
-		),
-		bot.WithEventListenerFunc(sy.OnReady),
-		bot.WithEventListenerFunc(sy.OnMessageCreate),
-		bot.WithEventListenerFunc(sy.OnGuildJoin),
+	client, err := createClient(config.Token,
+		bot.NewListenerFunc(schopYatch.OnReady),
+		bot.NewListenerFunc(schopYatch.OnGuildJoin),
+		bot.NewListenerFunc(schopYatch.OnMessageCreate),
 	)
-
-	return err
-}
-
-func (sy *SchopYatch) SetupLavalink() error {
-	link := disgolink.New(sy.Client)
-	_, err := link.AddNode(context.TODO(), lavalink.NodeConfig{
-		Name:        "schopyatch",
-		Host:        sy.Config.LavalinkHost,
-		Port:        sy.Config.LavalinkPort,
-		Password:    sy.Config.LavalinkPassword,
-		Secure:      sy.Config.LavalinkSecure,
-		ResumingKey: "",
-	})
 	if err != nil {
-		return err
+		return SchopYatch{}, err
 	}
 
-	sy.Lavalink = link
-	return nil
+	lavalink, err := createLavalinkConn(client, config)
+	if err != nil {
+		return SchopYatch{}, err
+	}
+
+	schopYatch.Client = client
+	schopYatch.Lavalink = lavalink
+
+	return schopYatch, nil
 }
 
 func (sy *SchopYatch) getPlayerByGuildId(guildId snowflake.ID) *musicplayer.MusicPlayer {

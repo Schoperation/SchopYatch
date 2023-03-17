@@ -18,23 +18,9 @@ func main() {
 		log.Fatalf("Error loading the config: %v", err)
 	}
 
-	/*
-		TODO
-
-		- about cmd? with version
-		- let seek use 00h00m00s
-
-		professor gopher
-	*/
-	schopYatch := bot.NewSchopYatchBot(config)
-	err = schopYatch.SetupClient()
+	schopYatch, err := bot.NewSchopYatchBot(config)
 	if err != nil {
 		log.Fatalf("Error building SchopYatch: %v", err)
-	}
-
-	err = schopYatch.SetupLavalink()
-	if err != nil {
-		log.Fatalf("Error setting up lavalink: %v", err)
 	}
 
 	defer schopYatch.Lavalink.Close()
