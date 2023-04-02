@@ -1,4 +1,4 @@
-package musicplayer
+package music_player
 
 import (
 	"math/rand"
@@ -89,8 +89,8 @@ func (q *MusicQueue) Clear() {
 }
 
 func (q *MusicQueue) Shuffle() {
-	rand.Seed(time.Now().UnixMicro())
-	rand.Shuffle(q.Length(), func(i, j int) {
+	rng := rand.New(rand.NewSource(time.Now().UnixMicro()))
+	rng.Shuffle(q.Length(), func(i, j int) {
 		q.tracks[i], q.tracks[j] = q.tracks[j], q.tracks[i]
 	})
 }

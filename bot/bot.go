@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"schoperation/schopyatch/command"
-	"schoperation/schopyatch/musicplayer"
+	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 	"strings"
 
@@ -19,18 +19,18 @@ import (
 type SchopYatch struct {
 	Client   bot.Client
 	Config   YatchConfig
-	Commands map[string]command.Command
-	guilds   map[snowflake.ID]string
-	players  map[snowflake.ID]*musicplayer.MusicPlayer
 	Lavalink disgolink.Link
+	commands map[string]command.Command
+	players  map[snowflake.ID]*music_player.MusicPlayer
+	version  string
 }
 
-func NewSchopYatchBot(config YatchConfig) (SchopYatch, error) {
+func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 	schopYatch := SchopYatch{
 		Config:   config,
-		Commands: command.GetCommandsAndAliasesAsMap(),
-		guilds:   make(map[snowflake.ID]string),
-		players:  make(map[snowflake.ID]*musicplayer.MusicPlayer),
+		commands: command.GetCommandsAndAliasesAsMap(),
+		players:  make(map[snowflake.ID]*music_player.MusicPlayer),
+		version:  version,
 	}
 
 	client, err := createClient(config.Token,
@@ -53,7 +53,7 @@ func NewSchopYatchBot(config YatchConfig) (SchopYatch, error) {
 	return schopYatch, nil
 }
 
-func (sy *SchopYatch) getPlayerByGuildId(guildId snowflake.ID) *musicplayer.MusicPlayer {
+func (sy *SchopYatch) getPlayerByGuildId(guildId snowflake.ID) *music_player.MusicPlayer {
 	player, exists := sy.players[guildId]
 	if !exists {
 		return nil
@@ -68,14 +68,13 @@ func (sy *SchopYatch) OnReady(event *events.Ready) {
 		log.Fatalf("Error setting presence: %v", err)
 	}
 
-	log.Printf("SchopYatch is up and running!")
+	log.Printf("SchopYatch v%s is up and running!", sy.version)
 }
 
 func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
 	guildId := event.GuildID
 
-	sy.guilds[guildId] = guildId.String()
-	sy.players[guildId] = musicplayer.NewMusicPlayer(guildId, sy.Lavalink)
+	sy.players[guildId] = music_player.NewMusicPlayer(guildId, sy.Lavalink)
 }
 
 func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
@@ -92,7 +91,7 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 	message = strings.Replace(message, sy.Config.Prefix, "", 1)
 
 	splitMessage := strings.Split(message, " ")
-	cmd, exists := sy.Commands[strings.ToLower(splitMessage[0])]
+	cmd, exists := sy.commands[strings.ToLower(splitMessage[0])]
 	if !exists {
 		return
 	}

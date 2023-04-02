@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/musicplayer"
+	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 	"strconv"
 )
@@ -75,7 +75,7 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return nil
 	}
 
-	if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+	if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
 		deps.MusicPlayer.Queue.Enqueue(deps.MusicPlayer.Player.PlayingTrack())
 	}
 
@@ -92,7 +92,7 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 	for i := 0; i < num-1; i++ {
 		track := deps.MusicPlayer.Queue.Dequeue()
 
-		if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+		if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
 			deps.MusicPlayer.Queue.Enqueue(*track)
 		}
 	}

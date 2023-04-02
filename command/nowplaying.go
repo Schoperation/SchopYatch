@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/musicplayer"
+	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 	"strings"
 )
@@ -86,9 +86,9 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 	}
 
 	loopStr := ""
-	if deps.MusicPlayer.LoopMode == musicplayer.LoopTrack {
+	if deps.MusicPlayer.LoopMode == music_player.LoopTrack {
 		loopStr = "**Looping Current Track**\n"
-	} else if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
+	} else if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
 		loopStr = "**Looping Queue**\n"
 	}
 

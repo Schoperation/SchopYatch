@@ -18,7 +18,8 @@ func main() {
 		log.Fatalf("Error loading the config: %v", err)
 	}
 
-	schopYatch, err := bot.NewSchopYatchBot(config)
+	const version = "1.0.0"
+	schopYatch, err := bot.NewSchopYatchBot(config, version)
 	if err != nil {
 		log.Fatalf("Error building SchopYatch: %v", err)
 	}

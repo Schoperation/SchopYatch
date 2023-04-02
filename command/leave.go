@@ -2,7 +2,7 @@ package command
 
 import (
 	"context"
-	"schoperation/schopyatch/musicplayer"
+	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 )
 
@@ -72,7 +72,7 @@ func leaveVoiceChannel(deps CommandDependencies) error {
 
 	deps.MusicPlayer.Queue.Clear()
 	deps.MusicPlayer.SearchResults.Clear()
-	deps.MusicPlayer.LoopMode = musicplayer.LoopOff
+	deps.MusicPlayer.LoopMode = music_player.LoopOff
 	deps.MusicPlayer.GotDisconnected = true
 	return err
 }

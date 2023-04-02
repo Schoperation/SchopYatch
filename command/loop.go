@@ -1,7 +1,7 @@
 package command
 
 import (
-	"schoperation/schopyatch/musicplayer"
+	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 )
 
@@ -67,30 +67,30 @@ func (cmd *LoopCmd) Execute(deps CommandDependencies, opts ...string) error {
 		cmd.loopQueue(deps)
 		return nil
 	default:
-		deps.MusicPlayer.LoopMode = musicplayer.LoopOff
+		deps.MusicPlayer.LoopMode = music_player.LoopOff
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Looping off.")
 		return nil
 	}
 }
 
 func (cmd *LoopCmd) loopSingle(deps CommandDependencies) {
-	if deps.MusicPlayer.LoopMode != musicplayer.LoopOff {
-		deps.MusicPlayer.LoopMode = musicplayer.LoopOff
+	if deps.MusicPlayer.LoopMode != music_player.LoopOff {
+		deps.MusicPlayer.LoopMode = music_player.LoopOff
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Looping off.")
 		return
 	}
 
-	deps.MusicPlayer.LoopMode = musicplayer.LoopTrack
+	deps.MusicPlayer.LoopMode = music_player.LoopTrack
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Looping the current track.")
 }
 
 func (cmd *LoopCmd) loopQueue(deps CommandDependencies) {
-	if deps.MusicPlayer.LoopMode == musicplayer.LoopQueue {
-		deps.MusicPlayer.LoopMode = musicplayer.LoopOff
+	if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
+		deps.MusicPlayer.LoopMode = music_player.LoopOff
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Looping off.")
 		return
 	}
 
-	deps.MusicPlayer.LoopMode = musicplayer.LoopQueue
+	deps.MusicPlayer.LoopMode = music_player.LoopQueue
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Looping the whole queue.")
 }

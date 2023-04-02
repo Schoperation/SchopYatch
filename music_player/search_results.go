@@ -1,4 +1,4 @@
-package musicplayer
+package music_player
 
 import "github.com/disgoorg/disgolink/lavalink"
 
