@@ -24,7 +24,7 @@ func main() {
 		log.Fatalf("Error building SchopYatch: %v", err)
 	}
 
-	defer schopYatch.Lavalink.Close()
+	defer schopYatch.LavalinkClient.Close()
 	defer schopYatch.Client.Close(context.TODO())
 
 	err = schopYatch.Client.OpenGateway(context.TODO())

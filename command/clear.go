@@ -51,27 +51,24 @@ func (cmd *ClearCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *ClearCmd) Execute(deps CommandDependencies, opts ...string) error {
-	if deps.MusicPlayer.Queue.IsEmpty() {
+	if deps.MusicPlayer.IsQueueEmpty() {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Already clear. Were you hoping for a funny error? Same")
 		return nil
 	}
 
 	if len(opts) == 0 {
-		deps.MusicPlayer.Queue.Clear()
+		deps.MusicPlayer.ClearQueue(0)
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cleared the queue.")
 		return nil
 	}
 
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude that was not a number...")
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude, that was not a number...")
 		return err
 	}
 
-	for i := 0; i < num; i++ {
-		_ = deps.MusicPlayer.Queue.Dequeue()
-	}
-
+	deps.MusicPlayer.ClearQueue(num)
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Cleared the first %d tracks from the queue.", num))
 	return nil
 }

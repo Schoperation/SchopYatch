@@ -1,10 +1,6 @@
 package command
 
-import (
-	"context"
-	"errors"
-	"schoperation/schopyatch/util"
-)
+import "schoperation/schopyatch/util"
 
 type JoinCmd struct {
 	name        string
@@ -51,25 +47,10 @@ func (cmd *JoinCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *JoinCmd) Execute(deps CommandDependencies, opts ...string) error {
-	err := joinVoiceChannel(deps)
-	return err
-}
-
-func joinVoiceChannel(deps CommandDependencies) error {
-	voiceState, exists := (*deps.Client).Caches().VoiceState(*deps.Event.GuildID, deps.Event.Message.Author.ID)
-	if !exists {
+	err := deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
+	if err != nil && util.IsErrorMessage(err, util.VoiceStateNotFound) {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
-		return errors.New("could not find voice state")
-	}
-
-	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, voiceState.ChannelID, false, true)
-	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot connect to your channel... do I have permission?")
-	}
-
-	if deps.MusicPlayer.GotDisconnected {
-		deps.MusicPlayer.RecreatePlayer(*deps.Lavalink)
-		deps.MusicPlayer.GotDisconnected = false
+		return nil
 	}
 
 	return err

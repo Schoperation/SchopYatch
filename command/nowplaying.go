@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 	"strings"
 )
@@ -52,14 +51,16 @@ func (cmd *NowPlayingCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) error {
-	currentTrack := deps.MusicPlayer.Player.PlayingTrack()
-	if currentTrack == nil {
+	currentTrack, err := deps.MusicPlayer.GetLoadedTrack()
+	if err != nil && util.IsErrorMessage(err, util.NoLoadedTrack) {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing's playing. Bruh moment...")
 		return nil
+	} else {
+		return err
 	}
 
-	currentPos := deps.MusicPlayer.Player.Position()
-	trackLen := currentTrack.Info().Length
+	currentPos := deps.MusicPlayer.GetPosition()
+	trackLen := currentTrack.Info.Length
 	timeLeft := trackLen.Seconds() - currentPos.Seconds()
 
 	hoursLeft := timeLeft / 3600
@@ -86,13 +87,13 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 	}
 
 	loopStr := ""
-	if deps.MusicPlayer.LoopMode == music_player.LoopTrack {
+	if deps.MusicPlayer.IsLoopModeTrack() {
 		loopStr = "**Looping Current Track**\n"
-	} else if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
+	} else if deps.MusicPlayer.IsLoopModeQueue() {
 		loopStr = "**Looping Queue**\n"
 	}
 
-	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s", currentTrack.Info().Title, currentTrack.Info().Author, builder.String(), currentPos, trackLen, loopStr)
+	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s", currentTrack.Info.Title, currentTrack.Info.Author, builder.String(), currentPos, trackLen, loopStr)
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, finalStr)
 	return nil
 }

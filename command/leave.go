@@ -1,10 +1,6 @@
 package command
 
-import (
-	"context"
-	"schoperation/schopyatch/music_player"
-	"schoperation/schopyatch/util"
-)
+import "schoperation/schopyatch/util"
 
 type LeaveCmd struct {
 	name        string
@@ -19,8 +15,8 @@ func NewLeaveCmd() Command {
 	return &LeaveCmd{
 		name:        "leave",
 		summary:     "Make the bot leave a voice channel",
-		description: "Upon running, the bot will leave the user's voice channel. Kindly.",
-		usage:       "leave",
+		description: "Upon running, the bot will leave the user's voice channel. Kindly. Add \"reset\" to clear the queue, search results, and reset looping as well.",
+		usage:       "leave [reset]",
 		aliases:     []string{"fuckoff", "disconnect"},
 		voiceOnly:   true,
 	}
@@ -51,28 +47,20 @@ func (cmd *LeaveCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {
-	err := leaveVoiceChannel(deps)
-	return err
-}
+	if len(opts) > 0 {
+		if opts[0] == "reset" {
+			err := deps.MusicPlayer.LeaveVoiceChannel(deps.Client, true)
+			if err != nil {
+				return err
+			}
 
-func leaveVoiceChannel(deps CommandDependencies) error {
-	if deps.MusicPlayer.Player.PlayingTrack() != nil {
-		err := deps.MusicPlayer.Player.Stop()
-		if err != nil {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't stop this track...")
-			return err
+			return nil
 		}
+
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "You want me to leave what? Try either leaving it blank or `reset`.")
+		return nil
 	}
 
-	err := (*deps.Client).UpdateVoiceState(context.TODO(), *deps.Event.GuildID, nil, false, false)
-	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cannot leave the channel... wait what?")
-		return err
-	}
-
-	deps.MusicPlayer.Queue.Clear()
-	deps.MusicPlayer.SearchResults.Clear()
-	deps.MusicPlayer.LoopMode = music_player.LoopOff
-	deps.MusicPlayer.GotDisconnected = true
+	err := deps.MusicPlayer.LeaveVoiceChannel(deps.Client, false)
 	return err
 }

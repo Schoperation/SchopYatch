@@ -4,56 +4,56 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v2/lavalink"
 )
 
 type MusicQueue struct {
-	tracks      []lavalink.AudioTrack
-	size        int
-	trackLength lavalink.Duration
+	tracks   []lavalink.Track
+	size     int
+	duration lavalink.Duration
 }
 
 func NewMusicQueue() MusicQueue {
 	return MusicQueue{
-		tracks:      []lavalink.AudioTrack{},
-		size:        0,
-		trackLength: lavalink.Duration(0),
+		tracks:   []lavalink.Track{},
+		size:     0,
+		duration: lavalink.Duration(0),
 	}
 }
 
-func (q *MusicQueue) Enqueue(track lavalink.AudioTrack) {
+func (q *MusicQueue) Enqueue(track lavalink.Track) {
 	q.tracks = append(q.tracks, track)
 	q.size++
-	q.trackLength += track.Info().Length
+	q.duration += track.Info.Length
 }
 
-func (q *MusicQueue) EnqueueList(tracks []lavalink.AudioTrack) {
+func (q *MusicQueue) EnqueueList(tracks []lavalink.Track) {
 	for _, track := range tracks {
 		q.tracks = append(q.tracks, track)
 		q.size++
-		q.trackLength += track.Info().Length
+		q.duration += track.Info.Length
 	}
 }
 
-func (q *MusicQueue) Dequeue() *lavalink.AudioTrack {
-	return q.DequeueAtIndex(0)
+func (q *MusicQueue) Dequeue() *lavalink.Track {
+	return q.DequeueAt(0)
 }
 
-func (q *MusicQueue) DequeueAtIndex(index int) *lavalink.AudioTrack {
-	if q.Length() < index {
+func (q *MusicQueue) DequeueAt(index int) *lavalink.Track {
+	if q.Length() <= index {
 		return nil
 	}
 
 	track := q.tracks[index]
 
 	if q.Length() == 1 {
-		q.tracks = []lavalink.AudioTrack{}
+		q.tracks = []lavalink.Track{}
 	} else {
 		q.tracks = append(q.tracks[:index], q.tracks[index+1:]...)
 	}
 
 	q.size--
-	q.trackLength -= track.Info().Length
+	q.duration -= track.Info.Length
 
 	return &track
 }
@@ -66,29 +66,37 @@ func (q *MusicQueue) IsEmpty() bool {
 	return q.size == 0
 }
 
-func (q *MusicQueue) TrackLength() lavalink.Duration {
-	return q.trackLength
+func (q *MusicQueue) Duration() lavalink.Duration {
+	return q.duration
 }
 
-func (q *MusicQueue) Peek() *lavalink.AudioTrack {
-	if q.IsEmpty() {
+func (q *MusicQueue) Peek() *lavalink.Track {
+	return q.PeekAt(0)
+}
+
+func (q *MusicQueue) PeekAt(index int) *lavalink.Track {
+	if q.Length() <= index {
 		return nil
 	}
 
-	return &q.tracks[0]
+	return &q.tracks[index]
 }
 
-func (q *MusicQueue) PeekList() []lavalink.AudioTrack {
+func (q *MusicQueue) PeekList() []lavalink.Track {
 	return q.tracks
 }
 
 func (q *MusicQueue) Clear() {
-	q.tracks = []lavalink.AudioTrack{}
+	q.tracks = []lavalink.Track{}
 	q.size = 0
-	q.trackLength = lavalink.Duration(0)
+	q.duration = lavalink.Duration(0)
 }
 
 func (q *MusicQueue) Shuffle() {
+	if q.IsEmpty() {
+		return
+	}
+
 	rng := rand.New(rand.NewSource(time.Now().UnixMicro()))
 	rng.Shuffle(q.Length(), func(i, j int) {
 		q.tracks[i], q.tracks[j] = q.tracks[j], q.tracks[i]

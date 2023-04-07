@@ -12,17 +12,20 @@ import (
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
-	"github.com/disgoorg/disgolink/disgolink"
+	"github.com/disgoorg/disgolink/v2/disgolink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
 type SchopYatch struct {
-	Client   bot.Client
-	Config   YatchConfig
-	Lavalink disgolink.Link
-	commands map[string]command.Command
-	players  map[snowflake.ID]*music_player.MusicPlayer
-	version  string
+	Client         bot.Client
+	Config         YatchConfig
+	LavalinkClient disgolink.Client
+	commands       map[string]command.Command
+	players        map[snowflake.ID]*music_player.MusicPlayer
+	version        string
+}
+
+type MusicPlayer interface {
 }
 
 func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
@@ -36,6 +39,8 @@ func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 	client, err := createClient(config.Token,
 		bot.NewListenerFunc(schopYatch.OnReady),
 		bot.NewListenerFunc(schopYatch.OnGuildJoin),
+		bot.NewListenerFunc(schopYatch.OnVoiceStateUpdate),
+		bot.NewListenerFunc(schopYatch.OnVoiceServerUpdate),
 		bot.NewListenerFunc(schopYatch.OnMessageCreate),
 	)
 	if err != nil {
@@ -48,7 +53,7 @@ func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 	}
 
 	schopYatch.Client = client
-	schopYatch.Lavalink = lavalink
+	schopYatch.LavalinkClient = lavalink
 
 	return schopYatch, nil
 }
@@ -72,9 +77,22 @@ func (sy *SchopYatch) OnReady(event *events.Ready) {
 }
 
 func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
+	err := event.Client().SetPresence(context.TODO(), gateway.WithListeningActivity("an Ace Attorney OST"))
+	if err != nil {
+		log.Fatalf("Error setting presence: %v", err)
+	}
+
 	guildId := event.GuildID
 
-	sy.players[guildId] = music_player.NewMusicPlayer(guildId, sy.Lavalink)
+	sy.players[guildId] = music_player.NewMusicPlayer(guildId, sy.LavalinkClient)
+}
+
+func (sy *SchopYatch) OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {
+	sy.LavalinkClient.OnVoiceStateUpdate(context.TODO(), event.VoiceState.GuildID, event.VoiceState.ChannelID, event.VoiceState.SessionID)
+}
+
+func (sy *SchopYatch) OnVoiceServerUpdate(event *events.VoiceServerUpdate) {
+	sy.LavalinkClient.OnVoiceServerUpdate(context.TODO(), event.GuildID, event.Token, *event.Endpoint)
 }
 
 func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
@@ -127,12 +145,13 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		Client:      &sy.Client,
 		Event:       event,
 		MusicPlayer: player,
-		Lavalink:    &sy.Lavalink,
+		Lavalink:    &sy.LavalinkClient,
 		Prefix:      sy.Config.Prefix,
 	}, splitMessage[1:]...)
 
 	if err != nil {
 		log.Printf("Error occurred running the %s command: %v", cmd.GetName(), err)
+		util.SendSimpleMessage(sy.Client, event.ChannelID, "Unexpected error occurred. Please try again.")
 		return
 	}
 }
