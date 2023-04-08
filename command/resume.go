@@ -1,6 +1,9 @@
 package command
 
-import "schoperation/schopyatch/util"
+import (
+	"schoperation/schopyatch/enum"
+	"schoperation/schopyatch/util"
+)
 
 type ResumeCmd struct {
 	name        string
@@ -47,25 +50,17 @@ func (cmd *ResumeCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *ResumeCmd) Execute(deps CommandDependencies, opts ...string) error {
-	err := resume(deps)
-	return err
-}
-
-func resume(deps CommandDependencies) error {
-	if deps.MusicPlayer.Player.PlayingTrack() == nil {
+	status, err := deps.MusicPlayer.Unpause()
+	if err != nil && util.IsErrorMessage(err, util.NoLoadedTrack) {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No track's currently playing. Are we resuming a val sesh? Oh boy, it's 4 AM already, shame...")
 		return nil
+	} else if err != nil {
+		return err
 	}
 
-	if !deps.MusicPlayer.Player.Paused() {
+	if status == enum.StatusAlreadyUnpaused {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Already playing. Bruh where's your ears? Better yet, where's the thing between them?")
 		return nil
-	}
-
-	err := deps.MusicPlayer.Player.Pause(false)
-	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Can't resume the player for some reason...")
-		return err
 	}
 
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Resuming.")

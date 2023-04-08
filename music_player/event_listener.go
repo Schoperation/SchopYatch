@@ -2,17 +2,18 @@ package music_player
 
 import (
 	"log"
+	"schoperation/schopyatch/enum"
 
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
 type EventListener struct {
 	Queue           *MusicQueue
-	LoopMode        *LoopMode
+	LoopMode        *enum.LoopMode
 	GotDisconnected *bool
 }
 
-func NewEventListener(queue *MusicQueue, loopMode *LoopMode, gotDisconnected *bool) lavalink.PlayerEventListener {
+func NewEventListener(queue *MusicQueue, loopMode *enum.LoopMode, gotDisconnected *bool) lavalink.PlayerEventListener {
 	return &EventListener{
 		Queue:           queue,
 		LoopMode:        loopMode,
@@ -33,19 +34,19 @@ func (l *EventListener) OnTrackStart(player lavalink.Player, track lavalink.Audi
 	//log.Printf("%d", *l.LoopMode)
 }
 func (l *EventListener) OnTrackEnd(player lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
-	if !endReason.MayStartNext() || (l.Queue.IsEmpty() && *l.LoopMode != LoopTrack) {
-		return
-	}
+	//if !endReason.MayStartNext() || (l.Queue.IsEmpty() && *l.LoopMode != LoopTrack) {
+	//	return
+	//}
 
 	var nextTrack lavalink.AudioTrack
 	switch *l.LoopMode {
-	case LoopTrack:
+	case enum.LoopTrack:
 		nextTrack = track
-	case LoopQueue:
-		l.Queue.Enqueue(track)
-		nextTrack = *l.Queue.Dequeue()
+	case enum.LoopQueue:
+		//l.Queue.Enqueue(track)
+		//nextTrack = *l.Queue.Dequeue()
 	default:
-		nextTrack = *l.Queue.Dequeue()
+		//nextTrack = *l.Queue.Dequeue()
 	}
 
 	err := player.Play(nextTrack)

@@ -151,7 +151,7 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 
 	if err != nil {
 		log.Printf("Error occurred running the %s command: %v", cmd.GetName(), err)
-		util.SendSimpleMessage(sy.Client, event.ChannelID, "Unexpected error occurred. Please try again.")
+		util.SendSimpleMessage(sy.Client, event.ChannelID, "Unexpected error occurred. Please try again. If this persists then you might wanna file a bug report...")
 		return
 	}
 }

@@ -3,7 +3,6 @@ package command
 import (
 	"fmt"
 	"log"
-	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 	"strconv"
 	"strings"
@@ -56,24 +55,24 @@ func (cmd *QueueCmd) IsVoiceOnlyCmd() bool {
 func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 	builder := strings.Builder{}
 
-	if deps.MusicPlayer.Player.PlayingTrack() != nil {
-		currentTrack := deps.MusicPlayer.Player.PlayingTrack()
-		builder.WriteString(fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info().Title, currentTrack.Info().Author, deps.MusicPlayer.Player.Position().String(), currentTrack.Info().Length.String()))
+	currentTrack, err := deps.MusicPlayer.GetLoadedTrack()
+	if err == nil {
+		builder.WriteString(fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info.Title, currentTrack.Info.Author, deps.MusicPlayer.GetPosition().String(), currentTrack.Info.Length.String()))
 	}
 
-	if deps.MusicPlayer.LoopMode == music_player.LoopTrack {
+	if deps.MusicPlayer.IsLoopModeTrack() {
 		builder.WriteString("**Looping Current Track**\n")
-	} else if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
+	} else if deps.MusicPlayer.IsLoopModeQueue() {
 		builder.WriteString("**Looping Queue**\n")
 	}
 
-	if deps.MusicPlayer.Queue.IsEmpty() {
+	if deps.MusicPlayer.IsQueueEmpty() {
 		builder.WriteString("Queue is empty.\n")
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
 		return nil
 	}
 
-	queueLen := deps.MusicPlayer.Queue.Length()
+	queueLen := deps.MusicPlayer.GetQueueLength()
 	pages := (queueLen / 10) + 1
 	if queueLen%10 == 0 {
 		pages--
@@ -92,22 +91,22 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 	}
 
 	if queueLen == 1 {
-		builder.WriteString(fmt.Sprintf("Total of **%d** track in the queue. `[%s]`\n", 1, deps.MusicPlayer.Queue.TrackLength().String()))
+		builder.WriteString(fmt.Sprintf("Total of **%d** track in the queue. `[%s]`\n", 1, deps.MusicPlayer.GetQueueDuration().String()))
 	} else {
-		builder.WriteString(fmt.Sprintf("Total of **%d** tracks in the queue. `[%s]`\n", queueLen, deps.MusicPlayer.Queue.TrackLength().String()))
+		builder.WriteString(fmt.Sprintf("Total of **%d** tracks in the queue. `[%s]`\n", queueLen, deps.MusicPlayer.GetQueueDuration().String()))
 	}
 
 	builder.WriteString(fmt.Sprintf("Page **%d** of **%d**:\n\n", pageNum, pages))
 
 	rangeStart := (pageNum - 1) * 10
 	rangeEnd := pageNum * 10
-	if rangeEnd > deps.MusicPlayer.Queue.Length() {
-		rangeEnd = deps.MusicPlayer.Queue.Length()
+	if rangeEnd > queueLen {
+		rangeEnd = queueLen
 	}
 
-	queue := deps.MusicPlayer.Queue.PeekList()
+	queue := deps.MusicPlayer.GetQueue()
 	for i := rangeStart; i < rangeEnd; i++ {
-		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, queue[i].Info().Title, queue[i].Info().Author, queue[i].Info().Length))
+		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, queue[i].Info.Title, queue[i].Info.Author, queue[i].Info.Length))
 	}
 
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())

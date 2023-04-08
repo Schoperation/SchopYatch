@@ -55,7 +55,7 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 	if err != nil && util.IsErrorMessage(err, util.NoLoadedTrack) {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing's playing. Bruh moment...")
 		return nil
-	} else {
+	} else if err != nil {
 		return err
 	}
 

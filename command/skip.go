@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 )
 
@@ -51,35 +50,21 @@ func (cmd *SkipCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *SkipCmd) Execute(deps CommandDependencies, opts ...string) error {
-	if deps.MusicPlayer.Player.PlayingTrack() == nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to skip. Have a great evening.")
-		return nil
-	}
-
 	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Skipping...")
 
-	if deps.MusicPlayer.Queue.IsEmpty() {
-		err := deps.MusicPlayer.Player.Stop()
-		if err != nil {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't stop this track...")
-			return err
-		}
+	playingTrack, err := deps.MusicPlayer.Skip()
+	if err != nil && util.IsErrorMessage(err, util.NoLoadedTrack) {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to skip. Have a great evening.")
+		return nil
+	} else if err != nil {
+		return err
+	}
 
+	if playingTrack == nil {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "All is now quiet on the SchopYatch front.")
 		return nil
 	}
 
-	if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
-		deps.MusicPlayer.Queue.Enqueue(deps.MusicPlayer.Player.PlayingTrack())
-	}
-
-	nextTrack := deps.MusicPlayer.Queue.Dequeue()
-	err := deps.MusicPlayer.Player.Play(*nextTrack)
-	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't play this... might be some dumb age restriction?")
-		return err
-	}
-
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", (*nextTrack).Info().Title, (*nextTrack).Info().Author))
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
 	return nil
 }

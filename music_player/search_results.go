@@ -1,39 +1,58 @@
 package music_player
 
-import "github.com/disgoorg/disgolink/lavalink"
+import "github.com/disgoorg/disgolink/v2/lavalink"
 
 type SearchResults struct {
-	results   []lavalink.AudioTrack
+	results   []lavalink.Track
+	length    int
 	maxLength int
 }
 
 func NewSearchResults() SearchResults {
 	return SearchResults{
-		results:   []lavalink.AudioTrack{},
+		results:   []lavalink.Track{},
+		length:    0,
 		maxLength: 5,
 	}
 }
 
-func (sr *SearchResults) AddTrack(track lavalink.AudioTrack) {
-	if sr.Length() < sr.MaxLength() {
+func (sr *SearchResults) AddResult(track lavalink.Track) {
+	if sr.length < sr.maxLength {
 		sr.results = append(sr.results, track)
+		sr.length++
 	}
 }
 
-func (sr *SearchResults) GetTrack(i int) *lavalink.AudioTrack {
-	if i < 0 || i >= sr.Length() {
+func (sr *SearchResults) AddResults(tracks []lavalink.Track) {
+	for _, track := range tracks {
+		if sr.length >= sr.maxLength {
+			break
+		}
+
+		sr.results = append(sr.results, track)
+		sr.length++
+	}
+}
+
+func (sr *SearchResults) GetResult(i int) *lavalink.Track {
+	if i < 0 || i >= sr.length {
 		return nil
 	}
 
 	return &sr.results[i]
 }
 
+func (sr *SearchResults) GetResults() []lavalink.Track {
+	return sr.results
+}
+
 func (sr *SearchResults) Clear() {
-	sr.results = []lavalink.AudioTrack{}
+	sr.results = []lavalink.Track{}
+	sr.length = 0
 }
 
 func (sr *SearchResults) Length() int {
-	return len(sr.results)
+	return sr.length
 }
 
 func (sr *SearchResults) MaxLength() int {

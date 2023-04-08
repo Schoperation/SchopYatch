@@ -3,6 +3,7 @@ package music_player
 import (
 	"context"
 	"errors"
+	"schoperation/schopyatch/enum"
 	"schoperation/schopyatch/util"
 
 	"github.com/disgoorg/disgo/bot"
@@ -11,21 +12,13 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
-type LoopMode int
-
-const (
-	LoopOff LoopMode = iota
-	LoopTrack
-	LoopQueue
-)
-
 type MusicPlayer struct {
 	guildID        snowflake.ID
 	lavalinkClient *disgolink.Client
 	player         disgolink.Player
 	queue          MusicQueue
 	searchResults  SearchResults
-	loopMode       LoopMode
+	loopMode       enum.LoopMode
 	disconnected   bool
 }
 
@@ -35,7 +28,7 @@ func NewMusicPlayer(guildId snowflake.ID, lavaLinkClient *disgolink.Client) *Mus
 		lavalinkClient: lavaLinkClient,
 		queue:          NewMusicQueue(),
 		searchResults:  NewSearchResults(),
-		loopMode:       LoopOff,
+		loopMode:       enum.LoopOff,
 		disconnected:   false,
 	}
 
@@ -59,8 +52,8 @@ func (mp *MusicPlayer) JoinVoiceChannel(botClient *bot.Client, userId snowflake.
 }
 
 func (mp *MusicPlayer) LeaveVoiceChannel(botClient *bot.Client, shouldReset bool) error {
-	if mp.HasLoadedTrack() {
-		err := mp.Stop()
+	if mp.hasLoadedTrack() {
+		_, err := mp.Stop()
 		if err != nil {
 			return err
 		}
@@ -81,52 +74,208 @@ func (mp *MusicPlayer) LeaveVoiceChannel(botClient *bot.Client, shouldReset bool
 	return nil
 }
 
-func (mp *MusicPlayer) ProcessQuery(query string) {
+func (mp *MusicPlayer) ProcessQuery(query string) (enum.PlayerStatus, int, error) {
+	var playerStatus enum.PlayerStatus
+	var tracksQueued int
+	var playerErr error
 
+	(*mp.lavalinkClient).BestNode().LoadTracksHandler(context.TODO(), query, disgolink.NewResultHandler(
+		func(track lavalink.Track) {
+			playerStatus, playerErr = mp.Load(track)
+			tracksQueued = 0
+		},
+		func(playlist lavalink.Playlist) {
+			playerStatus, tracksQueued, playerErr = mp.LoadList(playlist.Tracks)
+		},
+		func(tracks []lavalink.Track) {
+			mp.SetSearchResults(tracks)
+			playerStatus = enum.StatusSuccess
+			tracksQueued = 0
+		},
+		func() {
+			playerStatus = enum.StatusFailed
+			tracksQueued = 0
+			playerErr = errors.New(util.NoResultsFound)
+		},
+		func(err error) {
+			playerStatus = enum.StatusFailed
+			tracksQueued = 0
+			playerErr = err
+		},
+	))
+
+	return playerStatus, tracksQueued, playerErr
 }
 
 /////////////////////
 // Basic Player Cmds
 /////////////////////
 
-func (mp *MusicPlayer) Load() {
-
-}
-
-func (mp *MusicPlayer) Pause() error {
-	if !mp.HasLoadedTrack() {
-		return errors.New(util.NoLoadedTrack)
+func (mp *MusicPlayer) Load(track lavalink.Track) (enum.PlayerStatus, error) {
+	if mp.hasLoadedTrack() {
+		mp.queue.Enqueue(track)
+		return enum.StatusQueued, nil
 	}
 
-	return mp.player.Update(context.TODO(), lavalink.WithPaused(true))
-}
-
-func (mp *MusicPlayer) Unpause() error {
-	if !mp.HasLoadedTrack() {
-		return errors.New(util.NoLoadedTrack)
+	err := mp.player.Update(context.TODO(), lavalink.WithTrack(track), lavalink.WithPaused(false))
+	if err != nil {
+		return enum.StatusFailed, err
 	}
 
-	return mp.player.Update(context.TODO(), lavalink.WithPaused(false))
+	return enum.StatusSuccess, nil
 }
 
-func (mp *MusicPlayer) Stop() error {
-	if !mp.HasLoadedTrack() {
-		return errors.New(util.NoLoadedTrack)
+func (mp *MusicPlayer) LoadList(tracks []lavalink.Track) (enum.PlayerStatus, int, error) {
+	if len(tracks) == 0 {
+		return enum.StatusSuccess, 0, nil
 	}
 
-	return mp.player.Update(context.TODO(), lavalink.WithNullTrack())
+	if !mp.hasLoadedTrack() {
+		err := mp.player.Update(context.TODO(), lavalink.WithTrack(tracks[0]), lavalink.WithPaused(false))
+		if err != nil {
+			return enum.StatusFailed, 0, err
+		}
+
+		if len(tracks) == 1 {
+			return enum.StatusSuccess, 0, nil
+		}
+
+		tracks = tracks[1:]
+
+		// Exception here just so we don't mention a one-hit-wonder when there were actually 2 tracks.
+		if len(tracks) == 1 {
+			mp.queue.Enqueue(tracks[0])
+			return enum.StatusPlayingAndQueuedList, 1, nil
+		}
+	}
+
+	mp.queue.EnqueueList(tracks)
+	return enum.StatusQueuedList, len(tracks), nil
 }
 
-func (mp *MusicPlayer) Seek() {
+func (mp *MusicPlayer) Pause() (enum.PlayerStatus, error) {
+	if !mp.hasLoadedTrack() {
+		return enum.StatusFailed, errors.New(util.NoLoadedTrack)
+	}
 
+	if mp.player.Paused() {
+		return enum.StatusAlreadyPaused, nil
+	}
+
+	err := mp.player.Update(context.TODO(), lavalink.WithPaused(true))
+	if err != nil {
+		return enum.StatusFailed, err
+	}
+
+	return enum.StatusSuccess, nil
 }
 
-func (mp *MusicPlayer) Skip() {
+func (mp *MusicPlayer) Unpause() (enum.PlayerStatus, error) {
+	if !mp.hasLoadedTrack() {
+		return enum.StatusFailed, errors.New(util.NoLoadedTrack)
+	}
 
+	if !mp.player.Paused() {
+		return enum.StatusAlreadyUnpaused, nil
+	}
+
+	err := mp.player.Update(context.TODO(), lavalink.WithPaused(false))
+	if err != nil {
+		return enum.StatusFailed, err
+	}
+
+	return enum.StatusSuccess, nil
 }
 
-func (mp *MusicPlayer) SkipTo() {
+func (mp *MusicPlayer) Stop() (enum.PlayerStatus, error) {
+	if !mp.hasLoadedTrack() {
+		return enum.StatusFailed, errors.New(util.NoLoadedTrack)
+	}
 
+	err := mp.player.Update(context.TODO(), lavalink.WithNullTrack())
+	if err != nil {
+		return enum.StatusFailed, err
+	}
+
+	return enum.StatusSuccess, nil
+}
+
+func (mp *MusicPlayer) Seek(time lavalink.Duration) (enum.PlayerStatus, error) {
+	if !mp.hasLoadedTrack() {
+		return enum.StatusFailed, errors.New(util.NoLoadedTrack)
+	}
+
+	if time.Milliseconds() < 0 {
+		return enum.StatusFailed, errors.New(util.NegativeDuration)
+	}
+
+	err := mp.player.Update(context.TODO(), lavalink.WithPosition(time))
+	if err != nil {
+		return enum.StatusFailed, err
+	}
+
+	return 0, nil
+}
+
+func (mp *MusicPlayer) Skip() (*lavalink.Track, error) {
+	if !mp.hasLoadedTrack() {
+		return nil, errors.New(util.NoLoadedTrack)
+	}
+
+	if mp.IsLoopModeQueue() {
+		mp.queue.Enqueue(*mp.player.Track())
+	}
+
+	if mp.queue.IsEmpty() {
+		err := mp.player.Update(context.TODO(), lavalink.WithNullTrack(), lavalink.WithPaused(false))
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	}
+
+	nextTrack := mp.queue.Dequeue()
+	err := mp.player.Update(context.TODO(), lavalink.WithTrack(*nextTrack), lavalink.WithPaused(false))
+	if err != nil {
+		return nil, err
+	}
+
+	return nextTrack, nil
+}
+
+func (mp *MusicPlayer) SkipTo(index int) (*lavalink.Track, error) {
+	if !mp.hasLoadedTrack() {
+		return nil, errors.New(util.NoLoadedTrack)
+	}
+
+	if mp.queue.IsEmpty() {
+		return nil, nil
+	}
+
+	if index < 0 || index >= mp.queue.Length() {
+		return nil, errors.New(util.IndexOutOfBounds)
+	}
+
+	nextTrack := mp.queue.PeekAt(index)
+	err := mp.player.Update(context.TODO(), lavalink.WithTrack(*nextTrack), lavalink.WithPaused(false))
+	if err != nil {
+		return nil, err
+	}
+
+	if mp.IsLoopModeQueue() {
+		mp.queue.Enqueue(*mp.player.Track())
+	}
+
+	for i := 0; i < index+1; i++ {
+		track := mp.queue.Dequeue()
+
+		if mp.IsLoopModeQueue() {
+			mp.queue.Enqueue(*track)
+		}
+	}
+
+	return nextTrack, nil
 }
 
 /////////////////////
@@ -134,51 +283,43 @@ func (mp *MusicPlayer) SkipTo() {
 /////////////////////
 
 func (mp *MusicPlayer) SetLoopModeOff() {
-	mp.loopMode = LoopOff
+	mp.loopMode = enum.LoopOff
 }
 
 func (mp *MusicPlayer) SetLoopModeTrack() {
-	mp.loopMode = LoopTrack
+	mp.loopMode = enum.LoopTrack
 }
 
 func (mp *MusicPlayer) SetLoopModeQueue() {
-	mp.loopMode = LoopQueue
+	mp.loopMode = enum.LoopQueue
 }
 
 func (mp *MusicPlayer) IsLoopModeOff() bool {
-	return mp.loopMode == LoopOff
+	return mp.loopMode == enum.LoopOff
 }
 
 func (mp *MusicPlayer) IsLoopModeTrack() bool {
-	return mp.loopMode == LoopTrack
+	return mp.loopMode == enum.LoopTrack
 }
 
 func (mp *MusicPlayer) IsLoopModeQueue() bool {
-	return mp.loopMode == LoopQueue
+	return mp.loopMode == enum.LoopQueue
 }
 
 /////////////////////
-// Getters / Bools
+// Search Results
 /////////////////////
 
-func (mp *MusicPlayer) GetLoadedTrack() (*lavalink.Track, error) {
-	if !mp.HasLoadedTrack() {
-		return nil, errors.New(util.NoLoadedTrack)
-	}
-
-	return mp.player.Track(), nil
+func (mp *MusicPlayer) GetSearchResults() []lavalink.Track {
+	return mp.searchResults.GetResults()
 }
 
-func (mp *MusicPlayer) HasLoadedTrack() bool {
-	return mp.player.Track() != nil
+func (mp *MusicPlayer) GetSearchResult(index int) *lavalink.Track {
+	return mp.searchResults.GetResult(index)
 }
 
-func (mp *MusicPlayer) GetPosition() lavalink.Duration {
-	return mp.player.Position()
-}
-
-func (mp *MusicPlayer) IsPaused() bool {
-	return mp.player.Paused()
+func (mp *MusicPlayer) SetSearchResults(tracks []lavalink.Track) {
+	mp.searchResults.AddResults(tracks)
 }
 
 /////////////////////
@@ -217,7 +358,23 @@ func (mp *MusicPlayer) ShuffleQueue() {
 }
 
 /////////////////////
-// Helper Functions
+// Getters / Bools
+/////////////////////
+
+func (mp *MusicPlayer) GetLoadedTrack() (*lavalink.Track, error) {
+	if !mp.hasLoadedTrack() {
+		return nil, errors.New(util.NoLoadedTrack)
+	}
+
+	return mp.player.Track(), nil
+}
+
+func (mp *MusicPlayer) GetPosition() lavalink.Duration {
+	return mp.player.Position()
+}
+
+/////////////////////
+// Internal Helper Functions
 /////////////////////
 
 func (mp *MusicPlayer) newPlayer() {
@@ -235,4 +392,8 @@ func (mp *MusicPlayer) recreatePlayer() {
 		mp.newPlayer()
 		mp.disconnected = false
 	}
+}
+
+func (mp *MusicPlayer) hasLoadedTrack() bool {
+	return mp.player.Track() != nil
 }
