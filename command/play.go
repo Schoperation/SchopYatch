@@ -1,15 +1,14 @@
 package command
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"net/url"
+	"schoperation/schopyatch/enum"
 	"schoperation/schopyatch/util"
 	"strconv"
 	"strings"
 
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v2/lavalink"
 )
 
 type PlayCmd struct {
@@ -58,115 +57,90 @@ func (cmd *PlayCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if len(opts) == 0 {
-		if deps.MusicPlayer.Player.Paused() {
-			return resume(deps)
+		status, err := deps.MusicPlayer.Unpause()
+		if err != nil {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song??")
+		} else if status == enum.StatusAlreadyUnpaused {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Already playing.")
 		}
 
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song??")
 		return nil
 	}
 
+	// Selecting a search result
 	num, err := strconv.Atoi(opts[0])
 	if err == nil {
-		if num < 1 || num > deps.MusicPlayer.SearchResults.Length() {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.SearchResults.Length()))
+		if num < 1 || num > deps.MusicPlayer.GetSearchResultsLength() {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.GetSearchResultsLength()))
 			return nil
 		}
 
-		cmd.playTrack(deps, *deps.MusicPlayer.SearchResults.GetTrack(num - 1))
-		deps.MusicPlayer.SearchResults.Clear()
+		track := deps.MusicPlayer.GetSearchResult(num - 1)
+		status, err := deps.MusicPlayer.Load(*track)
+		if err != nil {
+			return err
+		}
+
+		if status == enum.StatusQueued {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
+			return nil
+		}
+
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
 		return nil
 	}
 
-	// If we have a query, then we'll need to put the string opts back together into one.
+	// If we have a search query, then we'll need to put the string opts back together into one.
 	song := opts[0]
 	_, err = url.ParseRequestURI(song)
 	if err != nil {
 		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYoutube, strings.Join(opts, " "))
 	}
 
-	err = (*deps.Lavalink).BestRestClient().LoadItemHandler(context.TODO(), song, lavalink.NewResultHandler(
-		func(track lavalink.AudioTrack) {
-			cmd.playTrack(deps, track)
-		},
-		func(playlist lavalink.AudioPlaylist) {
-			cmd.playList(deps, playlist)
-		},
-		func(tracks []lavalink.AudioTrack) {
-			cmd.search(deps, tracks)
-		},
-		func() {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Track not found. Make sure the URL is correct, or try searching something else...")
-		},
-		func(ex lavalink.FriendlyException) {
-			log.Printf("Lavalink error: %s", ex.Message)
-		},
-	))
-
-	return err
-}
-
-func (cmd *PlayCmd) playTrack(deps CommandDependencies, track lavalink.AudioTrack) {
-	err := joinVoiceChannel(deps)
+	err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
 	if err != nil {
-		log.Printf("Couldn't join voice channel: %v", err)
-		return
-	}
-
-	if deps.MusicPlayer.Player.PlayingTrack() == nil {
-		err = deps.MusicPlayer.Player.Play(track)
-		if err != nil {
-			log.Printf("%v", err)
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't play this... might be some dumb age restriction?")
-			return
+		if util.IsErrorMessage(err, util.VoiceStateNotFound) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+			return nil
 		}
 
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info().Title, track.Info().Author))
-		return
+		return err
 	}
 
-	deps.MusicPlayer.Queue.Enqueue(track)
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added *%s* by **%s** to the queue.", track.Info().Title, track.Info().Author))
-}
+	status, track, tracksQueued, err := deps.MusicPlayer.ProcessQuery(song)
+	if err != nil {
+		if util.IsErrorMessage(err, util.NoResultsFound) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No results. Try some other keywords? Such as OFFICIAL, FEATURING, ft., THE TRUTH ABOUT, IS A FRAUD, or CHARLIE")
+			return nil
+		}
 
-func (cmd *PlayCmd) playList(deps CommandDependencies, playlist lavalink.AudioPlaylist) {
-	if len(playlist.Tracks()) == 0 {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Empty playlist. Try again...?")
-		return
+		return err
 	}
 
-	cmd.playTrack(deps, playlist.Tracks()[0])
-
-	if len(playlist.Tracks()) == 1 {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Just a one hit wonder, huh?")
-		return
+	switch status {
+	case enum.StatusQueued:
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
+	case enum.StatusQueuedList:
+		if tracksQueued == 0 {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Queued nothing. What the...?")
+		} else if tracksQueued == 1 {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Queued **1** additional track. Just a one hit wonder, huh?")
+		} else {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Queued **%d** additional tracks.", tracksQueued))
+		}
+	case enum.StatusPlayingAndQueuedList:
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Queued **1** additional track.")
+	case enum.StatusSearchSuccess:
+		builder := strings.Builder{}
+		builder.WriteString("Search Results:\n\n")
+		for i, result := range deps.MusicPlayer.GetSearchResults() {
+			builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, result.Info.Title, result.Info.Author, result.Info.Length))
+			builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
+		}
+	default:
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
 	}
 
-	deps.MusicPlayer.Queue.EnqueueList(playlist.Tracks()[1:])
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Added **%d** additional tracks from playlist **%s** to the queue.", len(playlist.Tracks()[1:]), playlist.Name()))
-}
-
-func (cmd *PlayCmd) search(deps CommandDependencies, tracks []lavalink.AudioTrack) {
-	if len(tracks) == 0 {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No results. Try some other keywords? Such as OFFICIAL, FEATURING, ft., THE TRUTH ABOUT, IS A FRAUD, or CHARLIE")
-		return
-	}
-
-	builder := strings.Builder{}
-	builder.WriteString("Search Results:\n\n")
-
-	rangeLimit := deps.MusicPlayer.SearchResults.MaxLength()
-	if rangeLimit > len(tracks) {
-		rangeLimit = len(tracks)
-	}
-
-	deps.MusicPlayer.SearchResults.Clear()
-
-	for i := 0; i < rangeLimit; i++ {
-		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, tracks[i].Info().Title, tracks[i].Info().Author, tracks[i].Info().Length))
-		deps.MusicPlayer.SearchResults.AddTrack(tracks[i])
-	}
-
-	builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+	return nil
 }

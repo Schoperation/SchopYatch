@@ -61,17 +61,20 @@ func (cmd *RemoveCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return err
 	}
 
-	if deps.MusicPlayer.Queue.IsEmpty() {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to remove. The glass, this time, is fully empty.")
-		return nil
+	track, err := deps.MusicPlayer.RemoveTrackFromQueue(num - 1)
+	if err != nil {
+		if util.IsErrorMessage(err, util.QueueIsEmpty) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to remove. The glass, this time, is fully empty.")
+			return nil
+		}
+		if util.IsErrorMessage(err, util.IndexOutOfBounds) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Out of bounds. Use a number betweem 1 and %d.", deps.MusicPlayer.GetQueueLength()))
+			return nil
+		}
+
+		return err
 	}
 
-	if num > deps.MusicPlayer.Queue.Length() {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("That index doesn't exist. The current length is %d.", deps.MusicPlayer.Queue.Length()))
-		return nil
-	}
-
-	track := deps.MusicPlayer.Queue.DequeueAtIndex(num - 1)
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Removed *%s* by **%s** from the queue.", (*track).Info().Title, (*track).Info().Author))
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Removed *%s* by **%s** from the queue.", track.Info.Title, track.Info.Author))
 	return nil
 }

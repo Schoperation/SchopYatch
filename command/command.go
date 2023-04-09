@@ -4,7 +4,7 @@ import (
 	"schoperation/schopyatch/music_player"
 
 	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgolink/disgolink"
+	"github.com/disgoorg/disgolink/v2/disgolink"
 
 	"github.com/disgoorg/disgo/events"
 )
@@ -23,6 +23,6 @@ type CommandDependencies struct {
 	Client      *bot.Client
 	Event       *events.MessageCreate
 	MusicPlayer *music_player.MusicPlayer
-	Lavalink    *disgolink.Link
+	Lavalink    *disgolink.Client
 	Prefix      string
 }

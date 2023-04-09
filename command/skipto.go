@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/music_player"
 	"schoperation/schopyatch/util"
 	"strconv"
 )
@@ -52,31 +51,9 @@ func (cmd *SkipToCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
-	if deps.MusicPlayer.Player.PlayingTrack() == nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to skip. Have a great evening.")
-		return nil
-	}
-
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Skipping...")
-
-	if deps.MusicPlayer.Queue.IsEmpty() {
-		err := deps.MusicPlayer.Player.Stop()
-		if err != nil {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't stop this track...")
-			return err
-		}
-
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "All is now quiet on the SchopYatch front.")
-		return nil
-	}
-
 	if len(opts) == 0 {
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No position specified. Please specify a position in the queue. E.g. `skipto 5` to go to the 5th song in the queue.")
 		return nil
-	}
-
-	if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
-		deps.MusicPlayer.Queue.Enqueue(deps.MusicPlayer.Player.PlayingTrack())
 	}
 
 	num, err := strconv.Atoi(opts[0])
@@ -85,25 +62,27 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return err
 	}
 
-	if num > deps.MusicPlayer.Queue.Length() {
-		num = deps.MusicPlayer.Queue.Length()
-	}
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Skipping to #%d in the queue...", num))
 
-	for i := 0; i < num-1; i++ {
-		track := deps.MusicPlayer.Queue.Dequeue()
-
-		if deps.MusicPlayer.LoopMode == music_player.LoopQueue {
-			deps.MusicPlayer.Queue.Enqueue(*track)
-		}
-	}
-
-	nextTrack := deps.MusicPlayer.Queue.Dequeue()
-	err = deps.MusicPlayer.Player.Play(*nextTrack)
+	playingTrack, err := deps.MusicPlayer.SkipTo(num - 1)
 	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "For some reason I can't play this... might be some dumb age restriction?")
+		if util.IsErrorMessage(err, util.NoLoadedTrack) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to skip. Have a great evening.")
+			return nil
+		}
+		if util.IsErrorMessage(err, util.IndexOutOfBounds) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Out of bounds. Please use a number between 1 and %d", deps.MusicPlayer.GetQueueLength()))
+			return nil
+		}
+
 		return err
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", (*nextTrack).Info().Title, (*nextTrack).Info().Author))
+	if playingTrack == nil {
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "All is now quiet on the SchopYatch front.")
+		return nil
+	}
+
+	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
 	return nil
 }

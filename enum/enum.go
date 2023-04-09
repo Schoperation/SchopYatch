@@ -17,5 +17,6 @@ const (
 	StatusPlayingAndQueuedList
 	StatusAlreadyPaused
 	StatusAlreadyUnpaused
+	StatusSearchSuccess
 	StatusFailed
 )

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v2/lavalink"
 )
 
 type SeekCmd struct {
@@ -85,14 +85,26 @@ func (cmd *SeekCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return nil
 	}
 
-	if duration >= deps.MusicPlayer.Player.PlayingTrack().Info().Length {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("The time you specified is longer than the length of `%s`. Try using your fingers.", deps.MusicPlayer.Player.PlayingTrack().Info().Length))
-		return nil
-	}
-
-	err := deps.MusicPlayer.Player.Seek(duration)
+	_, err := deps.MusicPlayer.Seek(duration)
 	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Couldn't seek out some sikh moves. Maybe the times are off?")
+		if util.IsErrorMessage(err, util.NoLoadedTrack) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Can't seek through nothing... not a sikh move if you ask me...")
+			return nil
+		}
+		if util.IsErrorMessage(err, util.NegativeDuration) {
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Can't seek back in time. Try adopting a more positive outlook.")
+			return nil
+		}
+		if util.IsErrorMessage(err, util.IndexOutOfBounds) {
+			track, err := deps.MusicPlayer.GetLoadedTrack()
+			if err != nil {
+				return err
+			}
+
+			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Can't seek beyond the track length. It's %s long.", track.Info.Length))
+			return nil
+		}
+
 		return err
 	}
 

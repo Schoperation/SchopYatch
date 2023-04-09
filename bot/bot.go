@@ -84,7 +84,7 @@ func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
 
 	guildId := event.GuildID
 
-	sy.players[guildId] = music_player.NewMusicPlayer(guildId, sy.LavalinkClient)
+	sy.players[guildId] = music_player.NewMusicPlayer(guildId, &sy.LavalinkClient)
 }
 
 func (sy *SchopYatch) OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {
