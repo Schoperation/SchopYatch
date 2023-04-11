@@ -5,6 +5,7 @@ import (
 	"errors"
 	"schoperation/schopyatch/enum"
 	"schoperation/schopyatch/util"
+	"time"
 
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgolink/v2/disgolink"
@@ -47,6 +48,10 @@ func (mp *MusicPlayer) JoinVoiceChannel(botClient *bot.Client, userId snowflake.
 	}
 
 	err := (*botClient).UpdateVoiceState(context.TODO(), mp.guildID, voiceState.ChannelID, false, true)
+	if err != nil {
+		return err
+	}
+
 	mp.recreatePlayer()
 	return err
 }
@@ -80,7 +85,10 @@ func (mp *MusicPlayer) ProcessQuery(query string) (enum.PlayerStatus, *lavalink.
 	var tracksQueued int
 	var playerErr error
 
-	(*mp.lavalinkClient).BestNode().LoadTracksHandler(context.TODO(), query, disgolink.NewResultHandler(
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	(*mp.lavalinkClient).BestNode().LoadTracksHandler(ctx, query, disgolink.NewResultHandler(
 		func(track lavalink.Track) {
 			newTrack = &track
 			playerStatus, playerErr = mp.Load(track)
@@ -369,6 +377,14 @@ func (mp *MusicPlayer) ClearQueue(num int) {
 	}
 }
 
+func (mp *MusicPlayer) AddTrackToQueue(track lavalink.Track) {
+	mp.queue.Enqueue(track)
+}
+
+func (mp *MusicPlayer) RemoveNextTrackFromQueue() (*lavalink.Track, error) {
+	return mp.RemoveTrackFromQueue(0)
+}
+
 func (mp *MusicPlayer) RemoveTrackFromQueue(index int) (*lavalink.Track, error) {
 	if mp.queue.IsEmpty() {
 		return nil, errors.New(util.QueueIsEmpty)
@@ -415,7 +431,6 @@ func (mp *MusicPlayer) newPlayer() {
 
 	player.Update(context.TODO(), lavalink.WithVolume(42))
 
-	//player.AddListener(NewEventListener(&mp.Queue, &mp.LoopMode, &mp.GotDisconnected))
 	mp.player = player
 }
 

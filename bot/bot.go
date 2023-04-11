@@ -25,9 +25,6 @@ type SchopYatch struct {
 	version        string
 }
 
-type MusicPlayer interface {
-}
-
 func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 	schopYatch := SchopYatch{
 		Config:   config,
@@ -47,7 +44,7 @@ func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 		return SchopYatch{}, err
 	}
 
-	lavalink, err := createLavalinkConn(client, config)
+	lavalink, err := createLavalinkConn(client, config, &schopYatch.players)
 	if err != nil {
 		return SchopYatch{}, err
 	}
@@ -88,6 +85,10 @@ func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
 }
 
 func (sy *SchopYatch) OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {
+	if event.VoiceState.UserID != sy.Client.ApplicationID() {
+		return
+	}
+
 	sy.LavalinkClient.OnVoiceStateUpdate(context.TODO(), event.VoiceState.GuildID, event.VoiceState.ChannelID, event.VoiceState.SessionID)
 }
 
@@ -145,7 +146,6 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		Client:      &sy.Client,
 		Event:       event,
 		MusicPlayer: player,
-		Lavalink:    &sy.LavalinkClient,
 		Prefix:      sy.Config.Prefix,
 	}, splitMessage[1:]...)
 

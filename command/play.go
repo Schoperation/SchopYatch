@@ -75,6 +75,16 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 			return nil
 		}
 
+		err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
+		if err != nil {
+			if util.IsErrorMessage(err, util.VoiceStateNotFound) {
+				util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+				return nil
+			}
+
+			return err
+		}
+
 		track := deps.MusicPlayer.GetSearchResult(num - 1)
 		status, err := deps.MusicPlayer.Load(*track)
 		if err != nil {
@@ -95,16 +105,16 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	_, err = url.ParseRequestURI(song)
 	if err != nil {
 		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYoutube, strings.Join(opts, " "))
-	}
+	} else {
+		err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
+		if err != nil {
+			if util.IsErrorMessage(err, util.VoiceStateNotFound) {
+				util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+				return nil
+			}
 
-	err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
-	if err != nil {
-		if util.IsErrorMessage(err, util.VoiceStateNotFound) {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
-			return nil
+			return err
 		}
-
-		return err
 	}
 
 	status, track, tracksQueued, err := deps.MusicPlayer.ProcessQuery(song)
@@ -134,10 +144,14 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	case enum.StatusSearchSuccess:
 		builder := strings.Builder{}
 		builder.WriteString("Search Results:\n\n")
+
 		for i, result := range deps.MusicPlayer.GetSearchResults() {
 			builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, result.Info.Title, result.Info.Author, result.Info.Length))
-			builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
 		}
+
+		builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
+
+		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
 	default:
 		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
 	}

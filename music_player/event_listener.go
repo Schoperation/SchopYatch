@@ -1,67 +1,74 @@
 package music_player
 
 import (
+	"context"
 	"log"
-	"schoperation/schopyatch/enum"
 
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v2/disgolink"
+	"github.com/disgoorg/disgolink/v2/lavalink"
+	"github.com/disgoorg/snowflake/v2"
 )
 
-type EventListener struct {
-	Queue           *MusicQueue
-	LoopMode        *enum.LoopMode
-	GotDisconnected *bool
+type MusicPlayerEventListener struct {
+	musicPlayers *map[snowflake.ID]*MusicPlayer
 }
 
-func NewEventListener(queue *MusicQueue, loopMode *enum.LoopMode, gotDisconnected *bool) lavalink.PlayerEventListener {
-	return &EventListener{
-		Queue:           queue,
-		LoopMode:        loopMode,
-		GotDisconnected: gotDisconnected,
+func NewMusicPlayerEventListener(musicPlayers *map[snowflake.ID]*MusicPlayer) MusicPlayerEventListener {
+	return MusicPlayerEventListener{
+		musicPlayers: musicPlayers,
 	}
 }
 
-func (l *EventListener) OnPlayerPause(player lavalink.Player) {
-	//log.Printf("OnPlayerPause")
-}
-func (l *EventListener) OnPlayerResume(player lavalink.Player) {
-	//log.Printf("OnPlayerResume")
-}
-func (l *EventListener) OnPlayerUpdate(player lavalink.Player, state lavalink.PlayerState) {
-	//log.Printf("OnPlayerUpdate")
-}
-func (l *EventListener) OnTrackStart(player lavalink.Player, track lavalink.AudioTrack) {
-	//log.Printf("%d", *l.LoopMode)
-}
-func (l *EventListener) OnTrackEnd(player lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
-	//if !endReason.MayStartNext() || (l.Queue.IsEmpty() && *l.LoopMode != LoopTrack) {
-	//	return
-	//}
+func (listener *MusicPlayerEventListener) OnTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) {
+	musicPlayerMap := *listener.musicPlayers
+	musicPlayer := musicPlayerMap[player.GuildID()]
 
-	var nextTrack lavalink.AudioTrack
-	switch *l.LoopMode {
-	case enum.LoopTrack:
-		nextTrack = track
-	case enum.LoopQueue:
-		//l.Queue.Enqueue(track)
-		//nextTrack = *l.Queue.Dequeue()
-	default:
-		//nextTrack = *l.Queue.Dequeue()
-	}
-
-	err := player.Play(nextTrack)
-	if err != nil {
-		log.Printf("Could not play the next track: %v", err)
+	if !event.Reason.MayStartNext() || (musicPlayer.IsQueueEmpty() && !musicPlayer.IsLoopModeTrack()) {
 		return
 	}
+
+	finishedTrack, err := player.Lavalink().BestNode().DecodeTrack(context.TODO(), event.EncodedTrack)
+	if err != nil {
+		log.Printf("Error occurred decoding the finished track: %v\n", err)
+		return
+	}
+
+	var nextTrack *lavalink.Track
+	if musicPlayer.IsLoopModeTrack() {
+		finishedTrackCopy := *finishedTrack
+		nextTrack = &finishedTrackCopy
+	} else {
+		nextTrack, err = musicPlayer.RemoveNextTrackFromQueue()
+		if err != nil {
+			log.Printf("Error retrieving next track from queue: %v\n", err)
+			return
+		}
+	}
+
+	if nextTrack == nil {
+		log.Printf("The next track is nil!\n")
+		return
+	}
+
+	_, err = musicPlayer.Load(*nextTrack)
+	if err != nil {
+		log.Printf("Error occurred loading nextTrack: %v\n", err)
+		return
+	}
+
+	if musicPlayer.IsLoopModeQueue() {
+		_, err := musicPlayer.Load(*finishedTrack)
+		if err != nil {
+			log.Printf("Error occurred re-queueing finishedTrack: %v\n", err)
+		}
+	}
 }
-func (l *EventListener) OnTrackException(player lavalink.Player, track lavalink.AudioTrack, exception lavalink.FriendlyException) {
-	//log.Printf("OnTrackException")
-}
-func (l *EventListener) OnTrackStuck(player lavalink.Player, track lavalink.AudioTrack, thresholdMs lavalink.Duration) {
-	//log.Printf("OnTrackStuck")
-}
-func (l *EventListener) OnWebSocketClosed(player lavalink.Player, code int, reason string, byRemote bool) {
-	//log.Printf("OnWebSocketClosed code: %v\n", code)
-	*l.GotDisconnected = true
+
+func (listener *MusicPlayerEventListener) OnWebSocketClosed(player disgolink.Player, event lavalink.WebSocketClosedEvent) {
+	musicPlayerMap := *listener.musicPlayers
+	musicPlayer := musicPlayerMap[player.GuildID()]
+
+	//log.Printf("Socket closed: %s", event.Reason)
+
+	musicPlayer.disconnected = true
 }
