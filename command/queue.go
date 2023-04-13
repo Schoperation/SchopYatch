@@ -3,7 +3,6 @@ package command
 import (
 	"fmt"
 	"log"
-	"schoperation/schopyatch/util"
 	"strconv"
 	"strings"
 )
@@ -68,7 +67,7 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	if deps.MusicPlayer.IsQueueEmpty() {
 		builder.WriteString("Queue is empty.\n")
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+		deps.Messenger.SendSimpleMessage(builder.String())
 		return nil
 	}
 
@@ -109,6 +108,6 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, queue[i].Info.Title, queue[i].Info.Author, queue[i].Info.Length))
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+	deps.Messenger.SendSimpleMessage(builder.String())
 	return nil
 }

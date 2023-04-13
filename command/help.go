@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/util"
 	"strings"
 )
 
@@ -59,7 +58,7 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 		cmd, exists := mappedCommands[strings.ToLower(opts[0])]
 		if !exists {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Could not find %s. Try doing %shelp for a full list.", strings.ToLower(opts[0]), deps.Prefix))
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Could not find %s. Try doing %shelp for a full list.", strings.ToLower(opts[0]), deps.Prefix))
 			return nil
 		}
 
@@ -76,7 +75,7 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 		builder.WriteString(fmt.Sprintf("%s\n", cmd.GetDescription()))
 
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+		deps.Messenger.SendSimpleMessage(builder.String())
 		return nil
 	}
 
@@ -96,6 +95,6 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	builder.WriteString("```")
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+	deps.Messenger.SendSimpleMessage(builder.String())
 	return nil
 }

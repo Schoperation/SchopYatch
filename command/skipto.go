@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/util"
+	"schoperation/schopyatch/msg"
 	"strconv"
 )
 
@@ -52,26 +52,26 @@ func (cmd *SkipToCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if len(opts) == 0 {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No position specified. Please specify a position in the queue. E.g. `skipto 5` to go to the 5th song in the queue.")
+		deps.Messenger.SendSimpleMessage("No position specified. Please specify a position in the queue. E.g. `skipto 5` to go to the 5th song in the queue.")
 		return nil
 	}
 
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Woah hey now, that ain't a number...")
+		deps.Messenger.SendSimpleMessage("Woah hey now, that ain't a number...")
 		return err
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Skipping to #%d in the queue...", num))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Skipping to #%d in the queue...", num))
 
 	playingTrack, err := deps.MusicPlayer.SkipTo(num - 1)
 	if err != nil {
-		if util.IsErrorMessage(err, util.NoLoadedTrack) {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to skip. Have a great evening.")
+		if msg.IsErrorMessage(err, msg.NoLoadedTrack) {
+			deps.Messenger.SendSimpleMessage("Nothing to skip. Have a great evening.")
 			return nil
 		}
-		if util.IsErrorMessage(err, util.IndexOutOfBounds) {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Out of bounds. Please use a number between 1 and %d", deps.MusicPlayer.GetQueueLength()))
+		if msg.IsErrorMessage(err, msg.IndexOutOfBounds) {
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Out of bounds. Please use a number between 1 and %d", deps.MusicPlayer.GetQueueLength()))
 			return nil
 		}
 
@@ -79,10 +79,10 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 	}
 
 	if playingTrack == nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "All is now quiet on the SchopYatch front.")
+		deps.Messenger.SendSimpleMessage("All is now quiet on the SchopYatch front.")
 		return nil
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
 	return nil
 }

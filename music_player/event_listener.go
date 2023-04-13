@@ -3,6 +3,7 @@ package music_player
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/disgoorg/disgolink/v2/disgolink"
 	"github.com/disgoorg/disgolink/v2/lavalink"
@@ -27,7 +28,10 @@ func (listener *MusicPlayerEventListener) OnTrackEnd(player disgolink.Player, ev
 		return
 	}
 
-	finishedTrack, err := player.Lavalink().BestNode().DecodeTrack(context.TODO(), event.EncodedTrack)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	finishedTrack, err := player.Lavalink().BestNode().DecodeTrack(ctx, event.EncodedTrack)
 	if err != nil {
 		log.Printf("Error occurred decoding the finished track: %v\n", err)
 		return

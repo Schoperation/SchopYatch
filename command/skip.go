@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/util"
+	"schoperation/schopyatch/msg"
 )
 
 type SkipCmd struct {
@@ -50,21 +50,21 @@ func (cmd *SkipCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *SkipCmd) Execute(deps CommandDependencies, opts ...string) error {
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Skipping...")
+	deps.Messenger.SendSimpleMessage("Skipping...")
 
 	playingTrack, err := deps.MusicPlayer.Skip()
-	if err != nil && util.IsErrorMessage(err, util.NoLoadedTrack) {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to skip. Have a great evening.")
+	if err != nil && msg.IsErrorMessage(err, msg.NoLoadedTrack) {
+		deps.Messenger.SendSimpleMessage("Nothing to skip. Have a great evening.")
 		return nil
 	} else if err != nil {
 		return err
 	}
 
 	if playingTrack == nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "All is now quiet on the SchopYatch front.")
+		deps.Messenger.SendSimpleMessage("All is now quiet on the SchopYatch front.")
 		return nil
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
 	return nil
 }

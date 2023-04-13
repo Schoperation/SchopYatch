@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"schoperation/schopyatch/enum"
-	"schoperation/schopyatch/util"
+	"schoperation/schopyatch/msg"
 	"strconv"
 	"strings"
 
@@ -59,9 +59,12 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if len(opts) == 0 {
 		status, err := deps.MusicPlayer.Unpause()
 		if err != nil {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Bruh where's your song??")
-		} else if status == enum.StatusAlreadyUnpaused {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Already playing.")
+			return err
+		} else if status == enum.StatusSuccess {
+			deps.Messenger.SendSimpleMessage("Resuming.")
+			return nil
+		} else {
+			deps.Messenger.SendSimpleMessage("Bruh where's your song??")
 		}
 
 		return nil
@@ -71,14 +74,14 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	num, err := strconv.Atoi(opts[0])
 	if err == nil {
 		if num < 1 || num > deps.MusicPlayer.GetSearchResultsLength() {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.GetSearchResultsLength()))
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Selected thin air. Try a number between 1 and %d.", deps.MusicPlayer.GetSearchResultsLength()))
 			return nil
 		}
 
 		err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
 		if err != nil {
-			if util.IsErrorMessage(err, util.VoiceStateNotFound) {
-				util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+			if msg.IsErrorMessage(err, msg.VoiceStateNotFound) {
+				deps.Messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
 				return nil
 			}
 
@@ -92,11 +95,11 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 		}
 
 		if status == enum.StatusQueued {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
 			return nil
 		}
 
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
 		return nil
 	}
 
@@ -108,8 +111,8 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	} else {
 		err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
 		if err != nil {
-			if util.IsErrorMessage(err, util.VoiceStateNotFound) {
-				util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+			if msg.IsErrorMessage(err, msg.VoiceStateNotFound) {
+				deps.Messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
 				return nil
 			}
 
@@ -119,8 +122,8 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	status, track, tracksQueued, err := deps.MusicPlayer.ProcessQuery(song)
 	if err != nil {
-		if util.IsErrorMessage(err, util.NoResultsFound) {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "No results. Try some other keywords? Such as OFFICIAL, FEATURING, ft., THE TRUTH ABOUT, IS A FRAUD, or CHARLIE")
+		if msg.IsErrorMessage(err, msg.NoResultsFound) {
+			deps.Messenger.SendSimpleMessage("No results. Try some other keywords? Such as OFFICIAL, FEATURING, ft., THE TRUTH ABOUT, IS A FRAUD, or CHARLIE")
 			return nil
 		}
 
@@ -129,18 +132,18 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	switch status {
 	case enum.StatusQueued:
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
 	case enum.StatusQueuedList:
 		if tracksQueued == 0 {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Queued nothing. What the...?")
+			deps.Messenger.SendSimpleMessage("Queued nothing. What the...?")
 		} else if tracksQueued == 1 {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Queued **1** additional track. Just a one hit wonder, huh?")
+			deps.Messenger.SendSimpleMessage("Queued **1** additional track. Just a one hit wonder, huh?")
 		} else {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Queued **%d** additional tracks.", tracksQueued))
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued **%d** additional tracks.", tracksQueued))
 		}
 	case enum.StatusPlayingAndQueuedList:
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Queued **1** additional track.")
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage("Queued **1** additional track.")
 	case enum.StatusSearchSuccess:
 		builder := strings.Builder{}
 		builder.WriteString("Search Results:\n\n")
@@ -151,9 +154,9 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 		builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
 
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, builder.String())
+		deps.Messenger.SendSimpleMessage(builder.String())
 	default:
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
 	}
 
 	return nil

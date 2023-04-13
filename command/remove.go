@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/util"
+	"schoperation/schopyatch/msg"
 	"strconv"
 )
 
@@ -51,30 +51,30 @@ func (cmd *RemoveCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *RemoveCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if len(opts) == 0 {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Need to specify a number to remove. E.g. `%sremove 4` to remove the 4th track. Try `%squeue` to see the numbers.", deps.Prefix, deps.Prefix))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Need to specify a number to remove. E.g. `%sremove 4` to remove the 4th track. Try `%squeue` to see the numbers.", deps.Prefix, deps.Prefix))
 		return nil
 	}
 
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude that's some voodoo... we need a number.")
+		deps.Messenger.SendSimpleMessage("Dude that's some voodoo... we need a number.")
 		return err
 	}
 
 	track, err := deps.MusicPlayer.RemoveTrackFromQueue(num - 1)
 	if err != nil {
-		if util.IsErrorMessage(err, util.QueueIsEmpty) {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to remove. The glass, this time, is fully empty.")
+		if msg.IsErrorMessage(err, msg.QueueIsEmpty) {
+			deps.Messenger.SendSimpleMessage("Nothing to remove. The glass, this time, is fully empty.")
 			return nil
 		}
-		if util.IsErrorMessage(err, util.IndexOutOfBounds) {
-			util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Out of bounds. Use a number betweem 1 and %d.", deps.MusicPlayer.GetQueueLength()))
+		if msg.IsErrorMessage(err, msg.IndexOutOfBounds) {
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Out of bounds. Use a number betweem 1 and %d.", deps.MusicPlayer.GetQueueLength()))
 			return nil
 		}
 
 		return err
 	}
 
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Removed *%s* by **%s** from the queue.", track.Info.Title, track.Info.Author))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Removed *%s* by **%s** from the queue.", track.Info.Title, track.Info.Author))
 	return nil
 }

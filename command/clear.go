@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/util"
 	"strconv"
 )
 
@@ -52,23 +51,23 @@ func (cmd *ClearCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *ClearCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if deps.MusicPlayer.IsQueueEmpty() {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Already clear. Were you hoping for a funny error? Same")
+		deps.Messenger.SendSimpleMessage("Already clear. Were you hoping for a funny error? Same")
 		return nil
 	}
 
 	if len(opts) == 0 {
 		deps.MusicPlayer.ClearQueue(0)
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Cleared the queue.")
+		deps.Messenger.SendSimpleMessage("Cleared the queue.")
 		return nil
 	}
 
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude, that was not a number...")
+		deps.Messenger.SendSimpleMessage("Dude, that was not a number...")
 		return err
 	}
 
 	deps.MusicPlayer.ClearQueue(num)
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, fmt.Sprintf("Cleared the first %d tracks from the queue.", num))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Cleared the first %d tracks from the queue.", num))
 	return nil
 }

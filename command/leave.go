@@ -1,7 +1,5 @@
 package command
 
-import "schoperation/schopyatch/util"
-
 type LeaveCmd struct {
 	name        string
 	summary     string
@@ -57,7 +55,7 @@ func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {
 			return nil
 		}
 
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "You want me to leave what? Try either leaving it blank or `reset`.")
+		deps.Messenger.SendSimpleMessage("You want me to leave what? Try either leaving it blank or `reset`.")
 		return nil
 	}
 

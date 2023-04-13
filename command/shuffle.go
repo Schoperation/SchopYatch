@@ -1,7 +1,5 @@
 package command
 
-import "schoperation/schopyatch/util"
-
 type ShuffleCmd struct {
 	name        string
 	summary     string
@@ -48,11 +46,11 @@ func (cmd *ShuffleCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *ShuffleCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if deps.MusicPlayer.IsQueueEmpty() {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing to shuffle. How else am I gonna show off my riffles?")
+		deps.Messenger.SendSimpleMessage("Nothing to shuffle. How else am I gonna show off my riffles?")
 		return nil
 	}
 
 	deps.MusicPlayer.ShuffleQueue()
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Shuffled the queue.")
+	deps.Messenger.SendSimpleMessage("Shuffled the queue.")
 	return nil
 }

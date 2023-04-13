@@ -1,9 +1,5 @@
 package command
 
-import (
-	"schoperation/schopyatch/util"
-)
-
 type PingCmd struct {
 	name        string
 	summary     string
@@ -49,6 +45,6 @@ func (cmd *PingCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *PingCmd) Execute(deps CommandDependencies, opts ...string) error {
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Pong!")
+	deps.Messenger.SendSimpleMessage("Pong!")
 	return nil
 }

@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"schoperation/schopyatch/util"
+	"schoperation/schopyatch/msg"
 	"strings"
 )
 
@@ -52,8 +52,8 @@ func (cmd *NowPlayingCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) error {
 	currentTrack, err := deps.MusicPlayer.GetLoadedTrack()
-	if err != nil && util.IsErrorMessage(err, util.NoLoadedTrack) {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Nothing's playing. Bruh moment...")
+	if err != nil && msg.IsErrorMessage(err, msg.NoLoadedTrack) {
+		deps.Messenger.SendSimpleMessage("Nothing's playing. Bruh moment...")
 		return nil
 	} else if err != nil {
 		return err
@@ -94,6 +94,6 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 	}
 
 	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s", currentTrack.Info.Title, currentTrack.Info.Author, builder.String(), currentPos, trackLen, loopStr)
-	util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, finalStr)
+	deps.Messenger.SendSimpleMessage(finalStr)
 	return nil
 }

@@ -1,6 +1,6 @@
 package command
 
-import "schoperation/schopyatch/util"
+import "schoperation/schopyatch/msg"
 
 type JoinCmd struct {
 	name        string
@@ -48,8 +48,8 @@ func (cmd *JoinCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *JoinCmd) Execute(deps CommandDependencies, opts ...string) error {
 	err := deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
-	if err != nil && util.IsErrorMessage(err, util.VoiceStateNotFound) {
-		util.SendSimpleMessage(*deps.Client, deps.Event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+	if err != nil && msg.IsErrorMessage(err, msg.VoiceStateNotFound) {
+		deps.Messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
 		return nil
 	}
 

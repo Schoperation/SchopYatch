@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"schoperation/schopyatch/command"
+	"schoperation/schopyatch/msg"
 	"schoperation/schopyatch/music_player"
-	"schoperation/schopyatch/util"
 	"strings"
 
 	"github.com/disgoorg/disgo/bot"
@@ -20,6 +20,7 @@ type SchopYatch struct {
 	Client         bot.Client
 	Config         YatchConfig
 	LavalinkClient disgolink.Client
+	messenger      msg.Messenger
 	commands       map[string]command.Command
 	players        map[snowflake.ID]*music_player.MusicPlayer
 	version        string
@@ -51,6 +52,7 @@ func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 
 	schopYatch.Client = client
 	schopYatch.LavalinkClient = lavalink
+	schopYatch.messenger = msg.NewMessenger(&client)
 
 	return schopYatch, nil
 }
@@ -115,22 +117,24 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		return
 	}
 
+	sy.messenger.SetChannel(event.ChannelID)
+
 	if cmd.IsVoiceOnlyCmd() {
 		userVoiceState, exists := sy.Client.Caches().VoiceState(*event.GuildID, event.Message.Author.ID)
 		if !exists {
-			util.SendSimpleMessage(sy.Client, event.ChannelID, "Dude you're not in a voice channel... get in one I can see!")
+			sy.messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
 			return
 		}
 
 		botVoiceState, exists := sy.Client.Caches().VoiceState(*event.GuildID, sy.Client.ID())
 		if !exists && cmd.GetName() != "join" && cmd.GetName() != "play" {
-			util.SendSimpleMessage(sy.Client, event.ChannelID, fmt.Sprintf("Dude I'm not in a voice channel... use either `%sjoin` or `%splay` to summon me.", sy.Config.Prefix, sy.Config.Prefix))
+			sy.messenger.SendSimpleMessage(fmt.Sprintf("Dude I'm not in a voice channel... use either `%sjoin` or `%splay` to summon me.", sy.Config.Prefix, sy.Config.Prefix))
 			return
 		}
 
 		if exists {
 			if userVoiceState.ChannelID.String() != botVoiceState.ChannelID.String() {
-				util.SendSimpleMessage(sy.Client, event.ChannelID, "It would appear that you're in a different channel.")
+				sy.messenger.SendSimpleMessage("It would appear that you're in a different channel.")
 				return
 			}
 		}
@@ -146,12 +150,13 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		Client:      &sy.Client,
 		Event:       event,
 		MusicPlayer: player,
+		Messenger:   &sy.messenger,
 		Prefix:      sy.Config.Prefix,
 	}, splitMessage[1:]...)
 
 	if err != nil {
 		log.Printf("Error occurred running the %s command: %v", cmd.GetName(), err)
-		util.SendSimpleMessage(sy.Client, event.ChannelID, "Unexpected error occurred. Please try again. If this persists then you might wanna file a bug report...")
+		sy.messenger.SendSimpleMessage("Unexpected error occurred. Please try again. If this persists then you might wanna file a bug report...")
 		return
 	}
 }
