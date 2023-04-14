@@ -50,7 +50,7 @@ type MusicPlayer interface {
 	IsPaused() bool
 	IsQueueEmpty() bool
 	JoinVoiceChannel(botClient *bot.Client, userId snowflake.ID) error
-	LeaveVoiceChannel(botClient *bot.Client, shouldReset bool) error
+	LeaveVoiceChannel(botClient *bot.Client) error
 	Load(track lavalink.Track) (enum.PlayerStatus, error)
 	LoadList(tracks []lavalink.Track) (enum.PlayerStatus, int, error)
 	Pause() (enum.PlayerStatus, error)
@@ -62,7 +62,7 @@ type MusicPlayer interface {
 	SetLoopModeQueue()
 	SetLoopModeTrack()
 	SetSearchResults(tracks []lavalink.Track)
-	ShuffleQueue()
+	ShuffleQueue() error
 	Skip() (*lavalink.Track, error)
 	SkipTo(index int) (*lavalink.Track, error)
 	Stop() (enum.PlayerStatus, error)

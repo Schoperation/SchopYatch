@@ -13,8 +13,8 @@ func NewLeaveCmd() Command {
 	return &LeaveCmd{
 		name:        "leave",
 		summary:     "Make the bot leave a voice channel",
-		description: "Upon running, the bot will leave the user's voice channel. Kindly. Add \"reset\" to clear the queue, search results, and reset looping as well.",
-		usage:       "leave [reset]",
+		description: "Upon running, the bot will leave the user's voice channel, clearing the queue, search results, and everything else.",
+		usage:       "leave",
 		aliases:     []string{"fuckoff", "disconnect"},
 		voiceOnly:   true,
 	}
@@ -45,20 +45,6 @@ func (cmd *LeaveCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {
-	if len(opts) > 0 {
-		if opts[0] == "reset" {
-			err := deps.MusicPlayer.LeaveVoiceChannel(deps.Client, true)
-			if err != nil {
-				return err
-			}
-
-			return nil
-		}
-
-		deps.Messenger.SendSimpleMessage("You want me to leave what? Try either leaving it blank or `reset`.")
-		return nil
-	}
-
-	err := deps.MusicPlayer.LeaveVoiceChannel(deps.Client, false)
+	err := deps.MusicPlayer.LeaveVoiceChannel(deps.Client)
 	return err
 }

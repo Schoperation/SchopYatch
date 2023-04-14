@@ -13,6 +13,8 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
+// TODO add client interface to allow testing?
+
 type MusicPlayer struct {
 	guildID        snowflake.ID
 	lavalinkClient *disgolink.Client
@@ -53,14 +55,13 @@ func (mp *MusicPlayer) JoinVoiceChannel(botClient *bot.Client, userId snowflake.
 	}
 
 	mp.recreatePlayer()
-	return err
+	return nil
 }
 
-func (mp *MusicPlayer) LeaveVoiceChannel(botClient *bot.Client, shouldReset bool) error {
+func (mp *MusicPlayer) LeaveVoiceChannel(botClient *bot.Client) error {
 	if mp.hasLoadedTrack() {
-		// TODO don't do? causes bad state
-		_, err := mp.Stop()
-		if err != nil && !msg.IsErrorMessage(err, msg.NoLoadedTrack) {
+		err := mp.player.Update(context.TODO(), lavalink.WithNullTrack())
+		if err != nil {
 			return err
 		}
 	}
@@ -68,12 +69,6 @@ func (mp *MusicPlayer) LeaveVoiceChannel(botClient *bot.Client, shouldReset bool
 	err := (*botClient).UpdateVoiceState(context.TODO(), mp.guildID, nil, false, false)
 	if err != nil {
 		return err
-	}
-
-	if shouldReset {
-		mp.queue.Clear()
-		mp.searchResults.Clear()
-		mp.SetLoopModeOff()
 	}
 
 	mp.disconnected = true
@@ -167,6 +162,8 @@ func (mp *MusicPlayer) LoadList(tracks []lavalink.Track) (enum.PlayerStatus, int
 	mp.queue.EnqueueList(tracks)
 	return enum.StatusQueuedList, len(tracks), nil
 }
+
+// TODO make a play function that overrides currently playing song
 
 func (mp *MusicPlayer) Pause() (enum.PlayerStatus, error) {
 	if !mp.hasLoadedTrack() {
@@ -399,8 +396,13 @@ func (mp *MusicPlayer) RemoveTrackFromQueue(index int) (*lavalink.Track, error) 
 	return track, nil
 }
 
-func (mp *MusicPlayer) ShuffleQueue() {
+func (mp *MusicPlayer) ShuffleQueue() error {
+	if mp.queue.IsEmpty() {
+		return errors.New(msg.QueueIsEmpty)
+	}
+
 	mp.queue.Shuffle()
+	return nil
 }
 
 /////////////////////
@@ -436,7 +438,7 @@ func (mp *MusicPlayer) newPlayer() {
 }
 
 func (mp *MusicPlayer) recreatePlayer() {
-	// Should be automatically destroyed in disgolink, upon leaving a voice channel.
+	// Player should be automatically destroyed in disgolink upon leaving a voice channel.
 	if mp.disconnected {
 		mp.newPlayer()
 		mp.disconnected = false

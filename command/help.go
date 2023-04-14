@@ -69,9 +69,11 @@ func (cmd *HelpCmd) Execute(deps CommandDependencies, opts ...string) error {
 			if i < len(cmd.GetAliases())-1 {
 				builder.WriteString(fmt.Sprintf("%s, ", alias))
 			} else {
-				builder.WriteString(fmt.Sprintf("%s`\n\n", alias))
+				builder.WriteString(alias)
 			}
 		}
+
+		builder.WriteString(" `\n\n")
 
 		builder.WriteString(fmt.Sprintf("%s\n", cmd.GetDescription()))
 

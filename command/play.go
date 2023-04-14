@@ -23,10 +23,10 @@ type PlayCmd struct {
 func NewPlayCmd() Command {
 	return &PlayCmd{
 		name:        "play",
-		summary:     "Play a track or playlist",
-		description: "Plays a track on the bot",
-		usage:       "play <required> [optional]",
-		aliases:     []string{"p", "resume"},
+		summary:     "Play a track, playlist, or search for something on YouTube",
+		description: "The motherload of commands!\n\tIf no arguments are provided, then it'll resume any paused track.\n\tIf provided a URL, then it'll attempt to directly play it. Right now, only YouTube and SoundCloud are supported.\n\tIf a non-URL is provided, it'll search YouTube with your query, and provide the first five options. There, you can use `play 1` to select the first option, for example.",
+		usage:       "play [url or query]",
+		aliases:     []string{"p", "load"},
 		voiceOnly:   true,
 	}
 }
@@ -152,7 +152,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 			builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, result.Info.Title, result.Info.Author, result.Info.Length))
 		}
 
-		builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play.", deps.Prefix))
+		builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play. Results will be available until the next query.", deps.Prefix))
 
 		deps.Messenger.SendSimpleMessage(builder.String())
 	default:
