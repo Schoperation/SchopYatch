@@ -147,7 +147,6 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 	}
 
 	err := cmd.Execute(command.CommandDependencies{
-		Client:      &sy.Client,
 		Event:       event,
 		MusicPlayer: player,
 		Messenger:   &sy.messenger,

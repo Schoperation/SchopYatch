@@ -47,7 +47,8 @@ func (cmd *JoinCmd) IsVoiceOnlyCmd() bool {
 }
 
 func (cmd *JoinCmd) Execute(deps CommandDependencies, opts ...string) error {
-	err := deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
+	client := deps.Event.Client()
+	err := deps.MusicPlayer.JoinVoiceChannel(&client, deps.Event.Message.Author.ID)
 	if err != nil {
 		if msg.IsErrorMessage(err, msg.VoiceStateNotFound) {
 			deps.Messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")

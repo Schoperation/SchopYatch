@@ -11,7 +11,6 @@ import (
 )
 
 type CommandDependencies struct {
-	Client      *bot.Client
 	Event       *events.MessageCreate
 	MusicPlayer MusicPlayer
 	Messenger   Messenger

@@ -78,7 +78,8 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 			return nil
 		}
 
-		err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
+		client := deps.Event.Client()
+		err = deps.MusicPlayer.JoinVoiceChannel(&client, deps.Event.Message.Author.ID)
 		if err != nil {
 			if msg.IsErrorMessage(err, msg.VoiceStateNotFound) {
 				deps.Messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
@@ -109,7 +110,8 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if err != nil {
 		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYoutube, strings.Join(opts, " "))
 	} else {
-		err = deps.MusicPlayer.JoinVoiceChannel(deps.Client, deps.Event.Message.Author.ID)
+		client := deps.Event.Client()
+		err = deps.MusicPlayer.JoinVoiceChannel(&client, deps.Event.Message.Author.ID)
 		if err != nil {
 			if msg.IsErrorMessage(err, msg.VoiceStateNotFound) {
 				deps.Messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
