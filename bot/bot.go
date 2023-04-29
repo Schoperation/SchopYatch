@@ -37,6 +37,7 @@ func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 	client, err := createClient(config.Token,
 		bot.NewListenerFunc(schopYatch.OnReady),
 		bot.NewListenerFunc(schopYatch.OnGuildJoin),
+		bot.NewListenerFunc(schopYatch.OnGuildLeave),
 		bot.NewListenerFunc(schopYatch.OnVoiceStateUpdate),
 		bot.NewListenerFunc(schopYatch.OnVoiceServerUpdate),
 		bot.NewListenerFunc(schopYatch.OnMessageCreate),
@@ -84,6 +85,10 @@ func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
 	guildId := event.GuildID
 
 	sy.players[guildId] = music_player.NewMusicPlayer(guildId, &sy.LavalinkClient)
+}
+
+func (sy *SchopYatch) OnGuildLeave(event *events.GuildLeave) {
+	delete(sy.players, event.GuildID)
 }
 
 func (sy *SchopYatch) OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {

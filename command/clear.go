@@ -64,7 +64,7 @@ func (cmd *ClearCmd) Execute(deps CommandDependencies, opts ...string) error {
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
 		deps.Messenger.SendSimpleMessage("Dude, that was not a number...")
-		return err
+		return nil
 	}
 
 	deps.MusicPlayer.ClearQueue(num)
