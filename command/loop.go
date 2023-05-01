@@ -46,7 +46,7 @@ func (cmd *LoopCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *LoopCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if len(opts) == 0 {
-		cmd.loopSingle(deps)
+		cmd.loopWithNoOptions(deps)
 		return nil
 	}
 
@@ -68,8 +68,19 @@ func (cmd *LoopCmd) Execute(deps CommandDependencies, opts ...string) error {
 	}
 }
 
-func (cmd *LoopCmd) loopSingle(deps CommandDependencies) {
+func (cmd *LoopCmd) loopWithNoOptions(deps CommandDependencies) {
 	if !deps.MusicPlayer.IsLoopModeOff() {
+		deps.MusicPlayer.SetLoopModeOff()
+		deps.Messenger.SendSimpleMessage("Looping off.")
+		return
+	}
+
+	deps.MusicPlayer.SetLoopModeTrack()
+	deps.Messenger.SendSimpleMessage("Looping the current track.")
+}
+
+func (cmd *LoopCmd) loopSingle(deps CommandDependencies) {
+	if deps.MusicPlayer.IsLoopModeTrack() {
 		deps.MusicPlayer.SetLoopModeOff()
 		deps.Messenger.SendSimpleMessage("Looping off.")
 		return

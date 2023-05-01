@@ -110,7 +110,7 @@ func (fmp *fakeMusicPlayer) LoadList(tracks []lavalink.Track) (enum.PlayerStatus
 }
 
 func (fmp *fakeMusicPlayer) Pause() (enum.PlayerStatus, error) {
-	return enum.StatusSuccess, nil
+	return fmp.StatusToReturn, fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) ProcessQuery(query string) (enum.PlayerStatus, *lavalink.Track, int, error) {

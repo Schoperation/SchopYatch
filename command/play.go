@@ -63,10 +63,9 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 		} else if status == enum.StatusSuccess {
 			deps.Messenger.SendSimpleMessage("Resuming.")
 			return nil
-		} else {
-			deps.Messenger.SendSimpleMessage("Bruh where's your song??")
 		}
 
+		deps.Messenger.SendSimpleMessage("Bruh where's your song??")
 		return nil
 	}
 
