@@ -18,9 +18,11 @@ type fakeMusicPlayer struct {
 	disconnected  bool
 
 	// Testing Only
-	LoadedTrack    *lavalink.Track
-	StatusToReturn enum.PlayerStatus
-	ErrorToReturn  error
+	LoadedTrack     *lavalink.Track
+	Paused          bool
+	CurrentPosition lavalink.Duration
+	StatusToReturn  enum.PlayerStatus
+	ErrorToReturn   error
 }
 
 func NewDefaultFakeMusicPlayer() fakeMusicPlayer {
@@ -42,11 +44,11 @@ func (fmp *fakeMusicPlayer) ClearQueue(num int) {
 }
 
 func (fmp *fakeMusicPlayer) GetLoadedTrack() (*lavalink.Track, error) {
-	return fmp.LoadedTrack, nil
+	return fmp.LoadedTrack, fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) GetPosition() lavalink.Duration {
-	return lavalink.Day
+	return fmp.CurrentPosition
 }
 
 func (fmp *fakeMusicPlayer) GetQueue() []lavalink.Track {
@@ -86,7 +88,7 @@ func (fmp *fakeMusicPlayer) IsLoopModeTrack() bool {
 }
 
 func (fmp *fakeMusicPlayer) IsPaused() bool {
-	return false
+	return fmp.Paused
 }
 
 func (fmp *fakeMusicPlayer) IsQueueEmpty() bool {
@@ -94,19 +96,19 @@ func (fmp *fakeMusicPlayer) IsQueueEmpty() bool {
 }
 
 func (fmp *fakeMusicPlayer) JoinVoiceChannel(botClient *bot.Client, userId snowflake.ID) error {
-	return nil
+	return fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) LeaveVoiceChannel(botClient *bot.Client) error {
-	return nil
+	return fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) Load(track lavalink.Track) (enum.PlayerStatus, error) {
-	return enum.StatusSuccess, nil
+	return fmp.StatusToReturn, fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) LoadList(tracks []lavalink.Track) (enum.PlayerStatus, int, error) {
-	return enum.StatusSuccess, 0, nil
+	return fmp.StatusToReturn, 0, fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) Pause() (enum.PlayerStatus, error) {
@@ -114,7 +116,7 @@ func (fmp *fakeMusicPlayer) Pause() (enum.PlayerStatus, error) {
 }
 
 func (fmp *fakeMusicPlayer) ProcessQuery(query string) (enum.PlayerStatus, *lavalink.Track, int, error) {
-	return enum.StatusSuccess, nil, 0, nil
+	return fmp.StatusToReturn, nil, 0, fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) RemoveNextTrackFromQueue() (*lavalink.Track, error) {
@@ -126,7 +128,7 @@ func (fmp *fakeMusicPlayer) RemoveTrackFromQueue(index int) (*lavalink.Track, er
 }
 
 func (fmp *fakeMusicPlayer) Seek(time lavalink.Duration) (enum.PlayerStatus, error) {
-	return enum.StatusSuccess, nil
+	return fmp.StatusToReturn, fmp.ErrorToReturn
 }
 
 func (fmp *fakeMusicPlayer) SetLoopModeOff() {
