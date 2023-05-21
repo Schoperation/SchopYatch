@@ -58,7 +58,7 @@ func (cmd *RemoveCmd) Execute(deps CommandDependencies, opts ...string) error {
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
 		deps.Messenger.SendSimpleMessage("Dude that's some voodoo... we need a number.")
-		return err
+		return nil
 	}
 
 	track, err := deps.MusicPlayer.RemoveTrackFromQueue(num - 1)

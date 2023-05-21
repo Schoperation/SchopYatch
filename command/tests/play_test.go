@@ -20,6 +20,7 @@ type playerConfig struct {
 	searchResults   music_player.SearchResults
 	queue           music_player.MusicQueue
 	tracksQueued    int
+	loopMode        enum.LoopMode
 }
 
 func TestPlayCmd(t *testing.T) {
@@ -238,6 +239,7 @@ func TestPlayCmd(t *testing.T) {
 			fakeMusicPlayer.searchResults = tc.playerConfig.searchResults
 			fakeMusicPlayer.queue = tc.playerConfig.queue
 			fakeMusicPlayer.TracksQueued = tc.playerConfig.tracksQueued
+			fakeMusicPlayer.loopMode = tc.playerConfig.loopMode
 
 			err := cmd.Execute(command.CommandDependencies{
 				MusicPlayer: &fakeMusicPlayer,
