@@ -11,14 +11,14 @@ import (
 
 func TestShuffleCmd(t *testing.T) {
 	testCases := []struct {
-		name            string
-		errorFromPlayer error
-		expectedMessage string
+		name             string
+		errorsFromPlayer map[string]error
+		expectedMessage  string
 	}{
 		{
-			name:            "empty_queue_returns_appropriate_error_message",
-			errorFromPlayer: errors.New(msg.QueueIsEmpty),
-			expectedMessage: "Nothing to shuffle. How else am I gonna show off my riffles?",
+			name:             "empty_queue_returns_appropriate_error_message",
+			errorsFromPlayer: map[string]error{"ShuffleQueue": errors.New(msg.QueueIsEmpty)},
+			expectedMessage:  "Nothing to shuffle. How else am I gonna show off my riffles?",
 		},
 		{
 			name:            "normal_circumstances_returns_success_message",
@@ -36,7 +36,7 @@ func TestShuffleCmd(t *testing.T) {
 			fakeMusicPlayer := NewDefaultFakeMusicPlayer()
 			fakeMessenger := NewFakeMessenger()
 
-			fakeMusicPlayer.ErrorToReturn = tc.errorFromPlayer
+			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 
 			err := cmd.Execute(command.CommandDependencies{
 				MusicPlayer: &fakeMusicPlayer,

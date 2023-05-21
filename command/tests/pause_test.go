@@ -14,13 +14,13 @@ func TestPauseCmd(t *testing.T) {
 	testCases := []struct {
 		name             string
 		statusFromPlayer enum.PlayerStatus
-		errorFromPlayer  error
+		errorsFromPlayer map[string]error
 		expectedMessage  string
 	}{
 		{
-			name:            "no_loaded_track_returns_appropriate_error_message",
-			errorFromPlayer: errors.New(msg.NoLoadedTrack),
-			expectedMessage: "No track's currently playing. Would you like to pause time instead?",
+			name:             "no_loaded_track_returns_appropriate_error_message",
+			errorsFromPlayer: map[string]error{"Pause": errors.New(msg.NoLoadedTrack)},
+			expectedMessage:  "No track's currently playing. Would you like to pause time instead?",
 		},
 		{
 			name:             "already_paused_player_returns_appropriate_error_message",
@@ -44,7 +44,7 @@ func TestPauseCmd(t *testing.T) {
 			fakeMusicPlayer := NewDefaultFakeMusicPlayer()
 			fakeMessenger := NewFakeMessenger()
 
-			fakeMusicPlayer.ErrorToReturn = tc.errorFromPlayer
+			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 			fakeMusicPlayer.StatusToReturn = tc.statusFromPlayer
 
 			err := cmd.Execute(command.CommandDependencies{

@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -80,11 +79,7 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 	pageNum := 1
 	if len(opts) > 0 {
 		num, err := strconv.Atoi(opts[0])
-		if err != nil {
-			log.Printf("Couldn't read number in queue command, ignoring...")
-		} else if num > pages {
-			log.Printf("Some guy tried to go out of bounds in queue command, ignoring...")
-		} else {
+		if err == nil && num <= pages {
 			pageNum = num
 		}
 	}

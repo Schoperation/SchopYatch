@@ -9,9 +9,9 @@ import (
 
 func TestLeaveCmd(t *testing.T) {
 	testCases := []struct {
-		name            string
-		errorFromPlayer error
-		expectedMessage string
+		name             string
+		errorsFromPlayer map[string]error
+		expectedMessage  string
 	}{
 		{
 			name:            "normal_circumstances_returns_no_message",
@@ -29,7 +29,7 @@ func TestLeaveCmd(t *testing.T) {
 			fakeMusicPlayer := NewDefaultFakeMusicPlayer()
 			fakeMessenger := NewFakeMessenger()
 
-			fakeMusicPlayer.ErrorToReturn = tc.errorFromPlayer
+			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 
 			err := cmd.Execute(command.CommandDependencies{
 				MusicPlayer: &fakeMusicPlayer,

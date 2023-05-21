@@ -23,17 +23,17 @@ func TestNowPlayingCmd(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name            string
-		errorFromPlayer error
-		loopMode        enum.LoopMode
-		track           lavalink.Track
-		position        lavalink.Duration
-		expectedMessage string
+		name             string
+		errorsFromPlayer map[string]error
+		loopMode         enum.LoopMode
+		track            lavalink.Track
+		position         lavalink.Duration
+		expectedMessage  string
 	}{
 		{
-			name:            "no_loaded_track_returns_appropriate_error_message",
-			errorFromPlayer: errors.New(msg.NoLoadedTrack),
-			expectedMessage: "Nothing's playing. Bruh moment...",
+			name:             "no_loaded_track_returns_appropriate_error_message",
+			errorsFromPlayer: map[string]error{"GetLoadedTrack": errors.New(msg.NoLoadedTrack)},
+			expectedMessage:  "Nothing's playing. Bruh moment...",
 		},
 		{
 			name:     "normal_circumstances_returns_appropriate_message",
@@ -112,7 +112,7 @@ func TestNowPlayingCmd(t *testing.T) {
 			fakeMusicPlayer := NewDefaultFakeMusicPlayer()
 			fakeMessenger := NewFakeMessenger()
 
-			fakeMusicPlayer.ErrorToReturn = tc.errorFromPlayer
+			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 			fakeMusicPlayer.loopMode = tc.loopMode
 			fakeMusicPlayer.LoadedTrack = &tc.track
 			fakeMusicPlayer.CurrentPosition = tc.position
@@ -123,8 +123,6 @@ func TestNowPlayingCmd(t *testing.T) {
 				Event:       NewFakeMessageCreateEvent(),
 				Prefix:      ";;",
 			})
-
-			fmt.Println(fakeMusicPlayer.ErrorToReturn)
 
 			require.Nil(t, err)
 			require.Equal(t, tc.expectedMessage, fakeMessenger.sentMessage)

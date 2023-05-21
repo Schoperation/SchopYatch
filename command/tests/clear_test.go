@@ -11,12 +11,12 @@ import (
 
 func TestClearCmd(t *testing.T) {
 	testCases := []struct {
-		name            string
-		isFailureTest   bool
-		inputOpts       []string
-		isQueueEmpty    bool
-		errorFromPlayer error
-		expectedMessage string
+		name             string
+		isFailureTest    bool
+		inputOpts        []string
+		isQueueEmpty     bool
+		errorsFromPlayer map[string]error
+		expectedMessage  string
 	}{
 		{
 			name:            "empty_queue_returns_appropriate_message",
@@ -50,7 +50,7 @@ func TestClearCmd(t *testing.T) {
 			fakeMusicPlayer := NewDefaultFakeMusicPlayer()
 			fakeMessenger := NewFakeMessenger()
 
-			fakeMusicPlayer.ErrorToReturn = tc.errorFromPlayer
+			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 
 			if !tc.isQueueEmpty {
 				fakeMusicPlayer.AddTrackToQueue(lavalink.Track{})

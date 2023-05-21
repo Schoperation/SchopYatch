@@ -143,8 +143,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued **%d** additional tracks.", tracksQueued))
 		}
 	case enum.StatusPlayingAndQueuedList:
-		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
-		deps.Messenger.SendSimpleMessage("Queued **1** additional track.")
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.\nQueued **1** additional track.", track.Info.Title, track.Info.Author))
 	case enum.StatusSearchSuccess:
 		builder := strings.Builder{}
 		builder.WriteString("Search Results:\n\n")

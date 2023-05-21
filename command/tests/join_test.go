@@ -11,14 +11,14 @@ import (
 
 func TestJoinCmd(t *testing.T) {
 	testCases := []struct {
-		name            string
-		errorFromPlayer error
-		expectedMessage string
+		name             string
+		errorsFromPlayer map[string]error
+		expectedMessage  string
 	}{
 		{
-			name:            "no_voice_state_returns_appropriate_error_message",
-			errorFromPlayer: errors.New(msg.VoiceStateNotFound),
-			expectedMessage: "Dude you're not in a voice channel... get in one I can see!",
+			name:             "no_voice_state_returns_appropriate_error_message",
+			errorsFromPlayer: map[string]error{"JoinVoiceChannel": errors.New(msg.VoiceStateNotFound)},
+			expectedMessage:  "Dude you're not in a voice channel... get in one I can see!",
 		},
 		{
 			name:            "normal_circumstances_returns_no_message",
@@ -36,7 +36,7 @@ func TestJoinCmd(t *testing.T) {
 			fakeMusicPlayer := NewDefaultFakeMusicPlayer()
 			fakeMessenger := NewFakeMessenger()
 
-			fakeMusicPlayer.ErrorToReturn = tc.errorFromPlayer
+			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 
 			err := cmd.Execute(command.CommandDependencies{
 				MusicPlayer: &fakeMusicPlayer,
