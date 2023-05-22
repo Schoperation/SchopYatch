@@ -17,11 +17,13 @@ var (
 	removeCmd     = NewRemoveCmd()
 	shuffleCmd    = NewShuffleCmd()
 	pingCmd       = NewPingCmd()
+	aboutCmd      = NewAboutCmd()
 )
 
 func GetCommands() []Command {
 	return []Command{
 		helpCmd,
+		aboutCmd,
 		pingCmd,
 		joinCmd,
 		leaveCmd,

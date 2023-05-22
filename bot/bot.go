@@ -16,6 +16,8 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
+const SchopYatchVersion = "1.0.0"
+
 type SchopYatch struct {
 	Client         bot.Client
 	Config         YatchConfig
@@ -156,6 +158,7 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 		MusicPlayer: player,
 		Messenger:   &sy.messenger,
 		Prefix:      sy.Config.Prefix,
+		Version:     SchopYatchVersion,
 	}, splitMessage[1:]...)
 
 	if err != nil {

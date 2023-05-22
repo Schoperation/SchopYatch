@@ -15,6 +15,7 @@ type CommandDependencies struct {
 	MusicPlayer MusicPlayer
 	Messenger   Messenger
 	Prefix      string
+	Version     string
 }
 
 type Command interface {

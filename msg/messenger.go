@@ -24,7 +24,7 @@ func (msgr *Messenger) SetChannel(channel snowflake.ID) {
 }
 
 func (msgr *Messenger) SendSimpleMessage(msg string) {
-	_, err := (*msgr.client).Rest().CreateMessage(msgr.channel, discord.NewMessageCreateBuilder().SetContent(msg).Build())
+	_, err := (*msgr.client).Rest().CreateMessage(msgr.channel, discord.NewMessageCreateBuilder().SetContent(msg).ClearEmbeds().Build())
 	if err != nil {
 		log.Printf("Couldn't send a message: %v", err)
 	}
