@@ -5,12 +5,14 @@ import (
 )
 
 type fakeMessenger struct {
-	sentMessage string
+	previousMessage string
+	sentMessage     string
 }
 
 func NewFakeMessenger() fakeMessenger {
 	return fakeMessenger{
-		sentMessage: "",
+		previousMessage: "",
+		sentMessage:     "",
 	}
 }
 
@@ -19,5 +21,6 @@ func (msgr fakeMessenger) SetChannel(channel snowflake.ID) {
 }
 
 func (msgr *fakeMessenger) SendSimpleMessage(msg string) {
+	msgr.previousMessage = msgr.sentMessage
 	msgr.sentMessage = msg
 }

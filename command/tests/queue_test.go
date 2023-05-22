@@ -13,22 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createFakeQueue(numTracks int) music_player.MusicQueue {
-	queue := music_player.NewMusicQueue()
-	for i := 0; i < numTracks; i++ {
-		queue.Enqueue(lavalink.Track{
-			Encoded: "test",
-			Info: lavalink.TrackInfo{
-				Length: lavalink.Hour,
-				Author: fmt.Sprintf("author%d", i+1),
-				Title:  fmt.Sprintf("title%d", i+1),
-			},
-		})
-	}
-
-	return queue
-}
-
 func TestQueueCmd(t *testing.T) {
 	defaultTrack := lavalink.Track{
 		Encoded: "test",
@@ -62,7 +46,7 @@ func TestQueueCmd(t *testing.T) {
 			name: "empty_queue_with_loaded_track_returns_appropriate_success_message",
 			playerConfig: playerConfig{
 				queue:           music_player.NewMusicQueue(),
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -72,7 +56,7 @@ func TestQueueCmd(t *testing.T) {
 			name: "one_sized_queue_returns_appropriate_success_message",
 			playerConfig: playerConfig{
 				queue:           shortQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -84,7 +68,7 @@ func TestQueueCmd(t *testing.T) {
 			name: "two_sized_queue_returns_appropriate_success_message",
 			playerConfig: playerConfig{
 				queue:           defaultQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -97,7 +81,7 @@ func TestQueueCmd(t *testing.T) {
 			name: "multi_sized_queue_returns_appropriate_success_message",
 			playerConfig: playerConfig{
 				queue:           longQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -119,7 +103,7 @@ func TestQueueCmd(t *testing.T) {
 			inputOpts: []string{"2"},
 			playerConfig: playerConfig{
 				queue:           longQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -136,7 +120,7 @@ func TestQueueCmd(t *testing.T) {
 			inputOpts: []string{"99999"},
 			playerConfig: playerConfig{
 				queue:           longQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -158,7 +142,7 @@ func TestQueueCmd(t *testing.T) {
 			inputOpts: []string{"1"},
 			playerConfig: playerConfig{
 				queue:           defaultQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 			},
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", defaultTrack.Info.Title, defaultTrack.Info.Author, lavalink.Minute, defaultTrack.Info.Length.String()) +
@@ -171,7 +155,7 @@ func TestQueueCmd(t *testing.T) {
 			name: "two_sized_queue_with_loop_mode_track_returns_appropriate_success_message",
 			playerConfig: playerConfig{
 				queue:           defaultQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 				loopMode:        enum.LoopTrack,
 			},
@@ -186,7 +170,7 @@ func TestQueueCmd(t *testing.T) {
 			name: "two_sized_queue_with_loop_mode_queue_returns_appropriate_success_message",
 			playerConfig: playerConfig{
 				queue:           defaultQueue,
-				loadedTrack:     defaultTrack,
+				loadedTrack:     &defaultTrack,
 				currentPosition: lavalink.Minute,
 				loopMode:        enum.LoopQueue,
 			},
@@ -211,13 +195,7 @@ func TestQueueCmd(t *testing.T) {
 
 			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 
-			fakeMusicPlayer.Paused = tc.playerConfig.isPlayerPaused
-			fakeMusicPlayer.LoadedTrack = &tc.playerConfig.loadedTrack
-			fakeMusicPlayer.CurrentPosition = tc.playerConfig.currentPosition
-			fakeMusicPlayer.searchResults = tc.playerConfig.searchResults
-			fakeMusicPlayer.queue = tc.playerConfig.queue
-			fakeMusicPlayer.TracksQueued = tc.playerConfig.tracksQueued
-			fakeMusicPlayer.loopMode = tc.playerConfig.loopMode
+			fakeMusicPlayer.setPlayerConfig(tc.playerConfig)
 
 			err := cmd.Execute(command.CommandDependencies{
 				MusicPlayer: &fakeMusicPlayer,

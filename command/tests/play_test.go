@@ -13,16 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type playerConfig struct {
-	isPlayerPaused  bool
-	loadedTrack     lavalink.Track
-	currentPosition lavalink.Duration
-	searchResults   music_player.SearchResults
-	queue           music_player.MusicQueue
-	tracksQueued    int
-	loopMode        enum.LoopMode
-}
-
 func TestPlayCmd(t *testing.T) {
 	defaultTrack := lavalink.Track{
 		Encoded: "test",
@@ -117,7 +107,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"2"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 			},
 			statusFromPlayer: enum.StatusQueued,
 			expectedMessage:  fmt.Sprintf("Queued *%s* by **%s**.", "title2", "author2"),
@@ -136,7 +126,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 			},
 			statusFromPlayer: enum.StatusQueued,
 			expectedMessage:  fmt.Sprintf("Queued *%s* by **%s**.", "title", "author"),
@@ -146,7 +136,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 				tracksQueued:  0,
 			},
 			statusFromPlayer: enum.StatusQueuedList,
@@ -157,7 +147,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 				tracksQueued:  1,
 			},
 			statusFromPlayer: enum.StatusQueuedList,
@@ -168,7 +158,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 				tracksQueued:  5,
 			},
 			statusFromPlayer: enum.StatusQueuedList,
@@ -179,7 +169,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 				tracksQueued:  1,
 			},
 			statusFromPlayer: enum.StatusPlayingAndQueuedList,
@@ -203,7 +193,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 			},
 			statusFromPlayer: enum.StatusSuccess,
 			expectedMessage:  fmt.Sprintf("Now playing *%s* by **%s**.", "title", "author"),
@@ -213,7 +203,7 @@ func TestPlayCmd(t *testing.T) {
 			inputOpts: []string{"https://www.youtube.com/watch?v=enuOArEfqGo"},
 			playerConfig: playerConfig{
 				searchResults: defaultSearchResults,
-				loadedTrack:   defaultTrack,
+				loadedTrack:   &defaultTrack,
 			},
 			statusFromPlayer: enum.StatusQueued,
 			expectedMessage:  fmt.Sprintf("Queued *%s* by **%s**.", "title", "author"),
@@ -233,13 +223,7 @@ func TestPlayCmd(t *testing.T) {
 			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 			fakeMusicPlayer.StatusToReturn = tc.statusFromPlayer
 
-			fakeMusicPlayer.Paused = tc.playerConfig.isPlayerPaused
-			fakeMusicPlayer.LoadedTrack = &tc.playerConfig.loadedTrack
-			fakeMusicPlayer.CurrentPosition = tc.playerConfig.currentPosition
-			fakeMusicPlayer.searchResults = tc.playerConfig.searchResults
-			fakeMusicPlayer.queue = tc.playerConfig.queue
-			fakeMusicPlayer.TracksQueued = tc.playerConfig.tracksQueued
-			fakeMusicPlayer.loopMode = tc.playerConfig.loopMode
+			fakeMusicPlayer.setPlayerConfig(tc.playerConfig)
 
 			err := cmd.Execute(command.CommandDependencies{
 				MusicPlayer: &fakeMusicPlayer,

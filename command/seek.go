@@ -66,7 +66,7 @@ func (cmd *SeekCmd) Execute(deps CommandDependencies, opts ...string) error {
 		time, err := strconv.Atoi(str)
 		if err != nil {
 			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Detected something that ain't a number... cmon man... `%sseek hh:mm:ss`", deps.Prefix))
-			return err
+			return nil
 		}
 
 		times = append(times, time)

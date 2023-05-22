@@ -59,7 +59,7 @@ func (cmd *SkipToCmd) Execute(deps CommandDependencies, opts ...string) error {
 	num, err := strconv.Atoi(opts[0])
 	if err != nil {
 		deps.Messenger.SendSimpleMessage("Woah hey now, that ain't a number...")
-		return err
+		return nil
 	}
 
 	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Skipping to #%d in the queue...", num))
