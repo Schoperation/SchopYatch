@@ -4,6 +4,7 @@ import "schoperation/schopyatch/msg"
 
 type JoinCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -14,6 +15,7 @@ type JoinCmd struct {
 func NewJoinCmd() Command {
 	return &JoinCmd{
 		name:        "join",
+		group:       "player",
 		summary:     "Make the bot join a voice channel",
 		description: "Upon running, the bot will join the user's voice channel. It will error out if either the user isn't in a voice channel, or if the bot doesn't have permission to join.",
 		usage:       "join",
@@ -24,6 +26,10 @@ func NewJoinCmd() Command {
 
 func (cmd *JoinCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *JoinCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *JoinCmd) GetSummary() string {

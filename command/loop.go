@@ -2,6 +2,7 @@ package command
 
 type LoopCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -12,6 +13,7 @@ type LoopCmd struct {
 func NewLoopCmd() Command {
 	return &LoopCmd{
 		name:        "loop",
+		group:       "player",
 		summary:     "Loop a track or the queue",
 		description: "This command loops either the current track or the entire queue. Run without any arguments for the current track, or loop all/queue/list for the whole queue. Run the commands again, or loop off, to turn off looping.",
 		usage:       "loop [single|all|off]",
@@ -22,6 +24,10 @@ func NewLoopCmd() Command {
 
 func (cmd *LoopCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *LoopCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *LoopCmd) GetSummary() string {

@@ -2,6 +2,7 @@ package command
 
 type PingCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -12,6 +13,7 @@ type PingCmd struct {
 func NewPingCmd() Command {
 	return &PingCmd{
 		name:        "ping",
+		group:       "info",
 		summary:     "Pong!",
 		description: "Plays ping pong. Brilliant, I know...",
 		usage:       "ping",
@@ -22,6 +24,10 @@ func NewPingCmd() Command {
 
 func (cmd *PingCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *PingCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *PingCmd) GetSummary() string {

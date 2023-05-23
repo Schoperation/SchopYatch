@@ -20,6 +20,7 @@ type CommandDependencies struct {
 
 type Command interface {
 	GetName() string
+	GetGroup() string
 	GetSummary() string
 	GetDescription() string
 	GetUsage() string

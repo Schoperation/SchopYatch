@@ -4,6 +4,7 @@ import "schoperation/schopyatch/msg"
 
 type ShuffleCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -14,6 +15,7 @@ type ShuffleCmd struct {
 func NewShuffleCmd() Command {
 	return &ShuffleCmd{
 		name:        "shuffle",
+		group:       "queue",
 		summary:     "Shuffle the queue",
 		description: "This command simply shuffles the current queue.",
 		usage:       "shuffle",
@@ -24,6 +26,10 @@ func NewShuffleCmd() Command {
 
 func (cmd *ShuffleCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *ShuffleCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *ShuffleCmd) GetSummary() string {

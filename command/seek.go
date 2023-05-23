@@ -11,6 +11,7 @@ import (
 
 type SeekCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -21,6 +22,7 @@ type SeekCmd struct {
 func NewSeekCmd() Command {
 	return &SeekCmd{
 		name:        "seek",
+		group:       "player",
 		summary:     "Seek to a position in the current track",
 		description: "This command allows you to seek to a specific time within the currently playing track. Ex. `seek 30` goes to 30 seconds, `seek 1:30` goes to 1 minute and 30 seconds, and `seek 02:01:30` goes to 2 hours, 1 minute, and 30 seconds. Leading zeros (01) are optional.",
 		usage:       "seek <hh:mm:ss>",
@@ -31,6 +33,10 @@ func NewSeekCmd() Command {
 
 func (cmd *SeekCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *SeekCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *SeekCmd) GetSummary() string {

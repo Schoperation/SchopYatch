@@ -13,6 +13,7 @@ import (
 
 type PlayCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -23,6 +24,7 @@ type PlayCmd struct {
 func NewPlayCmd() Command {
 	return &PlayCmd{
 		name:        "play",
+		group:       "player",
 		summary:     "Play a track, playlist, or search for something on YouTube",
 		description: "The motherload of commands!\n\tIf no arguments are provided, then it'll resume any paused track.\n\tIf provided a URL, then it'll attempt to directly play it. Right now, only YouTube and SoundCloud are supported.\n\tIf a non-URL is provided, it'll search YouTube with your query, and provide the first five options. There, you can use `play 1` to select the first option, for example.",
 		usage:       "play [url or query]",
@@ -33,6 +35,10 @@ func NewPlayCmd() Command {
 
 func (cmd *PlayCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *PlayCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *PlayCmd) GetSummary() string {

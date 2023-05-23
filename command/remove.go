@@ -8,6 +8,7 @@ import (
 
 type RemoveCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -18,6 +19,7 @@ type RemoveCmd struct {
 func NewRemoveCmd() Command {
 	return &RemoveCmd{
 		name:        "remove",
+		group:       "queue",
 		summary:     "Remove a track from the queue",
 		description: "This command simply removes a specified track number from the queue.",
 		usage:       "remove <number>",
@@ -28,6 +30,10 @@ func NewRemoveCmd() Command {
 
 func (cmd *RemoveCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *RemoveCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *RemoveCmd) GetSummary() string {

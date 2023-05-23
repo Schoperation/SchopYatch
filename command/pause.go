@@ -8,6 +8,7 @@ import (
 
 type PauseCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -18,6 +19,7 @@ type PauseCmd struct {
 func NewPauseCmd() Command {
 	return &PauseCmd{
 		name:        "pause",
+		group:       "player",
 		summary:     "Pause the player",
 		description: "This command simply pauses the player. Use resume, unpause, or play to resume the track.",
 		usage:       "pause",
@@ -28,6 +30,10 @@ func NewPauseCmd() Command {
 
 func (cmd *PauseCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *PauseCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *PauseCmd) GetSummary() string {

@@ -7,6 +7,7 @@ import (
 
 type SkipCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -17,6 +18,7 @@ type SkipCmd struct {
 func NewSkipCmd() Command {
 	return &SkipCmd{
 		name:        "skip",
+		group:       "player",
 		summary:     "Skip the current track",
 		description: "This command skips the track that's currently playing on the bot. If the queue has tracks, it'll play the next one in line. Otherwise, it'll go radio silent...",
 		usage:       "skip",
@@ -27,6 +29,10 @@ func NewSkipCmd() Command {
 
 func (cmd *SkipCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *SkipCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *SkipCmd) GetSummary() string {

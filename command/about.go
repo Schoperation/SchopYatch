@@ -7,6 +7,7 @@ import (
 
 type AboutCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -17,6 +18,7 @@ type AboutCmd struct {
 func NewAboutCmd() Command {
 	return &AboutCmd{
 		name:        "about",
+		group:       "info",
 		summary:     "Show bot information",
 		description: "Displays a variety of information about the bot, including version, github link, and more.",
 		usage:       "about",
@@ -26,6 +28,10 @@ func NewAboutCmd() Command {
 
 func (cmd *AboutCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *AboutCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *AboutCmd) GetSummary() string {

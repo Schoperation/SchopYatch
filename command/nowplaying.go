@@ -8,6 +8,7 @@ import (
 
 type NowPlayingCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -18,6 +19,7 @@ type NowPlayingCmd struct {
 func NewNowPlayingCmd() Command {
 	return &NowPlayingCmd{
 		name:        "nowplaying",
+		group:       "player",
 		summary:     "Show the details of the track currently playing",
 		description: "This command shows details about the track that's currently playing on the bot.",
 		usage:       "nowplaying",
@@ -28,6 +30,10 @@ func NewNowPlayingCmd() Command {
 
 func (cmd *NowPlayingCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *NowPlayingCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *NowPlayingCmd) GetSummary() string {

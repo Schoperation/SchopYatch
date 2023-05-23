@@ -7,6 +7,7 @@ import (
 
 type ClearCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -17,6 +18,7 @@ type ClearCmd struct {
 func NewClearCmd() Command {
 	return &ClearCmd{
 		name:        "clear",
+		group:       "queue",
 		summary:     "Clear the queue",
 		description: "This command simply clears the queue. Has an additional, optional parameter to clear only the first num or so entries. Will not affect the track currently playing; use skip for that.",
 		usage:       "clear [num]",
@@ -27,6 +29,10 @@ func NewClearCmd() Command {
 
 func (cmd *ClearCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *ClearCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *ClearCmd) GetSummary() string {

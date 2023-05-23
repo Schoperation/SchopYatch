@@ -8,6 +8,7 @@ import (
 
 type QueueCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -18,6 +19,7 @@ type QueueCmd struct {
 func NewQueueCmd() Command {
 	return &QueueCmd{
 		name:        "queue",
+		group:       "queue",
 		summary:     "View the player's queue",
 		description: "Use this command to view a list of tracks that will eventually be played on the bot. If there are more than 10 tracks in the queue, you can add a page parameter to see additional pages.",
 		usage:       "queue [page]",
@@ -28,6 +30,10 @@ func NewQueueCmd() Command {
 
 func (cmd *QueueCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *QueueCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *QueueCmd) GetSummary() string {

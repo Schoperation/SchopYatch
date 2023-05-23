@@ -1,44 +1,44 @@
 package command
 
 var (
+	aboutCmd      = NewAboutCmd()
+	clearCmd      = NewClearCmd()
 	helpCmd       = NewHelpCmd()
-	playCmd       = NewPlayCmd()
 	joinCmd       = NewJoinCmd()
 	leaveCmd      = NewLeaveCmd()
-	pauseCmd      = NewPauseCmd()
-	resumeCmd     = NewResumeCmd()
+	loopCmd       = NewLoopCmd()
 	nowPlayingCmd = NewNowPlayingCmd()
+	pauseCmd      = NewPauseCmd()
+	pingCmd       = NewPingCmd()
+	playCmd       = NewPlayCmd()
+	queueCmd      = NewQueueCmd()
+	removeCmd     = NewRemoveCmd()
+	resumeCmd     = NewResumeCmd()
+	seekCmd       = NewSeekCmd()
+	shuffleCmd    = NewShuffleCmd()
 	skipCmd       = NewSkipCmd()
 	skipToCmd     = NewSkipToCmd()
-	seekCmd       = NewSeekCmd()
-	loopCmd       = NewLoopCmd()
-	queueCmd      = NewQueueCmd()
-	clearCmd      = NewClearCmd()
-	removeCmd     = NewRemoveCmd()
-	shuffleCmd    = NewShuffleCmd()
-	pingCmd       = NewPingCmd()
-	aboutCmd      = NewAboutCmd()
 )
 
 func GetCommands() []Command {
 	return []Command{
-		helpCmd,
 		aboutCmd,
-		pingCmd,
+		clearCmd,
+		helpCmd,
 		joinCmd,
 		leaveCmd,
-		playCmd,
-		pauseCmd,
-		resumeCmd,
+		loopCmd,
 		nowPlayingCmd,
+		pauseCmd,
+		pingCmd,
+		playCmd,
+		queueCmd,
+		removeCmd,
+		resumeCmd,
+		seekCmd,
+		shuffleCmd,
 		skipCmd,
 		skipToCmd,
-		seekCmd,
-		loopCmd,
-		queueCmd,
-		clearCmd,
-		removeCmd,
-		shuffleCmd,
 	}
 }
 

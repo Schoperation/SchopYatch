@@ -8,6 +8,7 @@ import (
 
 type SkipToCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -18,6 +19,7 @@ type SkipToCmd struct {
 func NewSkipToCmd() Command {
 	return &SkipToCmd{
 		name:        "skipto",
+		group:       "player",
 		summary:     "Skip multiple tracks to a spot in the queue",
 		description: "This command skips not only the currently playing track, but any tracks in the queue that are before the specified position number. To see the position numbers, run the queue command.",
 		usage:       "skipto <position>",
@@ -28,6 +30,10 @@ func NewSkipToCmd() Command {
 
 func (cmd *SkipToCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *SkipToCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *SkipToCmd) GetSummary() string {

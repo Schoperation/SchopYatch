@@ -7,6 +7,7 @@ import (
 
 type ResumeCmd struct {
 	name        string
+	group       string
 	summary     string
 	description string
 	usage       string
@@ -17,6 +18,7 @@ type ResumeCmd struct {
 func NewResumeCmd() Command {
 	return &ResumeCmd{
 		name:        "resume",
+		group:       "player",
 		summary:     "Resume the player",
 		description: "This command simply resumes the player if it's paused.",
 		usage:       "resume",
@@ -27,6 +29,10 @@ func NewResumeCmd() Command {
 
 func (cmd *ResumeCmd) GetName() string {
 	return cmd.name
+}
+
+func (cmd *ResumeCmd) GetGroup() string {
+	return cmd.group
 }
 
 func (cmd *ResumeCmd) GetSummary() string {
