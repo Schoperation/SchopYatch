@@ -37,9 +37,9 @@ func (listener *MusicPlayerEventListener) OnTrackEnd(player disgolink.Player, ev
 		return
 	}
 
-	var nextTrack *lavalink.Track
+	var nextTrack *Track
 	if musicPlayer.IsLoopModeTrack() {
-		finishedTrackCopy := *finishedTrack
+		finishedTrackCopy := toTrack(*finishedTrack)
 		nextTrack = &finishedTrackCopy
 	} else {
 		nextTrack, err = musicPlayer.RemoveNextTrackFromQueue()
@@ -61,7 +61,7 @@ func (listener *MusicPlayerEventListener) OnTrackEnd(player disgolink.Player, ev
 	}
 
 	if musicPlayer.IsLoopModeQueue() {
-		_, err := musicPlayer.Load(*finishedTrack)
+		_, err := musicPlayer.Load(toTrack(*finishedTrack))
 		if err != nil {
 			log.Printf("Error occurred re-queueing finishedTrack: %v\n", err)
 		}

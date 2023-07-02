@@ -7,20 +7,13 @@ import (
 	"schoperation/schopyatch/msg"
 	"schoperation/schopyatch/music_player"
 	"testing"
+	"time"
 
-	"github.com/disgoorg/disgolink/v2/lavalink"
 	"github.com/stretchr/testify/require"
 )
 
 func TestSkipToCmd(t *testing.T) {
-	defaultTrack := lavalink.Track{
-		Encoded: "test",
-		Info: lavalink.TrackInfo{
-			Length: lavalink.Hour * 2,
-			Author: "author",
-			Title:  "title",
-		},
-	}
+	defaultTrack := music_player.NewTrack("test", "title", "author", time.Hour*2)
 
 	defaultQueue := createFakeQueue(5)
 
@@ -76,7 +69,7 @@ func TestSkipToCmd(t *testing.T) {
 				loadedTrack: &defaultTrack,
 				queue:       defaultQueue,
 			},
-			expectedMessage:     fmt.Sprintf("Now playing *%s* by **%s**.", defaultTrack.Info.Title, defaultTrack.Info.Author),
+			expectedMessage:     fmt.Sprintf("Now playing *%s* by **%s**.", defaultTrack.Title(), defaultTrack.Author()),
 			expectedSkipMessage: fmt.Sprintf("Skipping to #%d in the queue...", 2),
 		},
 	}

@@ -5,21 +5,16 @@ import (
 	"fmt"
 	"schoperation/schopyatch/command"
 	"schoperation/schopyatch/msg"
+	"schoperation/schopyatch/music_player"
 	"testing"
+	"time"
 
 	"github.com/disgoorg/disgolink/v2/lavalink"
 	"github.com/stretchr/testify/require"
 )
 
 func TestSeekCmd(t *testing.T) {
-	defaultTrack := lavalink.Track{
-		Encoded: "test",
-		Info: lavalink.TrackInfo{
-			Length: lavalink.Hour * 2,
-			Author: "author",
-			Title:  "title",
-		},
-	}
+	defaultTrack := music_player.NewTrack("test", "title", "author", time.Hour*2)
 
 	testCases := []struct {
 		name             string
@@ -59,7 +54,7 @@ func TestSeekCmd(t *testing.T) {
 				loadedTrack: &defaultTrack,
 			},
 			errorsFromPlayer: map[string]error{"Seek": errors.New(msg.IndexOutOfBounds)},
-			expectedMessage:  fmt.Sprintf("Can't seek beyond the track length. It's %s long.", defaultTrack.Info.Length),
+			expectedMessage:  fmt.Sprintf("Can't seek beyond the track length. It's %s long.", defaultTrack.Length().String()),
 		},
 		{
 			name:      "seconds_duration_returns_appropriate_success_message",

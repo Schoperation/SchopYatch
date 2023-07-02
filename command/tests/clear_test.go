@@ -3,9 +3,9 @@ package command_tests
 import (
 	"fmt"
 	"schoperation/schopyatch/command"
+	"schoperation/schopyatch/music_player"
 	"testing"
 
-	"github.com/disgoorg/disgolink/v2/lavalink"
 	"github.com/stretchr/testify/require"
 )
 
@@ -53,7 +53,7 @@ func TestClearCmd(t *testing.T) {
 			fakeMusicPlayer.ErrorsToReturn = tc.errorsFromPlayer
 
 			if !tc.isQueueEmpty {
-				fakeMusicPlayer.AddTrackToQueue(lavalink.Track{})
+				fakeMusicPlayer.AddTrackToQueue(music_player.Track{})
 			}
 
 			err := cmd.Execute(command.CommandDependencies{

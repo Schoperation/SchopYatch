@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgolink/v2/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -18,9 +17,9 @@ type fakeMusicPlayer struct {
 	disconnected  bool
 
 	// Testing Only
-	LoadedTrack     *lavalink.Track
+	LoadedTrack     *music_player.Track
 	Paused          bool
-	CurrentPosition lavalink.Duration
+	CurrentPosition time.Duration
 	StatusToReturn  enum.PlayerStatus
 	ErrorsToReturn  map[string]error
 	TracksQueued    int
@@ -36,7 +35,7 @@ func NewDefaultFakeMusicPlayer() fakeMusicPlayer {
 	}
 }
 
-func (fmp *fakeMusicPlayer) AddTrackToQueue(track lavalink.Track) {
+func (fmp *fakeMusicPlayer) AddTrackToQueue(track music_player.Track) {
 	fmp.queue.Enqueue(track)
 }
 
@@ -44,19 +43,19 @@ func (fmp *fakeMusicPlayer) ClearQueue(num int) {
 	fmp.queue.Clear()
 }
 
-func (fmp *fakeMusicPlayer) GetLoadedTrack() (*lavalink.Track, error) {
+func (fmp *fakeMusicPlayer) GetLoadedTrack() (*music_player.Track, error) {
 	return fmp.LoadedTrack, fmp.ErrorsToReturn["GetLoadedTrack"]
 }
 
-func (fmp *fakeMusicPlayer) GetPosition() lavalink.Duration {
+func (fmp *fakeMusicPlayer) GetPosition() time.Duration {
 	return fmp.CurrentPosition
 }
 
-func (fmp *fakeMusicPlayer) GetQueue() []lavalink.Track {
+func (fmp *fakeMusicPlayer) GetQueue() []music_player.Track {
 	return fmp.queue.PeekList()
 }
 
-func (fmp *fakeMusicPlayer) GetQueueDuration() lavalink.Duration {
+func (fmp *fakeMusicPlayer) GetQueueDuration() time.Duration {
 	return fmp.queue.Duration()
 }
 
@@ -64,11 +63,11 @@ func (fmp *fakeMusicPlayer) GetQueueLength() int {
 	return fmp.queue.Length()
 }
 
-func (fmp *fakeMusicPlayer) GetSearchResult(index int) *lavalink.Track {
+func (fmp *fakeMusicPlayer) GetSearchResult(index int) *music_player.Track {
 	return fmp.searchResults.GetResult(index)
 }
 
-func (fmp *fakeMusicPlayer) GetSearchResults() []lavalink.Track {
+func (fmp *fakeMusicPlayer) GetSearchResults() []music_player.Track {
 	return fmp.searchResults.GetResults()
 }
 
@@ -104,11 +103,11 @@ func (fmp *fakeMusicPlayer) LeaveVoiceChannel(botClient *bot.Client) error {
 	return fmp.ErrorsToReturn["LeaveVoiceChannel"]
 }
 
-func (fmp *fakeMusicPlayer) Load(track lavalink.Track) (enum.PlayerStatus, error) {
+func (fmp *fakeMusicPlayer) Load(track music_player.Track) (enum.PlayerStatus, error) {
 	return fmp.StatusToReturn, fmp.ErrorsToReturn["Load"]
 }
 
-func (fmp *fakeMusicPlayer) LoadList(tracks []lavalink.Track) (enum.PlayerStatus, int, error) {
+func (fmp *fakeMusicPlayer) LoadList(tracks []music_player.Track) (enum.PlayerStatus, int, error) {
 	return fmp.StatusToReturn, 0, fmp.ErrorsToReturn["LoadList"]
 }
 
@@ -116,19 +115,19 @@ func (fmp *fakeMusicPlayer) Pause() (enum.PlayerStatus, error) {
 	return fmp.StatusToReturn, fmp.ErrorsToReturn["Pause"]
 }
 
-func (fmp *fakeMusicPlayer) ProcessQuery(query string) (enum.PlayerStatus, *lavalink.Track, int, error) {
+func (fmp *fakeMusicPlayer) ProcessQuery(query string) (enum.PlayerStatus, *music_player.Track, int, error) {
 	return fmp.StatusToReturn, fmp.LoadedTrack, fmp.TracksQueued, fmp.ErrorsToReturn["ProcessQuery"]
 }
 
-func (fmp *fakeMusicPlayer) RemoveNextTrackFromQueue() (*lavalink.Track, error) {
+func (fmp *fakeMusicPlayer) RemoveNextTrackFromQueue() (*music_player.Track, error) {
 	return fmp.queue.Dequeue(), fmp.ErrorsToReturn["RemoveNextTrackFromQueue"]
 }
 
-func (fmp *fakeMusicPlayer) RemoveTrackFromQueue(index int) (*lavalink.Track, error) {
+func (fmp *fakeMusicPlayer) RemoveTrackFromQueue(index int) (*music_player.Track, error) {
 	return fmp.queue.DequeueAt(index), fmp.ErrorsToReturn["RemoveTrackFromQueue"]
 }
 
-func (fmp *fakeMusicPlayer) Seek(time lavalink.Duration) (enum.PlayerStatus, error) {
+func (fmp *fakeMusicPlayer) Seek(time time.Duration) (enum.PlayerStatus, error) {
 	return fmp.StatusToReturn, fmp.ErrorsToReturn["Seek"]
 }
 
@@ -144,7 +143,7 @@ func (fmp *fakeMusicPlayer) SetLoopModeTrack() {
 	fmp.loopMode = enum.LoopTrack
 }
 
-func (fmp *fakeMusicPlayer) SetSearchResults(tracks []lavalink.Track) {
+func (fmp *fakeMusicPlayer) SetSearchResults(tracks []music_player.Track) {
 	fmp.searchResults.AddResults(tracks)
 }
 
@@ -152,11 +151,11 @@ func (fmp *fakeMusicPlayer) ShuffleQueue() error {
 	return fmp.ErrorsToReturn["ShuffleQueue"]
 }
 
-func (fmp *fakeMusicPlayer) Skip() (*lavalink.Track, error) {
+func (fmp *fakeMusicPlayer) Skip() (*music_player.Track, error) {
 	return fmp.LoadedTrack, fmp.ErrorsToReturn["Skip"]
 }
 
-func (fmp *fakeMusicPlayer) SkipTo(index int) (*lavalink.Track, error) {
+func (fmp *fakeMusicPlayer) SkipTo(index int) (*music_player.Track, error) {
 	return fmp.LoadedTrack, fmp.ErrorsToReturn["SkipTo"]
 }
 

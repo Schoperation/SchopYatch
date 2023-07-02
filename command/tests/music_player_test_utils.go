@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"schoperation/schopyatch/enum"
 	"schoperation/schopyatch/music_player"
-
-	"github.com/disgoorg/disgolink/v2/lavalink"
+	"time"
 )
 
 type playerConfig struct {
 	isPlayerPaused  bool
-	loadedTrack     *lavalink.Track
-	currentPosition lavalink.Duration
+	loadedTrack     *music_player.Track
+	currentPosition time.Duration
 	searchResults   music_player.SearchResults
 	queue           music_player.MusicQueue
 	tracksQueued    int
@@ -31,14 +30,7 @@ func (fmp *fakeMusicPlayer) setPlayerConfig(playerConfig playerConfig) {
 func createFakeQueue(numTracks int) music_player.MusicQueue {
 	queue := music_player.NewMusicQueue()
 	for i := 0; i < numTracks; i++ {
-		queue.Enqueue(lavalink.Track{
-			Encoded: "test",
-			Info: lavalink.TrackInfo{
-				Length: lavalink.Hour,
-				Author: fmt.Sprintf("author%d", i+1),
-				Title:  fmt.Sprintf("title%d", i+1),
-			},
-		})
+		queue.Enqueue(music_player.NewTrack("test", fmt.Sprintf("title%d", i+1), fmt.Sprintf("author%d", i+1), time.Hour))
 	}
 
 	return queue

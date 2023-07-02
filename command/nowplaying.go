@@ -66,8 +66,8 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 	}
 
 	currentPos := deps.MusicPlayer.GetPosition()
-	trackLen := currentTrack.Info.Length
-	timeLeft := trackLen.Seconds() - currentPos.Seconds()
+	trackLen := currentTrack.Length()
+	timeLeft := int(trackLen.Seconds() - currentPos.Seconds())
 
 	hoursLeft := timeLeft / 3600
 	timeLeft %= 3600
@@ -99,7 +99,7 @@ func (cmd *NowPlayingCmd) Execute(deps CommandDependencies, opts ...string) erro
 		loopStr = "**Looping Queue**\n"
 	}
 
-	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s", currentTrack.Info.Title, currentTrack.Info.Author, builder.String(), currentPos, trackLen, loopStr)
+	finalStr := fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s", currentTrack.Title(), currentTrack.Author(), builder.String(), currentPos, trackLen, loopStr)
 	deps.Messenger.SendSimpleMessage(finalStr)
 	return nil
 }

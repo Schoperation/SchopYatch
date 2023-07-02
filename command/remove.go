@@ -81,6 +81,6 @@ func (cmd *RemoveCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return err
 	}
 
-	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Removed *%s* by **%s** from the queue.", track.Info.Title, track.Info.Author))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Removed *%s* by **%s** from the queue.", track.Title(), track.Author()))
 	return nil
 }

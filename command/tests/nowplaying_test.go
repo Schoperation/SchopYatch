@@ -6,28 +6,22 @@ import (
 	"schoperation/schopyatch/command"
 	"schoperation/schopyatch/enum"
 	"schoperation/schopyatch/msg"
+	"schoperation/schopyatch/music_player"
 	"testing"
+	"time"
 
-	"github.com/disgoorg/disgolink/v2/lavalink"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNowPlayingCmd(t *testing.T) {
-	defaultTrack := lavalink.Track{
-		Encoded: "test",
-		Info: lavalink.TrackInfo{
-			Length: lavalink.Hour,
-			Author: "author",
-			Title:  "title",
-		},
-	}
+	defaultTrack := music_player.NewTrack("test", "title", "author", time.Hour)
 
 	testCases := []struct {
 		name             string
 		errorsFromPlayer map[string]error
 		loopMode         enum.LoopMode
-		track            lavalink.Track
-		position         lavalink.Duration
+		track            music_player.Track
+		position         time.Duration
 		expectedMessage  string
 	}{
 		{
@@ -39,65 +33,65 @@ func TestNowPlayingCmd(t *testing.T) {
 			name:     "normal_circumstances_returns_appropriate_message",
 			loopMode: enum.LoopOff,
 			track:    defaultTrack,
-			position: lavalink.Minute,
+			position: time.Minute,
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s",
-				defaultTrack.Info.Title,
-				defaultTrack.Info.Author,
+				defaultTrack.Title(),
+				defaultTrack.Author(),
 				"59 mins, 0 secs remaining.",
-				lavalink.Minute,
-				defaultTrack.Info.Length.String(),
+				time.Minute,
+				defaultTrack.Length().String(),
 				""),
 		},
 		{
 			name:     "with_complex_position_returns_appropriate_message",
 			loopMode: enum.LoopOff,
 			track:    defaultTrack,
-			position: lavalink.Duration(125000), // 2 minutes, 5 seconds
+			position: time.Duration(125000) * time.Millisecond, // 2 minutes, 5 seconds
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s",
-				defaultTrack.Info.Title,
-				defaultTrack.Info.Author,
+				defaultTrack.Title(),
+				defaultTrack.Author(),
 				"57 mins, 55 secs remaining.",
-				lavalink.Duration(125000),
-				defaultTrack.Info.Length.String(),
+				time.Duration(125000)*time.Millisecond,
+				defaultTrack.Length().String(),
 				""),
 		},
 		{
 			name:     "with_one_second_remaining_returns_appropriate_message",
 			loopMode: enum.LoopOff,
 			track:    defaultTrack,
-			position: lavalink.Duration(3599999), // 59 min, 59 sec
+			position: time.Duration(3599000) * time.Millisecond, // 59 min, 59 sec
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s",
-				defaultTrack.Info.Title,
-				defaultTrack.Info.Author,
+				defaultTrack.Title(),
+				defaultTrack.Author(),
 				"1 sec remaining.",
-				lavalink.Duration(3599999),
-				defaultTrack.Info.Length.String(),
+				time.Duration(3599000)*time.Millisecond,
+				defaultTrack.Length().String(),
 				""),
 		},
 		{
 			name:     "with_loop_single_returns_appropriate_message",
 			loopMode: enum.LoopTrack,
 			track:    defaultTrack,
-			position: lavalink.Minute,
+			position: time.Minute,
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s",
-				defaultTrack.Info.Title,
-				defaultTrack.Info.Author,
+				defaultTrack.Title(),
+				defaultTrack.Author(),
 				"59 mins, 0 secs remaining.",
-				lavalink.Minute,
-				defaultTrack.Info.Length.String(),
+				time.Minute,
+				defaultTrack.Length().String(),
 				"**Looping Current Track**\n"),
 		},
 		{
 			name:     "with_loop_queue_returns_appropriate_message",
 			loopMode: enum.LoopQueue,
 			track:    defaultTrack,
-			position: lavalink.Minute,
+			position: time.Minute,
 			expectedMessage: fmt.Sprintf("Now Playing:\n\t*%s* by **%s**\n\t%s `[%s / %s]`\n\t%s",
-				defaultTrack.Info.Title,
-				defaultTrack.Info.Author,
+				defaultTrack.Title(),
+				defaultTrack.Author(),
 				"59 mins, 0 secs remaining.",
-				lavalink.Minute,
-				defaultTrack.Info.Length.String(),
+				time.Minute,
+				defaultTrack.Length().String(),
 				"**Looping Queue**\n"),
 		},
 	}

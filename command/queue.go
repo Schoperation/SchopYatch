@@ -61,7 +61,7 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	currentTrack, err := deps.MusicPlayer.GetLoadedTrack()
 	if err == nil {
-		builder.WriteString(fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", currentTrack.Info.Title, currentTrack.Info.Author, deps.MusicPlayer.GetPosition().String(), currentTrack.Info.Length.String()))
+		builder.WriteString(fmt.Sprintf("Now Playing:\n\t*%s* by **%s** `[%s / %s]`\n\n", currentTrack.Title(), currentTrack.Author(), deps.MusicPlayer.GetPosition().String(), currentTrack.Length().String()))
 	}
 
 	if deps.MusicPlayer.IsLoopModeTrack() {
@@ -106,7 +106,7 @@ func (cmd *QueueCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	queue := deps.MusicPlayer.GetQueue()
 	for i := rangeStart; i < rangeEnd; i++ {
-		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, queue[i].Info.Title, queue[i].Info.Author, queue[i].Info.Length))
+		builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, queue[i].Title(), queue[i].Author(), queue[i].Length().String()))
 	}
 
 	deps.Messenger.SendSimpleMessage(builder.String())

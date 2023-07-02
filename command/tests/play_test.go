@@ -8,40 +8,19 @@ import (
 	"schoperation/schopyatch/msg"
 	"schoperation/schopyatch/music_player"
 	"testing"
+	"time"
 
-	"github.com/disgoorg/disgolink/v2/lavalink"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPlayCmd(t *testing.T) {
-	defaultTrack := lavalink.Track{
-		Encoded: "test",
-		Info: lavalink.TrackInfo{
-			Length: lavalink.Hour,
-			Author: "author",
-			Title:  "title",
-		},
-	}
+	defaultTrack := music_player.NewTrack("test", "title", "author", time.Hour)
 
 	defaultSearchResults := music_player.NewSearchResults()
-	defaultSearchResults.AddResults([]lavalink.Track{
+	defaultSearchResults.AddResults([]music_player.Track{
 		defaultTrack,
-		{
-			Encoded: "test2",
-			Info: lavalink.TrackInfo{
-				Length: lavalink.Hour,
-				Author: "author2",
-				Title:  "title2",
-			},
-		},
-		{
-			Encoded: "test3",
-			Info: lavalink.TrackInfo{
-				Length: lavalink.Hour,
-				Author: "author3",
-				Title:  "title3",
-			},
-		},
+		music_player.NewTrack("test2", "title2", "author2", time.Hour),
+		music_player.NewTrack("test3", "title3", "author3", time.Hour),
 	})
 
 	testCases := []struct {
@@ -183,9 +162,9 @@ func TestPlayCmd(t *testing.T) {
 			},
 			statusFromPlayer: enum.StatusSearchSuccess,
 			expectedMessage: "Search Results:\n\n" +
-				fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", 1, "title", "author", lavalink.Hour) +
-				fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", 2, "title2", "author2", lavalink.Hour) +
-				fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", 3, "title3", "author3", lavalink.Hour) +
+				fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", 1, "title", "author", time.Hour) +
+				fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", 2, "title2", "author2", time.Hour) +
+				fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", 3, "title3", "author3", time.Hour) +
 				fmt.Sprintf("\nUse `%splay n` to pick a track to play. Results will be available until the next query.", ";;"),
 		},
 		{

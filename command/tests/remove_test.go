@@ -48,7 +48,7 @@ func TestRemoveCmd(t *testing.T) {
 			name:            "valid_selection_returns_appropriate_success_message",
 			inputOpts:       []string{"2"},
 			queue:           defaultQueue,
-			expectedMessage: fmt.Sprintf("Removed *%s* by **%s** from the queue.", defaultQueue.PeekAt(1).Info.Title, defaultQueue.PeekAt(1).Info.Author),
+			expectedMessage: fmt.Sprintf("Removed *%s* by **%s** from the queue.", defaultQueue.PeekAt(1).Title(), defaultQueue.PeekAt(1).Author()),
 		},
 	}
 

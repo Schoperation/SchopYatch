@@ -5,8 +5,7 @@ import (
 	"schoperation/schopyatch/msg"
 	"strconv"
 	"strings"
-
-	"github.com/disgoorg/disgolink/v2/lavalink"
+	"time"
 )
 
 type SeekCmd struct {
@@ -78,18 +77,20 @@ func (cmd *SeekCmd) Execute(deps CommandDependencies, opts ...string) error {
 		times = append(times, time)
 	}
 
-	var duration lavalink.Duration
+	var duration time.Duration
 	switch len(times) {
 	case 1:
-		duration = lavalink.Duration(times[0] * int(lavalink.Second))
+		duration = time.Duration(times[0]) * time.Second
 	case 2:
-		duration = lavalink.Duration(times[0]*int(lavalink.Minute) + times[1]*int(lavalink.Second))
+		duration = time.Duration(times[0])*time.Minute + time.Duration(times[1])*time.Second
 	case 3:
-		duration = lavalink.Duration(times[0]*int(lavalink.Hour) + times[1]*int(lavalink.Minute) + times[2]*int(lavalink.Second))
+		duration = time.Duration(times[0])*time.Hour + time.Duration(times[1])*time.Minute + time.Duration(times[2])*time.Second
 	default:
 		deps.Messenger.SendSimpleMessage("OBJECTION! Your extra times contradict the ISO standard!")
 		return nil
 	}
+
+	_ = time.Duration(9) + time.Duration(1)
 
 	_, err := deps.MusicPlayer.Seek(duration)
 	if err != nil {
@@ -107,7 +108,7 @@ func (cmd *SeekCmd) Execute(deps CommandDependencies, opts ...string) error {
 				return err
 			}
 
-			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Can't seek beyond the track length. It's %s long.", track.Info.Length))
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Can't seek beyond the track length. It's %s long.", track.Length().String()))
 			return nil
 		}
 

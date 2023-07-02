@@ -101,11 +101,11 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 		}
 
 		if status == enum.StatusQueued {
-			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued *%s* by **%s**.", track.Title(), track.Author()))
 			return nil
 		}
 
-		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Title(), track.Author()))
 		return nil
 	}
 
@@ -139,7 +139,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 
 	switch status {
 	case enum.StatusQueued:
-		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued *%s* by **%s**.", track.Title(), track.Author()))
 	case enum.StatusQueuedList:
 		if tracksQueued == 0 {
 			deps.Messenger.SendSimpleMessage("Queued nothing. What the...?")
@@ -149,20 +149,20 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued **%d** additional tracks.", tracksQueued))
 		}
 	case enum.StatusPlayingAndQueuedList:
-		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.\nQueued **1** additional track.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.\nQueued **1** additional track.", track.Title(), track.Author()))
 	case enum.StatusSearchSuccess:
 		builder := strings.Builder{}
 		builder.WriteString("Search Results:\n\n")
 
 		for i, result := range deps.MusicPlayer.GetSearchResults() {
-			builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, result.Info.Title, result.Info.Author, result.Info.Length))
+			builder.WriteString(fmt.Sprintf("`%02d` - *%s* by **%s** `[%s]`\n", i+1, result.Title(), result.Author(), result.Length().String()))
 		}
 
 		builder.WriteString(fmt.Sprintf("\nUse `%splay n` to pick a track to play. Results will be available until the next query.", deps.Prefix))
 
 		deps.Messenger.SendSimpleMessage(builder.String())
 	default:
-		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Info.Title, track.Info.Author))
+		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", track.Title(), track.Author()))
 	}
 
 	return nil

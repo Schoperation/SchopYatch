@@ -71,6 +71,6 @@ func (cmd *SkipCmd) Execute(deps CommandDependencies, opts ...string) error {
 		return nil
 	}
 
-	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Info.Title, playingTrack.Info.Author))
+	deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.", playingTrack.Title(), playingTrack.Author()))
 	return nil
 }
