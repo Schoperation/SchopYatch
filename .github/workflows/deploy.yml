@@ -1,3 +1,5 @@
+# Ensures SchopYatch is properly vetted and tested before
+# ultimately deployed to production.
 name: Deploy SchopYatch
 
 on: 
@@ -14,7 +16,7 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v4.1.1
 
-    - name: Set up Go
+    - name: Setup Go
       uses: actions/setup-go@v4.1.0
       with:
         go-version-file: "go.mod"
@@ -46,4 +48,4 @@ jobs:
             /usr/local/go/bin/go build .
             cp schopyatch ../../schopyatch_bot/
             cd ../../schopyatch_bot
-            ./schopyatch &>/dev/null &
+            ./schopyatch &>logs/schopyatch.log &
