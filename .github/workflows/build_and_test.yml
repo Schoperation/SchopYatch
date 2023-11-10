@@ -1,18 +1,23 @@
-name: Build And Test SchopYatch
+name: Vet & Test
 
 on: 
-  push: 
   pull_request:
+    branches:
+      - master
+  push:
+    branches-ignore:
+      - master
   workflow_dispatch:
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4.1.1
 
     - name: Set up Go
-      uses: actions/setup-go@v4.0.1
+      uses: actions/setup-go@v4.1.0
       with:
         go-version-file: "go.mod"
 

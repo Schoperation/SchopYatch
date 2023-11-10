@@ -1,0 +1,49 @@
+name: Deploy SchopYatch
+
+on: 
+  push: 
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Vet & Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4.1.1
+
+    - name: Set up Go
+      uses: actions/setup-go@v4.1.0
+      with:
+        go-version-file: "go.mod"
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Vet
+      run: go vet -v ./...
+
+    - name: Test
+      run: go test -v ./...
+  deploy:
+    name: Deploy To Server
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Deploy Via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~/SchopYatch
+            git pull
+            rm schopyatch
+            pkill schopyatch
+            go build .
+            cp schopyatch ../../schopyatch_bot/
+            cd ../../schopyatch_bot
+            ./schopyatch &>/dev/null &
