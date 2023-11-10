@@ -43,7 +43,7 @@ jobs:
             git pull
             rm schopyatch
             pkill schopyatch
-            go build .
+            /usr/local/go/bin/go build .
             cp schopyatch ../../schopyatch_bot/
             cd ../../schopyatch_bot
             ./schopyatch &>/dev/null &
