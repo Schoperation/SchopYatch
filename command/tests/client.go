@@ -2,8 +2,7 @@ package command_tests
 
 import (
 	"context"
-
-	"github.com/disgoorg/log"
+	"log/slog"
 
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
@@ -30,8 +29,8 @@ func NewFakeMessageCreateEvent() *events.MessageCreate {
 	}
 }
 
-func (client fakeBotClient) Logger() log.Logger {
-	return log.New(1)
+func (client fakeBotClient) Logger() *slog.Logger {
+	return slog.Default()
 }
 
 func (client fakeBotClient) Close(ctx context.Context) {
