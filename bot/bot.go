@@ -16,7 +16,7 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
-const SchopYatchVersion = "1.0.2"
+const SchopYatchVersion = "1.1.0"
 
 type SchopYatch struct {
 	Client         bot.Client
