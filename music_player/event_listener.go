@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/disgoorg/disgolink/v2/disgolink"
-	"github.com/disgoorg/disgolink/v2/lavalink"
+	"github.com/disgoorg/disgolink/v3/disgolink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -31,7 +31,7 @@ func (listener *MusicPlayerEventListener) OnTrackEnd(player disgolink.Player, ev
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	finishedTrack, err := player.Lavalink().BestNode().DecodeTrack(ctx, event.EncodedTrack)
+	finishedTrack, err := player.Lavalink().BestNode().DecodeTrack(ctx, event.Track.Encoded)
 	if err != nil {
 		log.Printf("Error occurred decoding the finished track: %v\n", err)
 		return

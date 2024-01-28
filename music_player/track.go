@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/disgoorg/disgolink/v2/lavalink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 type Track struct {

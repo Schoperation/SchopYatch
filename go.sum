@@ -2,12 +2,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/disgoorg/disgo v0.17.0 h1:/LcgXgPDhzHt3GkQ4cpjmIJBim1/VYfS31VhGYif3Ms=
 github.com/disgoorg/disgo v0.17.0/go.mod h1:AE2J/8oLR2PtYfqcARsk1mgBxQ5z3Z1OD6Lc2SA0gak=
-github.com/disgoorg/disgolink/v2 v2.0.1 h1:PRaQOuZSt9uoFKzZ4yw/9Ajucw1uCbZf1d9FMzcAdUQ=
-github.com/disgoorg/disgolink/v2 v2.0.1/go.mod h1:v7jTmaR9vSbbNZh/xBmxU7gdI4lE5mQlSr0eSghjCr4=
+github.com/disgoorg/disgolink/v3 v3.0.0 h1:rresswQhYRu/L9Ly0pm/ALM8ApTcN/ejspABq2XM0k8=
+github.com/disgoorg/disgolink/v3 v3.0.0/go.mod h1:YIwjIteZcjfI7HYZWH241iRI7RjTLoN51HLDOUHVSFI=
 github.com/disgoorg/json v1.1.0 h1:7xigHvomlVA9PQw9bMGO02PHGJJPqvX5AnwlYg/Tnys=
 github.com/disgoorg/json v1.1.0/go.mod h1:BHDwdde0rpQFDVsRLKhma6Y7fTbQKub/zdGO5O9NqqA=
-github.com/disgoorg/log v1.2.1 h1:kZYAWkUBcGy4LbZcgYtgYu49xNVLy+xG5Uq3yz5VVQs=
-github.com/disgoorg/log v1.2.1/go.mod h1:hhQWYTFTnIGzAuFPZyXJEi11IBm9wq+/TVZt/FEwX0o=
 github.com/disgoorg/snowflake/v2 v2.0.1 h1:CuUxGLwggUxEswZOmZ+mZ5i0xSumQdXW9tXW7uGqe+0=
 github.com/disgoorg/snowflake/v2 v2.0.1/go.mod h1:SPU9c2CNn5DSyb86QcKtdZgix9osEtKrHLW4rMhfLCs=
 github.com/gorilla/websocket v1.5.1 h1:gmztn0JnHVt9JZquRuzLw3g4wouNVzKL15iLr/zn/QY=
@@ -20,8 +18,6 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 golang.org/x/crypto v0.18.0 h1:PGVlW0xEltQnzFZ55hkuX5+KLyrMYhHld1YHO4AKcdc=
 golang.org/x/crypto v0.18.0/go.mod h1:R0j02AL6hcrfOiy9T4ZYp/rcWeMxM3L6QYxlOuEG1mg=
-golang.org/x/exp v0.0.0-20240119083558-1b970713d09a h1:Q8/wZp0KX97QFTc2ywcOE0YRjZPVIx+MXInMzdvQqcA=
-golang.org/x/exp v0.0.0-20240119083558-1b970713d09a/go.mod h1:idGWGoKP1toJGkd5/ig9ZLuPcZBC3ewk7SzmH0uou08=
 golang.org/x/net v0.20.0 h1:aCL9BSgETF1k+blQaYUBx9hJ9LOGP3gAVemcZlf1Kpo=
 golang.org/x/net v0.20.0/go.mod h1:z8BVo6PvndSri0LbOE3hAn0apkU+1YvI6E70E9jsnvY=
 golang.org/x/sys v0.16.0 h1:xWw16ngr6ZMtmxDyKyIgsE93KNKz5HKmMa3b8ALHidU=

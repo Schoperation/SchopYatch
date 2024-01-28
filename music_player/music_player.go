@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgolink/v2/disgolink"
-	"github.com/disgoorg/disgolink/v2/lavalink"
+	"github.com/disgoorg/disgolink/v3/disgolink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 

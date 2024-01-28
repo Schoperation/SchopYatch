@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/disgoorg/disgolink/v2/lavalink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 type PlayCmd struct {
@@ -113,7 +113,7 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	song := opts[0]
 	_, err = url.ParseRequestURI(song)
 	if err != nil {
-		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYoutube, strings.Join(opts, " "))
+		song = fmt.Sprintf("%s:%s", lavalink.SearchTypeYouTube, strings.Join(opts, " "))
 	} else {
 		client := deps.Event.Client()
 		err = deps.MusicPlayer.JoinVoiceChannel(&client, deps.Event.Message.Author.ID)
