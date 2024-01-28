@@ -1,6 +1,7 @@
 package music_player
 
 import (
+	"log"
 	"strings"
 	"time"
 
@@ -49,7 +50,13 @@ func (track Track) Length() time.Duration {
 }
 
 func (track Track) ToLavalinkTrack() lavalink.Track {
-	return lavalink.Track{
+	var userdata struct {
+		FakeDataToShutUpLavalink int `json:"fake"`
+	}
+
+	userdata.FakeDataToShutUpLavalink = 1
+
+	lavalinkTrack, err := lavalink.Track{
 		Encoded: track.encoded,
 		Info: lavalink.TrackInfo{
 			Identifier: track.identifier,
@@ -61,7 +68,13 @@ func (track Track) ToLavalinkTrack() lavalink.Track {
 			SourceName: track.sourceName,
 			Position:   toLavalinkDuration(track.position),
 		},
+	}.WithUserData(userdata)
+	if err != nil {
+		log.Printf("Err marshalling userdata: %v\n", err)
+		return lavalink.Track{}
 	}
+
+	return lavalinkTrack
 }
 
 func toTrack(track lavalink.Track) Track {
