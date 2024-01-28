@@ -64,6 +64,8 @@ func (cmd *AboutCmd) Execute(deps CommandDependencies, opts ...string) error {
 	builder.WriteString("Libraries written by the DisGoOrg:\n")
 	builder.WriteString("\tDisGo:     https://github.com/DisgoOrg/disgo\n")
 	builder.WriteString("\tDisGoLink: https://github.com/disgoorg/disgolink\n")
+	builder.WriteString("\n")
+	builder.WriteString("PFP by Oliver McCloud, retrieved from https://commons.wikimedia.org/wiki/File:Sunfish_rigged_for_sailing.jpg\n")
 	builder.WriteString("```")
 
 	deps.Messenger.SendSimpleMessage(builder.String())
