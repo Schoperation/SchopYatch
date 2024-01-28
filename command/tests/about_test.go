@@ -24,6 +24,8 @@ func TestAboutCmd(t *testing.T) {
 				"Libraries written by the DisGoOrg:\n" +
 				"\tDisGo:     https://github.com/DisgoOrg/disgo\n" +
 				"\tDisGoLink: https://github.com/disgoorg/disgolink\n" +
+				"\n" +
+				"PFP by Oliver McCloud, retrieved from https://commons.wikimedia.org/wiki/File:Sunfish_rigged_for_sailing.jpg\n" +
 				"```",
 		},
 	}
