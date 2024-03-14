@@ -19,7 +19,7 @@ func TestAboutCmd(t *testing.T) {
 			name: "normal_circumstances_returns_success_message",
 			expectedMessage: "```" +
 				fmt.Sprintf("SchopYatch v%s\n\n", bot.SchopYatchVersion) +
-				"Coded by Schoperation: 		   https://github.com/Schoperation/SchopYatch\n" +
+				"Coded by Schoperation: 		https://github.com/Schoperation/SchopYatch\n" +
 				"Lavalink by the Lavalink Devs: https://github.com/lavalink-devs/Lavalink\n" +
 				"Libraries written by the DisGoOrg:\n" +
 				"\tDisGo:     https://github.com/DisgoOrg/disgo\n" +
