@@ -60,7 +60,7 @@ func (cmd *AboutCmd) Execute(deps CommandDependencies, opts ...string) error {
 	builder.WriteString("```")
 	builder.WriteString(fmt.Sprintf("SchopYatch v%s\n\n", deps.Version))
 	builder.WriteString("Coded by Schoperation: 		   https://github.com/Schoperation/SchopYatch\n")
-	builder.WriteString("Lavalink Client by Freya Arbjerg: https://github.com/freyacodes/Lavalink-Client\n")
+	builder.WriteString("Lavalink by the Lavalink Devs: https://github.com/lavalink-devs/Lavalink\n")
 	builder.WriteString("Libraries written by the DisGoOrg:\n")
 	builder.WriteString("\tDisGo:     https://github.com/DisgoOrg/disgo\n")
 	builder.WriteString("\tDisGoLink: https://github.com/disgoorg/disgolink\n")

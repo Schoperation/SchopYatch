@@ -20,7 +20,7 @@ func TestAboutCmd(t *testing.T) {
 			expectedMessage: "```" +
 				fmt.Sprintf("SchopYatch v%s\n\n", bot.SchopYatchVersion) +
 				"Coded by Schoperation: 		   https://github.com/Schoperation/SchopYatch\n" +
-				"Lavalink Client by Freya Arbjerg: https://github.com/freyacodes/Lavalink-Client\n" +
+				"Lavalink by the Lavalink Devs: https://github.com/lavalink-devs/Lavalink\n" +
 				"Libraries written by the DisGoOrg:\n" +
 				"\tDisGo:     https://github.com/DisgoOrg/disgo\n" +
 				"\tDisGoLink: https://github.com/disgoorg/disgolink\n" +
