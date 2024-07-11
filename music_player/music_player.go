@@ -71,6 +71,7 @@ func (mp *MusicPlayer) LeaveVoiceChannel(botClient *bot.Client) error {
 		return err
 	}
 
+	mp.queue.Clear()
 	mp.disconnected = true
 	return nil
 }

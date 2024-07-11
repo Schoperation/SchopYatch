@@ -64,7 +64,7 @@ func (cmd *PlayCmd) IsVoiceOnlyCmd() bool {
 func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 	if len(opts) == 0 {
 		status, err := deps.MusicPlayer.Unpause()
-		if err != nil {
+		if err != nil && !msg.IsErrorMessage(err, msg.NoLoadedTrack) {
 			return err
 		} else if status == enum.StatusSuccess {
 			deps.Messenger.SendSimpleMessage("Resuming.")

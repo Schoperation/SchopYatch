@@ -35,6 +35,7 @@ func TestPlayCmd(t *testing.T) {
 			name: "with_paused_player_unpauses_successfully",
 			playerConfig: playerConfig{
 				isPlayerPaused: true,
+				loadedTrack:    &defaultTrack,
 			},
 			statusFromPlayer: enum.StatusSuccess,
 			expectedMessage:  "Resuming.",
@@ -43,8 +44,18 @@ func TestPlayCmd(t *testing.T) {
 			name: "with_unpaused_player_returns_appropriate_error_message",
 			playerConfig: playerConfig{
 				isPlayerPaused: false,
+				loadedTrack:    &defaultTrack,
 			},
 			statusFromPlayer: enum.StatusAlreadyUnpaused,
+			expectedMessage:  "Bruh where's your song??",
+		},
+		{
+			name: "with_no_track_loaded_returns_appropriate_error_message",
+			playerConfig: playerConfig{
+				isPlayerPaused: false,
+				loadedTrack:    nil,
+			},
+			statusFromPlayer: enum.StatusFailed,
 			expectedMessage:  "Bruh where's your song??",
 		},
 		{

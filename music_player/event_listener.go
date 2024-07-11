@@ -72,7 +72,6 @@ func (listener *MusicPlayerEventListener) OnWebSocketClosed(player disgolink.Pla
 	musicPlayerMap := *listener.musicPlayers
 	musicPlayer := musicPlayerMap[player.GuildID()]
 
-	//log.Printf("Socket closed: %s", event.Reason)
-
 	musicPlayer.disconnected = true
+	musicPlayer.queue.Clear()
 }
