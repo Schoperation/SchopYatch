@@ -26,7 +26,7 @@ func NewPlayCmd() Command {
 		name:        "play",
 		group:       "player",
 		summary:     "Play a track, playlist, or search for something on YouTube",
-		description: "The motherload of commands!\n\tIf no arguments are provided, then it'll resume any paused track.\n\tIf provided a URL, then it'll attempt to directly play it. Right now, only YouTube and SoundCloud are supported.\n\tIf a non-URL is provided, it'll search YouTube with your query, and provide the first five options. There, you can use `play 1` to select the first option, for example.",
+		description: "The motherload of commands!\n\tIf no arguments are provided, then it'll resume any paused track.\n\tIf provided a URL, then it'll attempt to directly play it. Right now, YouTube, SoundCloud, and Spotify are supported.\n\tIf a non-URL is provided, it'll search YouTube with your query, and provide the first five options. There, you can use `play 1` to select the first option, for example.\n\nFor Spotify, the following link formats are supported:\n\thttps://open.spotify.com/track/...\n\thttps://open.spotify.com/playlist/...\n\thttps://open.spotify.com/artist/...",
 		usage:       "play [url or query]",
 		aliases:     []string{"p", "load"},
 		voiceOnly:   true,
@@ -149,7 +149,11 @@ func (cmd *PlayCmd) Execute(deps CommandDependencies, opts ...string) error {
 			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Queued **%d** additional tracks.", tracksQueued))
 		}
 	case enum.StatusPlayingAndQueuedList:
-		deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.\nQueued **1** additional track.", track.Title(), track.Author()))
+		if tracksQueued == 1 {
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.\nQueued **1** additional track.", track.Title(), track.Author()))
+		} else {
+			deps.Messenger.SendSimpleMessage(fmt.Sprintf("Now playing *%s* by **%s**.\nQueued **%d** additional tracks.", track.Title(), track.Author(), tracksQueued))
+		}
 	case enum.StatusSearchSuccess:
 		builder := strings.Builder{}
 		builder.WriteString("Search Results:\n\n")

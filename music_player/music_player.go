@@ -153,11 +153,8 @@ func (mp *MusicPlayer) LoadList(tracks []Track) (enum.PlayerStatus, int, error) 
 
 		tracks = tracks[1:]
 
-		// Exception here just so we don't mention a one-hit-wonder when there were actually 2 tracks.
-		if len(tracks) == 1 {
-			mp.queue.Enqueue(tracks[0])
-			return enum.StatusPlayingAndQueuedList, 1, nil
-		}
+		mp.queue.EnqueueList(tracks)
+		return enum.StatusPlayingAndQueuedList, len(tracks), nil
 	}
 
 	mp.queue.EnqueueList(tracks)
@@ -420,7 +417,7 @@ func (mp *MusicPlayer) GetLoadedTrack() (*Track, error) {
 }
 
 func (mp *MusicPlayer) GetPosition() time.Duration {
-	return toTimeDuration(mp.player.Position())
+	return toTimeDuration(mp.player.Position()).Round(time.Second)
 }
 
 func (mp *MusicPlayer) IsPaused() bool {

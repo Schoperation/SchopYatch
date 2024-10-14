@@ -46,7 +46,7 @@ func (track Track) Author() string {
 }
 
 func (track Track) Length() time.Duration {
-	return track.length
+	return track.length.Round(time.Second)
 }
 
 func (track Track) ToLavalinkTrack() lavalink.Track {
