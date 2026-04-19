@@ -17,8 +17,8 @@ import (
 
 type fakeBotClient struct{}
 
-func NewFakeBotClient() bot.Client {
-	return fakeBotClient{}
+func NewFakeBotClient() *bot.Client {
+	return &bot.Client{}
 }
 
 func NewFakeMessageCreateEvent() *events.MessageCreate {

@@ -16,7 +16,7 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
-const SchopYatchVersion = "1.3.0"
+const SchopYatchVersion = "1.4.0"
 
 type SchopYatch struct {
 	Client         bot.Client
@@ -94,7 +94,7 @@ func (sy *SchopYatch) OnGuildLeave(event *events.GuildLeave) {
 }
 
 func (sy *SchopYatch) OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {
-	if event.VoiceState.UserID != sy.Client.ApplicationID() {
+	if event.VoiceState.UserID != sy.Client.ApplicationID {
 		return
 	}
 
@@ -127,13 +127,13 @@ func (sy *SchopYatch) OnMessageCreate(event *events.MessageCreate) {
 	sy.messenger.SetChannel(event.ChannelID)
 
 	if cmd.IsVoiceOnlyCmd() {
-		userVoiceState, exists := sy.Client.Caches().VoiceState(*event.GuildID, event.Message.Author.ID)
+		userVoiceState, exists := sy.Client.Caches.VoiceState(*event.GuildID, event.Message.Author.ID)
 		if !exists {
 			sy.messenger.SendSimpleMessage("Dude you're not in a voice channel... get in one I can see!")
 			return
 		}
 
-		botVoiceState, exists := sy.Client.Caches().VoiceState(*event.GuildID, sy.Client.ID())
+		botVoiceState, exists := sy.Client.Caches.VoiceState(*event.GuildID, sy.Client.ID())
 		if !exists && cmd.GetName() != "join" && cmd.GetName() != "play" {
 			sy.messenger.SendSimpleMessage(fmt.Sprintf("Dude I'm not in a voice channel... use either `%sjoin` or `%splay` to summon me.", sy.Config.Prefix, sy.Config.Prefix))
 			return

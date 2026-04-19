@@ -52,6 +52,6 @@ func (cmd *LeaveCmd) IsVoiceOnlyCmd() bool {
 
 func (cmd *LeaveCmd) Execute(deps CommandDependencies, opts ...string) error {
 	client := deps.Event.Client()
-	err := deps.MusicPlayer.LeaveVoiceChannel(&client)
+	err := deps.MusicPlayer.LeaveVoiceChannel(client)
 	return err
 }

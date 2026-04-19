@@ -44,7 +44,7 @@ func NewMusicPlayer(guildId snowflake.ID, lavaLinkClient *disgolink.Client) *Mus
 /////////////////////
 
 func (mp *MusicPlayer) JoinVoiceChannel(botClient *bot.Client, userId snowflake.ID) error {
-	voiceState, exists := (*botClient).Caches().VoiceState(mp.guildID, userId)
+	voiceState, exists := (*botClient).Caches.VoiceState(mp.guildID, userId)
 	if !exists {
 		return errors.New(msg.VoiceStateNotFound)
 	}

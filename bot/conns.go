@@ -9,7 +9,9 @@ import (
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/gateway"
+	"github.com/disgoorg/disgo/voice"
 	"github.com/disgoorg/disgolink/v3/disgolink"
+	"github.com/disgoorg/godave/golibdave"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -27,19 +29,20 @@ func createClient(token string, eventListeners ...bot.EventListener) (bot.Client
 			cache.WithCaches(cache.FlagVoiceStates, cache.FlagMembers, cache.FlagChannels, cache.FlagGuilds, cache.FlagRoles),
 		),
 		bot.WithEventListeners(eventListeners...),
+		bot.WithVoiceManagerConfigOpts(voice.WithDaveSessionCreateFunc(golibdave.NewSession)),
 	)
 
 	if err != nil {
-		return nil, err
+		return bot.Client{}, err
 	}
 
-	return client, nil
+	return *client, nil
 }
 
 func createLavalinkConn(client bot.Client, config YatchConfig, musicPlayersMap *map[snowflake.ID]*music_player.MusicPlayer) (disgolink.Client, error) {
 	musicEventListener := music_player.NewMusicPlayerEventListener(musicPlayersMap)
 
-	link := disgolink.New(client.ApplicationID(),
+	link := disgolink.New(client.ApplicationID,
 		disgolink.WithListenerFunc(musicEventListener.OnTrackEnd),
 		disgolink.WithListenerFunc(musicEventListener.OnWebSocketClosed),
 	)
