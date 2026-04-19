@@ -36,7 +36,9 @@ jobs:
         go-version-file: "schopyatch/go.mod"
 
     - name: Build
-      run: go build -C schopyatch -v .
+      run: |
+        echo "PKG_CONFIG_PATH=$(echo $HOME)/.local/lib" >> $GITHUB_ENV
+        go build -C schopyatch .
 
     - name: Vet
       run: go vet -C schopyatch -v .
