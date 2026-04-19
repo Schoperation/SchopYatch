@@ -38,6 +38,7 @@ jobs:
     - name: Build
       run: |
         echo "PKG_CONFIG_PATH=$(echo $HOME)/.local/lib" >> $GITHUB_ENV
+        echo $PKG_CONFIG_PATH
         go build -C schopyatch .
 
     - name: Vet
