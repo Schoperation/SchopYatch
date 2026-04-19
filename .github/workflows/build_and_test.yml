@@ -26,7 +26,7 @@ jobs:
 
     - name: Compile DAVE
       run: |
-        cd ~/godave/scripts
+        cd godave/scripts
         chmod +x libdave_install.sh
         NON_INTERACTIVE=1 ./libdave_install.sh v1.1.1
 
@@ -37,7 +37,7 @@ jobs:
 
     - name: Build
       run: |
-        cd ~/schopyatch
+        cd ../../schopyatch
         go build -v ./...
 
     - name: Vet
