@@ -78,7 +78,7 @@ func (sy *SchopYatch) OnReady(event *events.Ready) {
 	log.Printf("SchopYatch v%s is up and running!", sy.version)
 }
 
-func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
+func (sy *SchopYatch) OnGuildJoin(event *events.GuildReady) { // todo add guild join somewhere???
 	err := event.Client().SetPresence(context.TODO(), gateway.WithListeningActivity("an Ace Attorney OST"))
 	if err != nil {
 		log.Fatalf("Error setting presence: %v", err)
