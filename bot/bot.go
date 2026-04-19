@@ -38,6 +38,7 @@ func NewSchopYatchBot(config YatchConfig, version string) (SchopYatch, error) {
 
 	client, err := createClient(config.Token,
 		bot.NewListenerFunc(schopYatch.OnReady),
+		bot.NewListenerFunc(schopYatch.OnGuildReady),
 		bot.NewListenerFunc(schopYatch.OnGuildJoin),
 		bot.NewListenerFunc(schopYatch.OnGuildLeave),
 		bot.NewListenerFunc(schopYatch.OnVoiceStateUpdate),
@@ -78,7 +79,18 @@ func (sy *SchopYatch) OnReady(event *events.Ready) {
 	log.Printf("SchopYatch v%s is up and running!", sy.version)
 }
 
-func (sy *SchopYatch) OnGuildJoin(event *events.GuildReady) { // todo add guild join somewhere???
+func (sy *SchopYatch) OnGuildReady(event *events.GuildReady) {
+	err := event.Client().SetPresence(context.TODO(), gateway.WithListeningActivity("an Ace Attorney OST"))
+	if err != nil {
+		log.Fatalf("Error setting presence: %v", err)
+	}
+
+	guildId := event.GuildID
+
+	sy.players[guildId] = music_player.NewMusicPlayer(guildId, &sy.LavalinkClient)
+}
+
+func (sy *SchopYatch) OnGuildJoin(event *events.GuildJoin) {
 	err := event.Client().SetPresence(context.TODO(), gateway.WithListeningActivity("an Ace Attorney OST"))
 	if err != nil {
 		log.Fatalf("Error setting presence: %v", err)

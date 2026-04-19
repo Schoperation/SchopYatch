@@ -13,11 +13,23 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4.1.1
+    - name: Checkout SchopYatch
+      uses: actions/checkout@v6.0.2
+
+    - name: Checkout Godave
+      uses: actions/checkout@6.0.2
+      with:
+        repository: disgoorg/godave
+        path: godave
+
+    - name: Compile DAVE
+      run: |
+        cd ~/godave/scripts
+        chmod +x libdave_install.sh
+        NON_INTERACTIVE=1 ./libdave_install.sh v1.1.1
 
     - name: Set up Go
-      uses: actions/setup-go@v5.0.0
+      uses: actions/setup-go@v6.4.0
       with:
         go-version-file: "go.mod"
 
