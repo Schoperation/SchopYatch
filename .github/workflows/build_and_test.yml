@@ -36,10 +36,10 @@ jobs:
         go-version-file: "schopyatch/go.mod"
 
     - name: Build
-      run: go build -v schopyatch/.
+      run: go build -C schopyatch -v .
 
     - name: Vet
-      run: go vet -v schopyatch/.
+      run: go vet -C schopyatch -v .
 
     - name: Test
-      run: go test -v schopyatch/.
+      run: go test -C schopyatch -v ./...
