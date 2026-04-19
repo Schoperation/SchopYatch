@@ -30,19 +30,16 @@ jobs:
         chmod +x libdave_install.sh
         NON_INTERACTIVE=1 ./libdave_install.sh v1.1.1
 
-    - name: Back to SchopYatch
-      run: cd ${GITHUB_WORKSPACE}/schopyatch
-
     - name: Set up Go
       uses: actions/setup-go@v6.4.0
       with:
         go-version-file: "schopyatch/go.mod"
 
     - name: Build
-      run: go build -v .
+      run: go build -v schopyatch/.
 
     - name: Vet
-      run: go vet -v .
+      run: go vet -v schopyatch/.
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v schopyatch/.
