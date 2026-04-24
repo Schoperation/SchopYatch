@@ -19,24 +19,37 @@ jobs:
 
     - name: Compile DAVE
       run: |
-        curl -fsL https://github.com/discord/libdave/releases/download/v1.1.1%2Fcpp/libdave-Linux-X64-boringssl.zip -o ~/libdave/prebuilt.zip
+        set -euo pipefail
+
+        mkdir -p ~/libdave
+        curl -fL --retry 5 --retry-delay 2 \
+          "https://github.com/discord/libdave/releases/download/v1.1.1%2Fcpp/libdave-Linux-X64-boringssl.zip" \
+          -o ~/libdave/prebuilt.zip
+
+        # Confirm the expected files exist in the archive (and show listing for debugging)
+        unzip -l ~/libdave/prebuilt.zip | sed -n '1,200p'
+
         mkdir -p ~/libdave/lib ~/libdave/include
-        unzip -j -o ~/libdave/prebuilt.zip "include/dave/dave.h" -d ~/libdave/include
-        unzip -j -o ~/libdave/prebuilt.zip "lib/libdave.so" -d ~/libdave/lib
+
+        # Extract by matching actual filenames (in case the archive layout differs)
+        unzip -j -o ~/libdave/prebuilt.zip "*/dave.h" -d ~/libdave/include
+        unzip -j -o ~/libdave/prebuilt.zip "*/libdave.so" -d ~/libdave/lib
+
         rm -f ~/libdave/prebuilt.zip
+
         mkdir -p ~/libdave/lib/pkgconfig
-        cat <<EOF > ~/libdave/lib/pkgconfig/dave.pc
-        prefix=~/libdave
-        exec_prefix=\${prefix}
-        libdir=\${exec_prefix}/lib
-        includedir=\${prefix}/include
+        cat > ~/libdave/lib/pkgconfig/dave.pc <<'EOF'
+        prefix=/home/runner/libdave
+        exec_prefix=${prefix}
+        libdir=${exec_prefix}/lib
+        includedir=${prefix}/include
 
         Name: dave
         Description: Discord Audio & Video End-to-End Encryption (DAVE) Protocol
         Version: v1.1.1
         URL: https://github.com/discord/libdave
-        Libs: -L\${libdir} -ldave -Wl,-rpath,\${libdir}
-        Cflags: -I\${includedir}
+        Libs: -L${libdir} -ldave -Wl,-rpath,${libdir}
+        Cflags: -I${includedir}
         EOF
 
     - name: Set up Go
@@ -46,7 +59,7 @@ jobs:
 
     - name: Build
       run: |
-        echo "PKG_CONFIG_PATH=~/libdave/lib/pkgconfig" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig" >> $GITHUB_ENV
         go build .
 
     - name: Vet
