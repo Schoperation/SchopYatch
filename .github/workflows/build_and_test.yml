@@ -59,7 +59,7 @@ jobs:
 
     - name: Build
       run: |
-        echo PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
+        export PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
         go build .
 
     - name: Vet
