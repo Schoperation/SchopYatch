@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  name: Build, Vet & Test
   build-vet-and-test:
+    name: Build, Vet & Test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout SchopYatch
