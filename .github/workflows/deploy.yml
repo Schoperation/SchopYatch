@@ -11,7 +11,7 @@ on:
 jobs:
   test:
     name: Check Build
-    uses: Schoperation/SchopYatch/.github/workflows/build_and_test.yml@dev
+    uses: Schoperation/SchopYatch/.github/workflows/build_and_test.yml@master
   deploy:
     name: Deploy To Server
     runs-on: ubuntu-latest
