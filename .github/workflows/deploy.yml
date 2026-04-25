@@ -1,4 +1,4 @@
-# Ensures SchopYatch is properly vetted and tested before
+# Ensures SchopYatch is properly tested before
 # ultimately deployed to production.
 name: Deploy SchopYatch
 
@@ -10,32 +10,15 @@ on:
 
 jobs:
   test:
-    name: Vet & Test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v4.1.1
-
-    - name: Setup Go
-      uses: actions/setup-go@v5.0.0
-      with:
-        go-version-file: "go.mod"
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Vet
-      run: go vet -v ./...
-
-    - name: Test
-      run: go test -v ./...
+    name: Check Build
+    uses: Schoperation/SchopYatch/.github/workflows/build_and_test.yml@dev
   deploy:
     name: Deploy To Server
     runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Deploy Via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
