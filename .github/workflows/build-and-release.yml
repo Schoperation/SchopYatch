@@ -58,7 +58,7 @@ jobs:
 
         cd ~/.local
         ls -la
-        cd libs
+        cd lib
         ls -la
 
     - name: Checkout SchopYatch
