@@ -1,9 +1,7 @@
-name: Build, Vet & Test
+name: Build & Release
+description: Builds, vets, and tests SchopYatch, while creating a release if applicable.
 
 on: 
-  pull_request:
-    branches:
-      - master
   push:
     branches-ignore:
       - master
@@ -11,9 +9,11 @@ on:
   workflow_call:
 
 jobs:
-  build-vet-and-test:
-    name: Build, Vet & Test
+  build-and-release:
+    name: Build & Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout SchopYatch
       uses: actions/checkout@v6.0.2
@@ -58,13 +58,28 @@ jobs:
       with:
         go-version-file: "go.mod"
 
-    - name: Build
-      run: |
-        export PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
-        go build .
-
     - name: Vet
       run: go vet -v ./...
 
     - name: Test
       run: go test -v ./...
+
+    - name: Build
+      run: |
+        export PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
+        go build -o schopyatch_linux64 .
+
+    - name: Get Version
+      if: ${{ github.ref_name == 'master' }}
+      run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+
+    - name: Create Release
+      if: ${{ github.ref_name == 'master' }}
+      uses: ncipollo/release-action@v1.21.0
+      with:
+          commit: "master"
+          tag: ${{ env.VERSION }}
+          artifacts: "schopyatch_linux64"
+          generateReleaseNotes: false
+          makeLatest: true
+          skipIfReleaseExists: true

@@ -1,34 +1,37 @@
-# Ensures SchopYatch is properly tested before
-# ultimately deployed to production.
 name: Deploy SchopYatch
+description: Builds & releases the latest SchopYatch if needed, and deploys it to the production environment.
 
 on: 
   push: 
     branches:
-      - master
+      - masterr
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Check Build
-    uses: Schoperation/SchopYatch/.github/workflows/build_and_test.yml@master
+  build-and-release:
+    name: Check Build & Release
+    uses: Schoperation/SchopYatch/.github/workflows/build.yml@master
   deploy:
     name: Deploy To Server
     runs-on: ubuntu-latest
-    needs: test
+    needs: build-and-release
     steps:
+      - name: Get Version
+        run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+
       - name: Deploy Via SSH
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          allenvs: true
           script: |
             cd ~/SchopYatch
-            git pull
             rm schopyatch
             pkill schopyatch
-            /usr/local/go/bin/go build .
+            wget "https://github.com/Schoperation/SchopYatch/releases/tag/$VERSION/schopyatch_linux64"
+            mv schopyatch_linux64 schopyatch
             cp schopyatch ../../schopyatch_bot/
             cd ../../schopyatch_bot
             ./schopyatch &>logs/schopyatch.log &
