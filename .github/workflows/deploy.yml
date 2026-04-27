@@ -35,4 +35,4 @@ jobs:
             mv schopyatch_linux64 schopyatch
             cp schopyatch ../../schopyatch_bot/
             cd ../../schopyatch_bot
-            ./schopyatch &>logs/schopyatch.log &
+            LD_LIBRARY_PATH=$HOME/.local/lib ./schopyatch &>logs/schopyatch.log &
