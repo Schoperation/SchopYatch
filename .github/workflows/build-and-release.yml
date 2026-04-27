@@ -42,7 +42,7 @@ jobs:
         rm -f ~/.local/prebuilt.zip
 
         mkdir -p ~/.local/lib/pkgconfig
-        cat > ~/.local/lib/pkgconfig/dave.pc <<'EOF'
+        cat > ~/.local/lib/pkgconfig/dave.pc <<EOF
         prefix=${HOME}/.local
         exec_prefix=${prefix}
         libdir=${exec_prefix}/lib
