@@ -28,6 +28,8 @@ jobs:
       run: |
         set -euo pipefail
 
+        ls -la
+
         mkdir -p ~/.local
         curl -fL --retry 5 --retry-delay 2 \
           "https://github.com/discord/libdave/releases/download/v1.1.1%2Fcpp/libdave-Linux-X64-boringssl.zip" \
@@ -46,7 +48,7 @@ jobs:
 
         mkdir -p ~/.local/lib/pkgconfig
         cat > ~/.local/lib/pkgconfig/dave.pc <<'EOF'
-        prefix=/home/runner/.local
+        prefix=~/.local
         exec_prefix=${prefix}
         libdir=${exec_prefix}/lib
         includedir=${prefix}/include
@@ -72,7 +74,7 @@ jobs:
 
     - name: Build
       run: |
-        export PKG_CONFIG_PATH=/home/runner/.local/lib/pkgconfig
+        export PKG_CONFIG_PATH=~/.local/lib/pkgconfig
         go build -o schopyatch_linux64 -v .
 
     - name: Get Version
