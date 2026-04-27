@@ -31,7 +31,7 @@ jobs:
             cd ~/SchopYatch
             rm schopyatch
             pkill schopyatch
-            wget "https://github.com/Schoperation/SchopYatch/releases/download/tag/$VERSION/schopyatch_linux64"
+            wget "https://github.com/Schoperation/SchopYatch/releases/download/$VERSION/schopyatch_linux64"
             mv schopyatch_linux64 schopyatch
             cp schopyatch ../../schopyatch_bot/
             cd ../../schopyatch_bot
