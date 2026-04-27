@@ -34,7 +34,7 @@ jobs:
           -o ~/libdave/prebuilt.zip
 
         # Confirm the expected files exist in the archive (and show listing for debugging)
-        unzip -l ~/.local/prebuilt.zip | sed -n '1,200p'
+        unzip -l ~/libdave/prebuilt.zip | sed -n '1,200p'
 
         mkdir -p ~/libdave/lib ~/libdave/include
 
