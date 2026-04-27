@@ -25,8 +25,6 @@ jobs:
       run: |
         set -euo pipefail
 
-        ls -la
-
         mkdir -p ~/.local
         curl -fL --retry 5 --retry-delay 2 \
           "https://github.com/discord/libdave/releases/download/v1.1.1%2Fcpp/libdave-Linux-X64-boringssl.zip" \
@@ -57,6 +55,11 @@ jobs:
         Libs: -L${libdir} -ldave -Wl,-rpath,${libdir}
         Cflags: -I${includedir}
         EOF
+
+        cd ~/.local
+        ls -la
+        cd libs
+        ls -la
 
     - name: Checkout SchopYatch
       uses: actions/checkout@v6.0.2
