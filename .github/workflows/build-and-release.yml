@@ -28,25 +28,25 @@ jobs:
       run: |
         set -euo pipefail
 
-        mkdir -p ~/libdave
+        mkdir -p ~/.local
         curl -fL --retry 5 --retry-delay 2 \
           "https://github.com/discord/libdave/releases/download/v1.1.1%2Fcpp/libdave-Linux-X64-boringssl.zip" \
-          -o ~/libdave/prebuilt.zip
+          -o ~/.local/prebuilt.zip
 
         # Confirm the expected files exist in the archive (and show listing for debugging)
-        unzip -l ~/libdave/prebuilt.zip | sed -n '1,200p'
+        unzip -l ~/.local/prebuilt.zip | sed -n '1,200p'
 
-        mkdir -p ~/libdave/lib ~/libdave/include
+        mkdir -p ~/.local/lib ~/.local/include
 
         # Extract by matching actual filenames (in case the archive layout differs)
-        unzip -j -o ~/libdave/prebuilt.zip "*/dave.h" -d ~/libdave/include
-        unzip -j -o ~/libdave/prebuilt.zip "*/libdave.so" -d ~/libdave/lib
+        unzip -j -o ~/.local/prebuilt.zip "*/dave.h" -d ~/.local/include
+        unzip -j -o ~/.local/prebuilt.zip "*/libdave.so" -d ~/.local/lib
 
-        rm -f ~/libdave/prebuilt.zip
+        rm -f ~/.local/prebuilt.zip
 
-        mkdir -p ~/libdave/lib/pkgconfig
-        cat > ~/libdave/lib/pkgconfig/dave.pc <<'EOF'
-        prefix=/home/runner/libdave
+        mkdir -p ~/.local/lib/pkgconfig
+        cat > ~/.local/lib/pkgconfig/dave.pc <<'EOF'
+        prefix=/home/runner/.local
         exec_prefix=${prefix}
         libdir=${exec_prefix}/lib
         includedir=${prefix}/include
@@ -72,8 +72,7 @@ jobs:
 
     - name: Build
       run: |
-        export PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
-        export CGO_LDFLAGS="-O2 -g -static"
+        export PKG_CONFIG_PATH=/home/runner/.local/lib/pkgconfig
         go build -o schopyatch_linux64 -v .
 
     - name: Get Version
