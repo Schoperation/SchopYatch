@@ -28,7 +28,7 @@ jobs:
         mkdir -p ~/libdave
         curl -fL --retry 5 --retry-delay 2 \
           "https://github.com/discord/libdave/releases/download/v1.1.1%2Fcpp/libdave-Linux-X64-boringssl.zip" \
-          -o ~/.local/prebuilt.zip
+          -o ~/libdave/prebuilt.zip
 
         # Confirm the expected files exist in the archive (and show listing for debugging)
         unzip -l ~/libdave/prebuilt.zip | sed -n '1,200p'
