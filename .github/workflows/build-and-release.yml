@@ -73,7 +73,7 @@ jobs:
     - name: Build
       run: |
         export PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
-        go build -o schopyatch_linux64 .
+        go build -o schopyatch_linux64 -v .
 
     - name: Get Version
       if: ${{ github.ref_name == 'master' }}
