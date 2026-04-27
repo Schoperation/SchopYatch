@@ -60,6 +60,8 @@ jobs:
         ls -la
         cd lib
         ls -la
+        cd pkgconfig
+        cat dave.pc
 
     - name: Checkout SchopYatch
       uses: actions/checkout@v6.0.2
