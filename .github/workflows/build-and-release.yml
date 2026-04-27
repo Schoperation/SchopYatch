@@ -56,6 +56,8 @@ jobs:
         Cflags: -I\${includedir}
         EOF
 
+        cat ~/.local/lib/pkgconfig/dave.pc
+
     - name: Checkout SchopYatch
       uses: actions/checkout@v6.0.2
 
@@ -73,7 +75,6 @@ jobs:
     - name: Build
       run: |
         export PKG_CONFIG_PATH=~/.local/lib/pkgconfig
-        go clean -cache -modcache -work
         go build -o schopyatch_linux64 -v .
 
     - name: Get Version
