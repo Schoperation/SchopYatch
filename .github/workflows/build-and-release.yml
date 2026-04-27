@@ -7,6 +7,10 @@ on:
       - master
   workflow_dispatch:
   workflow_call:
+    outputs:
+      version:
+        description: SchopYatch version
+        value: ${{ jobs.build-and-release.outputs.version }}
 
 jobs:
   build-and-release:
@@ -14,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      version: ${{ env.VERSION }}
     steps:
     - name: Checkout SchopYatch
       uses: actions/checkout@v6.0.2
