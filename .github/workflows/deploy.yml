@@ -4,13 +4,13 @@ description: Builds & releases the latest SchopYatch if needed, and deploys it t
 on: 
   push: 
     branches:
-      - masterr
+      - master
   workflow_dispatch:
 
 jobs:
   build-and-release:
     name: Check Build & Release
-    uses: Schoperation/SchopYatch/.github/workflows/build.yml@master
+    uses: Schoperation/SchopYatch/.github/workflows/build-and-release.yml@master
   deploy:
     name: Deploy To Server
     runs-on: ubuntu-latest
