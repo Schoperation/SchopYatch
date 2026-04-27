@@ -73,7 +73,7 @@ jobs:
     - name: Build
       run: |
         export PKG_CONFIG_PATH=/home/runner/libdave/lib/pkgconfig
-        export CGO_LDFLAGS="-L/home/runner/libdave/lib -ldave -static"
+        export CGO_LDFLAGS="-O2 -g -static"
         go build -o schopyatch_linux64 -v .
 
     - name: Get Version
